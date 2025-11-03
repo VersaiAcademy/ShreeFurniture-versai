@@ -4,10 +4,12 @@
   "description": "Admin panel for Shri Furniture Village",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
+  "dev": "vite",
+  "build": "npm rebuild && vite build",
+  "preview": "vite preview",
+  "postinstall": "chmod +x node_modules/.bin/vite"
+}
+,
   "engines": {
   "node": "20.x"
 },
