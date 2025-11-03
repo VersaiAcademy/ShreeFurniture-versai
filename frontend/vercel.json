@@ -1,4 +1,4 @@
-{
+curl -i -X OPTIONS "https://shrifurniturevillage-backend.onrender.com/api/auth/admin/login" -H "Origin: https://shree-furniture-versai-v2ee.vercel.app" -H "Access-Control-Request-Method: POST" -H "Access-Control-Request-Headers: Content-Type"{
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
