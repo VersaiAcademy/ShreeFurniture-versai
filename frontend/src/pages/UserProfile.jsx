@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import Modal from "../components/Modal";
 import { useSelector } from "react-redux";
 const UserProfile = () => {
-  const url = "http://127.0.0.1:8000/";
+  const url = "";
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const navigate = useNavigate();
@@ -133,7 +133,7 @@ const UserProfile = () => {
                         className="shadow-md border rounded-md p-2 flex items-center flex-col md:flex-row hover:border-orange-400 cursor-pointer gap-10"
                       >
                         <img
-                          src={url + item.product.img1}
+                          src={item.product.img1}
                           alt=""
                           className="w-32 md:w-52 "
                         />

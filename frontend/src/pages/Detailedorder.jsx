@@ -86,7 +86,7 @@ const Detailedorder = () => {
           if (data.column.index === 0 && data.cell.section === "body") {
             const imageSize = 40;
             doc.addImage(
-              url + item.product.img1,
+              item.product.img1,
               "JPEG",
               data.cell.x + 2,
               data.cell.y + 2,
@@ -240,7 +240,7 @@ const Detailedorder = () => {
                 {/* cards */}
                 <div className="shadow-md border rounded-md p-2 flex items-center justify-between hover:border-orange-400 cursor-pointer gap-10 w-auto md:w-[85rem] h-auto md:h-60">
                   <img
-                    src={url + item.product.img1}
+                    src={item.product.img1}
                     alt=""
                     className="w-32 md:w-52"
                   />
