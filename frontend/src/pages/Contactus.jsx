@@ -34,7 +34,7 @@ const Contactus = () => {
       formData.append('img', e.target.img.files[0]); // Assuming values.img is the File object
       formData.append('message', values.message);
   console.log(values.img)
-      const response = await axios.post("/api/contactus/", formData, {
+      const response = await axios.post("/api/contact/contactus", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

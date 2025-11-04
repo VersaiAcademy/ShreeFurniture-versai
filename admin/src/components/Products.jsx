@@ -49,17 +49,15 @@ const Products = () => {
   });
   const [imagePreviews, setImagePreviews] = useState([]);
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+  useEffect(() => {
+    loadProducts();
+    loadCategories();
+  }, []);
 
-  useEffect(() => {
-    loadProducts();
-    loadCategories();
-  }, []);
-
-  const loadProducts = async () => {
-    try {
-      const token = localStorage.getItem('adminToken');
-      const response = await axios.get(`${API_BASE_URL}/api/admin/products`, {
+  const loadProducts = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await axios.get(`/api/admin/products`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProducts(response.data.products || response.data);
@@ -71,9 +69,9 @@ const Products = () => {
     }
   };
 
-  const loadCategories = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/categories`);
+  const loadCategories = async () => {
+    try {
+      const response = await axios.get(`/api/categories`);
       setCategories(response.data);
     } catch (error) {
       console.error('Failed to load categories:', error);
@@ -102,9 +100,9 @@ const Products = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const isMultiple = formData.imageFiles.length > 1;
-      const endpoint = isMultiple 
-        ? `${API_BASE_URL}/api/upload/multiple` 
-        : `${API_BASE_URL}/api/upload`;
+      const endpoint = isMultiple 
+        ? `/api/upload/multiple` 
+        : `/api/upload`;
       const fieldName = isMultiple ? 'images' : 'image';
 
       const fd = new FormData();
@@ -200,18 +198,18 @@ const Products = () => {
       }
 
       if (editingProduct) {
-        await axios.put(
-          `${API_BASE_URL}/api/admin/products/${editingProduct._id}`, 
-          submitData, 
-          { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
-        );
+        await axios.put(
+          `/api/admin/products/${editingProduct._id}`, 
+          submitData, 
+          { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
+        );
         alert('Product updated successfully!');
       } else {
-        await axios.post(
-          `${API_BASE_URL}/api/admin/products`, 
-          submitData, 
-          { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
-        );
+        await axios.post(
+          `/api/admin/products`, 
+          submitData, 
+          { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
+        );
         alert('Product added successfully!');
       }
       
@@ -283,7 +281,7 @@ const Products = () => {
     if (window.confirm('Delete this product?')) {
       try {
         const token = localStorage.getItem('adminToken');
-        await axios.delete(`${API_BASE_URL}/api/admin/products/${id}`, {
+        await axios.delete(`/api/admin/products/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         alert('Product deleted!');

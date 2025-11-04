@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -15,6 +15,7 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 const Detailedorder = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const url = "http://127.0.0.1:8000/";
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -26,9 +27,9 @@ const Detailedorder = () => {
       try {
         const getItems = async () => {
           setLoading(true);
-          const response = await axios.get(`/api/dtorder/${id}/`, {
+          const response = await axios.get(`/api/orders/${id}`, {
             headers: {
-              Authorization: `Token ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           });
           setData(response.data);

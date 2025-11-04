@@ -5,15 +5,13 @@ import App from "./App.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import axios from "axios";
 
-// ✅ Axios base setup
-// In dev, keep relative URLs and let Vite proxy handle /api -> http://localhost:5000
-// In prod, set VITE_API_URL to the ROOT of your API (e.g., https://api.example.com)
-if (!import.meta.env.DEV) {
-  const root = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
-  if (root) {
-    axios.defaults.baseURL = root; // keep calls like /api/auth/... without double /api
-  }
-}
+// ✅ Axios base setup - Configure baseURL for all environments
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://shreefurniture-backend-production.up.railway.app';
+axios.defaults.baseURL = API_BASE_URL;
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.timeout = 30000;
+
+console.log('🌐 Admin API Base URL:', API_BASE_URL);
 
 // ✅ Axios interceptors for admin auth
 axios.interceptors.request.use((config) => {

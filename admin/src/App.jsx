@@ -32,7 +32,8 @@ const App = () => {
     }
 
     // Validate token silently
-    fetch("/api/auth/me", {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://shreefurniture-backend-production.up.railway.app';
+    fetch(`${API_BASE_URL}/api/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(async (r) => {

@@ -8,15 +8,13 @@ const Banners = () => {
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState('');
   const [position, setPosition] = useState('main');
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-
   useEffect(() => {
     loadBanners();
   }, []);
 
   const loadBanners = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/banners`);
+      const res = await axios.get(`/api/banners`);
       setBanners(res.data?.banners || res.data || []);
     } catch (e) {
       console.error('Error loading banners:', e);
@@ -38,7 +36,7 @@ const Banners = () => {
       const token = localStorage.getItem('adminToken');
       const fd = new FormData();
       fd.append('image', imageFile);
-      const up = await axios.post(`${API_BASE_URL}/api/upload`, fd, {
+      const up = await axios.post(`/api/upload`, fd, {
         headers: { 
           'Content-Type': 'multipart/form-data', 
           Authorization: `Bearer ${token}`
@@ -65,7 +63,7 @@ const Banners = () => {
         return;
       }
 
-      await axios.post(`${API_BASE_URL}/api/banners`, 
+      await axios.post(`/api/banners`, 
         { imageUrl, type }, 
         { headers: { Authorization: `Bearer ${token}` } 
       });
@@ -83,7 +81,7 @@ const Banners = () => {
     if (!confirm('Delete this banner?')) return;
     try {
       const token = localStorage.getItem('adminToken');
-  await axios.delete(`${API_BASE_URL}/api/banners/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+  await axios.delete(`/api/banners/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       await loadBanners();
     } catch (e) {
       alert('Failed to delete banner');
