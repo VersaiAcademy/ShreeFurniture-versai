@@ -26,138 +26,52 @@ const Homepage = () => {
     loadBanners();
   }, []);
 
+  const mainBanners = banners.filter(b => b.type === 'main').slice(0, 4);
+  const rightBanner = banners.find(b => b.type === 'sale');
+
   return (
     <div>
-      <div className="flex justify-between gap-4 px-5 pt-4">
-        {/* Left Section - Banner Carousel */}
-        <div className="w-full lg:w-3/4">
-          <div className="relative h-[300px] md:h-[500px] overflow-hidden rounded-lg">
-            {loading ? (
+      <div className="px-4 md:px-6 pt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
+          {/* Left: Horizontal scrollable carousel (4 images) */}
+          <div className="lg:col-span-3">
+            <div className="relative h-[260px] sm:h-[320px] md:h-[420px] lg:h-[500px] rounded-xl overflow-hidden bg-gray-100">
+              {loading ? (
               <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg">
                 <div className="text-lg text-gray-500">Loading banners...</div>
               </div>
-            ) : banners.length === 0 ? (
+              ) : mainBanners.length === 0 ? (
               <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg">
                 <div className="text-lg text-gray-500">No banners found. Add banners from admin.</div>
               </div>
-            ) : (
-              <div className="relative h-full">
-                {banners.filter(b => b.type === 'main').map((banner, i) => (
-                  <div 
-                    key={banner._id || i} 
-                    className={`absolute inset-0 transition-opacity duration-500 ${i === 0 ? 'opacity-100' : 'opacity-0'}`}
-                  >
-                    <img 
-                      src={banner.imageUrl} 
-                      alt={banner.title || `Banner ${i + 1}`} 
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                    {/* Optional: Banner Content Overlay */}
-                    <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/50 to-transparent text-white rounded-lg">
-                      {banner.title && <h3 className="text-2xl font-bold mb-2">{banner.title}</h3>}
-                      {banner.subtitle && <p className="text-sm opacity-90">{banner.subtitle}</p>}
-                    </div>
+              ) : (
+                <div className="h-full w-full">
+                  <div className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth gap-3 md:gap-4 [&::-webkit-scrollbar]:hidden -mb-2 pb-2">
+                    {mainBanners.map((banner, i) => (
+                      <div key={banner._id || i} className="snap-start shrink-0 w-full h-full">
+                        <img
+                          src={banner.imageUrl}
+                          alt={banner.title || `Banner ${i + 1}`}
+                          className="w-full h-full object-cover rounded-xl"
+                          loading={i === 0 ? 'eager' : 'lazy'}
+                        />
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
-          {/* Slider indicators */}
-          <div className="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
-            {banners.slice(0, 5).map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                className="w-3 h-3 rounded-full bg-white/50"
-                aria-current={i === 0 ? "true" : "false"}
-                aria-label={`Slide ${i + 1}`}
-                data-carousel-slide-to={i}
-              />
-            ))}
+                </div>
+              )}
+            </div>
           </div>
-          {/* Slider controls */}
-          <button
-            type="button"
-            className="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-            data-carousel-prev=""
-          >
-            <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-              <svg
-                className="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 1 1 5l4 4"
-                />
-              </svg>
-              <span className="sr-only">Previous</span>
-            </span>
-          </button>
-          <button
-            type="button"
-            className="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-            data-carousel-next=""
-          >
-            <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-              <svg
-                className="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="m1 9 4-4-4-4"
-                />
-              </svg>
-              <span className="sr-only">Next</span>
-            </span>
-          </button>
-        </div>
-
-          {/* Banner Navigation */}
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-            {banners.filter(b => b.position === 'main').map((_, i) => (
-              <button
-                key={i}
-                className={`w-2 h-2 rounded-full transition-all ${i === 0 ? 'bg-white' : 'bg-white/50'}`}
-                aria-label={`Go to slide ${i + 1}`}
-              />
-            ))}
+          {/* Right: Static image from admin (sale/right) */}
+          <div className="hidden lg:block lg:col-span-1">
+            <div className="h-[260px] sm:h-[320px] md:h-[420px] lg:h-[500px] rounded-xl overflow-hidden shadow-card bg-gray-100">
+              {rightBanner ? (
+                <img src={rightBanner.imageUrl} alt={rightBanner.title || 'Offer'} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-500">Add right-side banner</div>
+              )}
+            </div>
           </div>
-        </div>
-
-        {/* Right Section - Static Square Banners */}
-        <div className="hidden lg:flex flex-col gap-4 w-1/4">
-          {banners
-            .filter(b => b.type === 'sale')
-            .slice(0, 2)
-            .map((banner, i) => (
-              <div key={banner._id || i} className="relative h-[240px] rounded-lg overflow-hidden">
-                <img
-                  src={banner.imageUrl}
-                  alt={banner.title || `Right Banner ${i + 1}`}
-                  className="w-full h-full object-cover rounded-lg transition-transform hover:scale-105 duration-300"
-                />
-                {/* Optional: Right Banner Content */}
-                {(banner.title || banner.subtitle) && (
-                  <div className="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-black/50 to-transparent text-white">
-                    {banner.title && <h4 className="text-lg font-semibold">{banner.title}</h4>}
-                    {banner.subtitle && <p className="text-sm opacity-90">{banner.subtitle}</p>}
-                  </div>
-                )}
-              </div>
-            ))}
         </div>
       </div>
       <div className="banner">

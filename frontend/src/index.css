@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  html { @apply font-poppins text-gray-800; }
+  h1,h2,h3,h4,h5,h6 { @apply font-semibold text-gray-900; }
+  button { @apply rounded-lg px-4 py-2 transition-colors; }
+  .btn-primary { @apply bg-brand-500 text-white hover:bg-brand-600; }
+  .btn-outline { @apply border border-gray-300 hover:border-brand-400 hover:text-brand-700; }
+  .card { @apply bg-white rounded-xl shadow-card; }
+}
