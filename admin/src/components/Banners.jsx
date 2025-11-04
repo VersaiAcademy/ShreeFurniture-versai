@@ -5,8 +5,8 @@ import axios from 'axios';
 const Banners = () => {
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [imageFile, setImageFile] = useState(null);
-  const [preview, setPreview] = useState('');
+  const [imageFiles, setImageFiles] = useState([]);
+  const [previews, setPreviews] = useState([]);
   const [position, setPosition] = useState('main');
   useEffect(() => {
     loadBanners();
@@ -25,26 +25,30 @@ const Banners = () => {
   };
 
   const onSelectFile = (e) => {
-    const file = e.target.files?.[0];
-    setImageFile(file || null);
-    setPreview(file ? URL.createObjectURL(file) : '');
+    const files = Array.from(e.target.files || []);
+    if (files.length > 4) {
+      alert('You can upload maximum 4 banners at once');
+      return;
+    }
+    setImageFiles(files);
+    setPreviews(files.map(f => URL.createObjectURL(f)));
   };
 
   const handleUpload = async () => {
-    if (!imageFile) return;
+    if (!imageFiles.length) return;
     try {
       const token = localStorage.getItem('adminToken');
       const fd = new FormData();
-      fd.append('image', imageFile);
-      const up = await axios.post(`/api/upload`, fd, {
+      imageFiles.forEach(f => fd.append('images', f));
+      const up = await axios.post(`/api/upload/multiple`, fd, {
         headers: { 
           'Content-Type': 'multipart/form-data', 
           Authorization: `Bearer ${token}`
         }
       });
-      const imageUrl = up.data?.imageUrl;
-      if (!imageUrl) {
-        alert('Failed to get image URL from server');
+      const urls = up.data?.imageUrls || [];
+      if (!urls.length) {
+        alert('Failed to get image URLs from server');
         return;
       }
 
@@ -54,22 +58,20 @@ const Banners = () => {
 
       const type = position === 'right' ? 'sale' : 'main';
 
-      if (type === 'main' && mainCount >= 4) {
+      if (type === 'main' && mainCount + urls.length > 4) {
         alert('You can upload maximum 4 main banners for the carousel');
         return;
       }
-      if (type === 'sale' && saleCount >= 2) {
+      if (type === 'sale' && saleCount + urls.length > 2) {
         alert('You can upload maximum 2 sale/right side banners');
         return;
       }
 
-      await axios.post(`/api/banners`, 
-        { imageUrl, type }, 
-        { headers: { Authorization: `Bearer ${token}` } 
-      });
-  setImageFile(null);
-  setPreview('');
-  setPosition('main');
+      await Promise.all(urls.map((imageUrl) => axios.post(`/api/banners`, { imageUrl, type }, { headers: { Authorization: `Bearer ${token}` } })));
+
+      setImageFiles([]);
+      setPreviews([]);
+      setPosition('main');
       await loadBanners();
     } catch (e) {
       alert('Failed to upload banner');
@@ -100,16 +102,18 @@ const Banners = () => {
       <div className="card">
         <h3>Add New Banner</h3>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-          <input type="file" accept="image/*" onChange={onSelectFile} />
+          <input type="file" accept="image/*" multiple onChange={onSelectFile} />
           <select value={position} onChange={e => setPosition(e.target.value)}>
             <option value="main">Main Banner (Carousel)</option>
             <option value="right">Right Side Banner</option>
           </select>
-          <button className="btn btn-success" onClick={handleUpload} disabled={!imageFile}>Upload</button>
+          <button className="btn btn-success" onClick={handleUpload} disabled={!imageFiles.length}>Upload</button>
         </div>
-        {preview && (
-          <div style={{ marginTop: 12 }}>
-            <img src={preview} alt="preview" style={{ width: 300, height: 140, objectFit: 'cover', borderRadius: 6 }} />
+        {previews.length > 0 && (
+          <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {previews.map((p, idx) => (
+              <img key={idx} src={p} alt={`preview-${idx}`} style={{ width: 180, height: 100, objectFit: 'cover', borderRadius: 6 }} />
+            ))}
           </div>
         )}
       </div>

@@ -94,37 +94,31 @@ const Products = () => {
     setImagePreviews(previews);
   };
 
-  const uploadImagesToCloudinary = async () => {
-    if (!formData.imageFiles || formData.imageFiles.length === 0) return [];
-    setUploading(true);
-    try {
-      const token = localStorage.getItem('adminToken');
-      const isMultiple = formData.imageFiles.length > 1;
-      const endpoint = isMultiple 
-        ? `/api/upload/multiple` 
-        : `/api/upload`;
-      const fieldName = isMultiple ? 'images' : 'image';
+  const uploadImagesToCloudinary = async () => {
+    if (!formData.imageFiles || formData.imageFiles.length === 0) return [];
+    setUploading(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      // Always use multiple endpoint for consistency
+      const fd = new FormData();
+      formData.imageFiles.forEach((file) => fd.append('images', file));
 
-      const fd = new FormData();
-      formData.imageFiles.forEach((file) => fd.append(fieldName, file));
+      const response = await axios.post(`/api/upload/multiple`, fd, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
 
-      const response = await axios.post(endpoint, fd, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      if (isMultiple) return response.data.imageUrls || [];
-      return [response.data.imageUrl].filter(Boolean);
-    } catch (error) {
-      console.error('Image upload failed:', error);
-      alert('Failed to upload images');
-      return [];
-    } finally {
-      setUploading(false);
-    }
-  };
+      return response.data.imageUrls || [];
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      alert('Failed to upload images');
+      return [];
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
