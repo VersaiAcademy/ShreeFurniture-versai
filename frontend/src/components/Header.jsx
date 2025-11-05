@@ -158,10 +158,10 @@ const Header = () => {
 
             {/* Right Icons */}
             <div className="flex items-center space-x-6">
-              <button className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group" id='location'>
-                <MapPin className="h-5 w-5 mb-1" />
-                <span className="text-xs font-medium">Stores</span>
-              </button>
+             <a href="#location" className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group">
+            <MapPin className="h-5 w-5 mb-1" />
+            <span className="text-xs font-medium">Stores</span>
+        </a>
 
               <button 
                 onClick={() => window.location.href = '/login'}
