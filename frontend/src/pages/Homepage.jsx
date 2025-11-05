@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import API from '../utils/api';
 import { faStar, faTruck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import StoreLocator from "../components/store";
 
 const Homepage = () => {
   const [banners, setBanners] = useState([]);
@@ -78,7 +79,7 @@ const Homepage = () => {
         <img src="/images/emi-banner.jpg" alt="" />
       </div>
       <div className="pt-5 px-0 md:px-60">
-        <h1 className="font-serif text-center text-2xl">Top Picks For You</h1>
+        <h1 className=" text-center text-2xl">Top Picks For You</h1>
         <p className="text-center">Immensive Collection For Your Dream Home</p>
         <div className="flex gap-10 flex-col md:flex-row pt-5">
           <div className="flex justify-between gap-5 ">
@@ -163,12 +164,14 @@ const Homepage = () => {
         <hr className="" />
       </div>
 
-      <div className="banner pt-5 ">
-        <img src="/images/store-mid-banner.jpg" alt="" />
+      <div className="banner pt-5 px-10 rounded-md ">
+        <img
+        className="rounded-md" 
+        src="/Sri/2624x308 Pixle.jpg" alt="" />
       </div>
 
       <div className="pt-5 px-10">
-        <h1 className="font-serif text-center text-xl md:text-3xl">
+        <h1 className=" text-center text-xl md:text-3xl">
           India's Finest Online Furniture Brand{" "}
         </h1>
         <p className="text-center text-xs md:text-xl">
@@ -229,7 +232,7 @@ const Homepage = () => {
         <hr />
       </div>
       <div className="pt-5 px-5">
-        <h3 className="text-2xl font-serif font-bold">Recomended For You</h3>
+        <h3 className="text-2xl  font-bold">Recomended For You</h3>
         <p className="pb-3 ">Dive Into Your Tailored Selections Today!</p>
         <div className="flex flex-col md:flex-row mb-10">
           <div className="pt-0 md:pt-10">
@@ -302,7 +305,7 @@ const Homepage = () => {
 
       {/* setcion start */}
       <div className="pt-5 px-5">
-        <h3 className="text-2xl font-serif pb-3 font-bold">
+        <h3 className="text-2xl  pb-3 font-bold">
           Best-Sellers Of The Season
         </h3>
 
@@ -533,7 +536,7 @@ const Homepage = () => {
         <div className="flex justify-between items-center">
           <div>
             {" "}
-            <h3 className="text-2xl font-serif font-bold">
+            <h3 className="text-2xl  font-bold">
               Living Room Furniture
             </h3>
             <small className="pb-3 font-bold text-gray-400 ">
@@ -562,7 +565,7 @@ const Homepage = () => {
                   alt=""
                   className="w-96"
                 />
-                <p className="text-xl font-mono">Fabric sofa</p>
+                {/* <p className="text-xl font-mono">Fabric sofa</p> */}
               </div>
               <div>
                 <img
@@ -570,7 +573,7 @@ const Homepage = () => {
                   alt=""
                   className="w-96"
                 />
-                <p className="text-xl font-mono">Fabric sofa</p>
+                {/* <p className="text-xl font-mono">Fabric sofa</p> */}
               </div>
             </div>
             <div className="flex justify-between gap-3 pl-0 md:pl-10">
@@ -580,7 +583,7 @@ const Homepage = () => {
                   alt=""
                   className="w-96"
                 />
-                <p className="text-xl font-mono">Fabric sofa</p>
+                {/* <p className="text-xl font-mono">Fabric sofa</p> */}
               </div>
               <div>
                 <img
@@ -588,7 +591,7 @@ const Homepage = () => {
                   alt=""
                   className="w-96"
                 />
-                <p className="text-xl font-mono">Fabric sofa</p>
+                {/* <p className="text-xl font-mono">Fabric sofa</p> */}
               </div>
             </div>
           </div>
@@ -600,7 +603,7 @@ const Homepage = () => {
         <div className="flex justify-between items-center">
           <div>
             {" "}
-            <h3 className="text-3xl font-serif font-bold">Sofa Cum Beds</h3>
+            <h3 className="text-3xl  font-bold">Sofa Cum Beds</h3>
             <p className="pb-3  text-gray-400 ">Best Of Both The Worlds</p>
           </div>
           <div>
@@ -818,7 +821,7 @@ const Homepage = () => {
         <div className="flex justify-between items-center">
           <div>
             {" "}
-            <h3 className="text-3xl font-serif font-bold">
+            <h3 className="text-3xl  font-bold">
               Home Furnishing Items
             </h3>
             <p className="pb-3  text-gray-400 ">
@@ -924,7 +927,7 @@ const Homepage = () => {
         <div className="flex justify-between items-center">
           <div>
             {" "}
-            <h3 className="text-2xl font-serif font-bold">
+            <h3 className="text-2xl  font-bold">
               Dining Room Furniture
             </h3>
             <small className="pb-3 font-bold text-gray-400 ">
@@ -932,7 +935,7 @@ const Homepage = () => {
             </small>
           </div>
           <div>
-            <button className="bg-orange-300 p-1 font-serif border-black border focus:border-orange-300 rounded-2xl text-white hover:bg-orange-500">
+            <button className="bg-orange-300 p-1  border-black border focus:border-orange-300 rounded-2xl text-white hover:bg-orange-500">
               VIEW ALL <span className="text-xl">{">"}</span>
             </button>
           </div>
@@ -987,7 +990,7 @@ const Homepage = () => {
         <div className="flex justify-between items-center">
           <div>
             {" "}
-            <h3 className="text-3xl font-serif font-bold">
+            <h3 className="text-3xl  font-bold">
               Don't Underestimate The Power Of
             </h3>
             <p className="pb-3  text-gray-400 ">Lighting Up Your Home</p>
@@ -1175,40 +1178,42 @@ const Homepage = () => {
           </div>
         </div>
       </div>
-      <div className="p-3 ">
-        <p className="text-center text-3xl font-serif pb-10 pt-5">
-          90+ Experience Stores Across India
+
+      <StoreLocator/>
+      {/* <div className="p-3 ">
+        <p className="text-center text-3xl  pb-10 pt-5">
+          14+ Experience Stores Across India
         </p>
         <div className="flex text-center gap-3 flex-col ">
           <div className="flex items-center  justify-center gap-5">
             <div className="relative group">
               <img
                 className="h-auto w-96 rounded-lg transition-transform transform-gpu group-hover:scale-105"
-                src="/images/8.jpg"
+                src="/Sri/bangalore.jpg"
                 alt="image description"
               />
               <p className="absolute bottom-0 left-0 right-0 text-center text-white font-bold text-xl opacity-0 group-hover:opacity-100 bg-gradient-to-b from-transparent to-gray-700 p-3 rounded-lg  ">
-                Mumbai
+                Banglore
               </p>
             </div>
             <div className="relative group">
               <img
                 className="h-auto w-96 rounded-lg transition-transform transform-gpu group-hover:scale-105"
-                src="/images/12.jpg"
+                src="/Sri/Bhubaneshwar.jpg"
                 alt="image description"
               />
               <p className="absolute bottom-0 left-0 right-0 text-center text-white font-bold text-xl opacity-0 group-hover:opacity-100 bg-gradient-to-b from-transparent to-gray-700 p-3 rounded-lg  ">
-                Bangalore
+                Bhubaneshwar
               </p>
             </div>
             <div className="relative group">
               <img
                 className="h-auto w-96 rounded-lg transition-transform transform-gpu group-hover:scale-105"
-                src="/images/23.jpg"
+                src="/Sri/HYDRABAD Miyapur.png"
                 alt="image description"
               />
               <p className="absolute bottom-0 left-0 right-0 text-center text-white font-bold text-xl opacity-0 group-hover:opacity-100 bg-gradient-to-b from-transparent to-gray-700 p-3 rounded-lg  ">
-                Delhi
+                Hydrabad
               </p>
             </div>
           </div>
@@ -1250,10 +1255,10 @@ const Homepage = () => {
             </button>
           </div>{" "}
         </div>
-      </div>
+      </div> */}
 
       <div className="pt-3 pb-3 px-5 bg-blue-50">
-        <div className="flex justify-between items-center">
+        {/* <div className="flex justify-between items-center">
           <div>
             {" "}
             <h3 className="text-3xl font-serif font-bold">
@@ -1387,7 +1392,7 @@ const Homepage = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="pt-5 px-5">
           <div
