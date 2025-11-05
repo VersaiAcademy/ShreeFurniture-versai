@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Search, User, ShoppingCart, Menu, X, Heart } from 'lucide-react';
+import { ChevronDown, Search, User, ShoppingCart, Menu, X, Heart, MapPin } from 'lucide-react';
 
 const Header = () => {
   const [categories] = useState([
@@ -10,7 +10,9 @@ const Header = () => {
     { _id: '5', name: 'Storage', slug: 'storage' },
     { _id: '6', name: 'Study & Office', slug: 'study-office' },
     { _id: '7', name: 'Mattresses', slug: 'mattresses' },
-    { _id: '8', name: 'Home Furnishing', slug: 'home-furnishing' }
+    { _id: '8', name: 'Home Furnishing', slug: 'home-furnishing' },
+    { _id: '9', name: 'Lighting & Decor', slug: 'lighting-decor' },
+    { _id: '10', name: 'Interiors', slug: 'interiors' }
   ]);
   
   const [activeMenu, setActiveMenu] = useState(null);
@@ -20,7 +22,6 @@ const Header = () => {
   const [cartCount] = useState(3);
   const timeoutRef = useRef(null);
 
-  // ✅ Slug mapping for dropdown items - ye backend se match hona chahiye
   const slugMap = {
     'All Sofas': 'all-sofas',
     'Fabric Sofas': 'fabric-sofas',
@@ -52,7 +53,6 @@ const Header = () => {
     'Shoe Racks': 'shoe-racks',
     'Sideboards': 'sideboards',
     'Chest of Drawers': 'chest-of-drawers'
-    // Add more as needed - ya backend se dynamically fetch karo
   };
 
   const menuData = {
@@ -94,7 +94,6 @@ const Header = () => {
     }
   };
 
-  // ✅ Navigate to slug
   const navigateToSlug = (itemName) => {
     const slug = slugMap[itemName] || itemName.toLowerCase().replace(/\s+/g, '-').replace(/\+/g, '');
     window.location.href = `/${slug}`;
@@ -130,135 +129,134 @@ const Header = () => {
 
   return (
     <>
-      <div className="bg-gradient-to-r from-orange-600 to-orange-500 text-white text-center py-2 text-sm font-medium">
-        <p>🎉 Welcome to Sri Furniture Village - Free Delivery on Orders Above ₹10,000</p>
-      </div>
-
-      <header className="bg-white sticky top-0 z-50 shadow-md">
+      <header className="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            
-          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => window.location.href = '/'}>
-            <img 
-              src="\SFV Log 637x154 Pxl.png" 
-              alt="Sri Furniture Village Logo" 
-              className="h-20 w-auto object-contain"
-            />
-            {/* <span className="text-xl font-bold text-orange-600">Sri Furniture Village</span> */}
-          </div>
+          {/* Top Bar */}
+          <div className="flex items-center justify-between py-4 border-b border-gray-100">
+            {/* Logo */}
+            <div className="flex items-center cursor-pointer" onClick={() => window.location.href = '/'}>
+              <img 
+                src="/SFV Log 637x154 Pxl.png" 
+                alt="Sri Furniture Village Logo" 
+                className="h-12 w-auto object-contain"
+              />
+            </div>
 
-
-
-            <nav className="hidden lg:flex items-center space-x-1">
-              {categories.map((cat) => (
-                <div
-                  key={cat._id}
-                  className="relative"
-                  onMouseEnter={() => handleMouseEnter(cat.name)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <button 
-                    onClick={() => window.location.href = `/${cat.slug}`}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-md transition-all duration-200 flex items-center group"
-                  >
-                    {cat.name}
-                    <ChevronDown className="ml-1 h-4 w-4 group-hover:rotate-180 transition-transform duration-200" />
-                  </button>
-
-                  {activeMenu === cat.name && menuData[cat.name] && (
-                    <div
-                      className="absolute left-0 top-full mt-0 bg-white shadow-2xl rounded-lg border border-gray-100 min-w-[600px] z-50"
-                      onMouseEnter={() => handleMouseEnter(cat.name)}
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      <div className="p-6">
-                        <div className="grid grid-cols-2 gap-8">
-                          {menuData[cat.name].sections.map((section, idx) => (
-                            <div key={idx}>
-                              <h3 className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-3 pb-2 border-b border-orange-100">
-                                {section.title}
-                              </h3>
-                              <ul className="space-y-2">
-                                {section.items.map((item, itemIdx) => (
-                                  <li key={itemIdx}>
-                                    <button 
-                                      onClick={() => navigateToSlug(item)}
-                                      className="text-sm text-gray-600 hover:text-orange-600 hover:translate-x-1 transition-all duration-200 flex items-center group"
-                                    >
-                                      <span className="w-1 h-1 bg-orange-400 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                      {item}
-                                    </button>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </nav>
-
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                {searchOpen ? (
-                  <div className="flex items-center">
-                    <input
-                      type="text"
-                      placeholder="Search products..."
-                      className="w-64 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:border-orange-500 text-sm"
-                      autoFocus
-                    />
-                    <button onClick={() => setSearchOpen(false)} className="ml-2">
-                      <X className="h-5 w-5 text-gray-500" />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setSearchOpen(true)}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                  >
-                    <Search className="h-5 w-5 text-gray-600" />
-                  </button>
-                )}
+            {/* Search Bar */}
+            <div className="hidden md:flex flex-1 max-w-xl mx-8">
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  placeholder="Search Products, Color & More..."
+                  className="w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 text-sm"
+                />
+                <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <Search className="h-5 w-5 text-gray-400" />
+                </button>
               </div>
+            </div>
 
-              <button className="hidden sm:block p-2 hover:bg-gray-100 rounded-full transition-colors relative">
-                <Heart className="h-5 w-5 text-gray-600" />
+            {/* Right Icons */}
+            <div className="flex items-center space-x-6">
+              <button className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group" id='location'>
+                <MapPin className="h-5 w-5 mb-1" />
+                <span className="text-xs font-medium">Stores</span>
               </button>
 
               <button 
                 onClick={() => window.location.href = '/login'}
-                className="hidden sm:block p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group"
               >
-                <User className="h-5 w-5 text-gray-600" />
+                <User className="h-5 w-5 mb-1" />
+                <span className="text-xs font-medium">Profile</span>
+              </button>
+
+              <button className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group">
+                <Heart className="h-5 w-5 mb-1" />
+                <span className="text-xs font-medium">Wishlist (0)</span>
               </button>
 
               <button 
                 onClick={() => window.location.href = '/cart'}
-                className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group relative"
               >
-                <ShoppingCart className="h-5 w-5 text-gray-600" />
+                <ShoppingCart className="h-5 w-5 mb-1" />
+                <span className="text-xs font-medium">Cart (0)</span>
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartCount > 9 ? '9+' : cartCount}
+                  <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {cartCount}
                   </span>
                 )}
               </button>
 
               <button
-                className="lg:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="lg:hidden p-2"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
-                {isMobileMenuOpen ? <X className="h-6 w-6 text-gray-700" /> : <Menu className="h-6 w-6 text-gray-700" />}
+                <Menu className="h-6 w-6 text-gray-700" />
               </button>
             </div>
           </div>
+
+          {/* Navigation Bar */}
+          <nav className="hidden lg:flex items-center justify-center space-x-1 py-3">
+            {categories.map((cat) => (
+              <div
+                key={cat._id}
+                className="relative"
+                onMouseEnter={() => handleMouseEnter(cat.name)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <button 
+                  onClick={() => window.location.href = `/${cat.slug}`}
+                  className={`px-4 py-2 text-sm font-medium transition-colors ${
+                    cat.name === '' 
+                      ? 'text-orange-600 border-b-2 border-orange-600' 
+                      : 'text-gray-700 hover:text-orange-600'
+                  }`}
+                >
+                  {cat.name}
+                </button>
+
+                {activeMenu === cat.name && menuData[cat.name] && (
+                  <div
+                    className="absolute left-0 top-full mt-0 bg-white shadow-2xl rounded-lg border border-gray-100 min-w-[600px] z-50"
+                    onMouseEnter={() => handleMouseEnter(cat.name)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <div className="p-6">
+                      <div className="grid grid-cols-2 gap-8">
+                        {menuData[cat.name].sections.map((section, idx) => (
+                          <div key={idx}>
+                            <h3 className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-3 pb-2 border-b border-orange-100">
+                              {section.title}
+                            </h3>
+                            <ul className="space-y-2">
+                              {section.items.map((item, itemIdx) => (
+                                <li key={itemIdx}>
+                                  <button 
+                                    onClick={() => navigateToSlug(item)}
+                                    className="text-sm text-gray-600 hover:text-orange-600 hover:translate-x-1 transition-all duration-200 flex items-center group"
+                                  >
+                                    <span className="w-1 h-1 bg-orange-400 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                    {item}
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </nav>
         </div>
       </header>
 
+      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
@@ -279,6 +277,14 @@ const Header = () => {
         </div>
 
         <div className="p-4">
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder="Search Products..."
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 text-sm"
+            />
+          </div>
+
           {categories.map((cat) => (
             <div key={cat._id} className="border-b border-gray-200">
               <button
@@ -337,9 +343,6 @@ const Header = () => {
             className="w-full py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors mb-2"
           >
             Login / Sign Up
-          </button>
-          <button className="w-full py-3 border border-orange-600 text-orange-600 rounded-lg font-medium hover:bg-orange-50 transition-colors">
-            Track Order
           </button>
         </div>
       </div>

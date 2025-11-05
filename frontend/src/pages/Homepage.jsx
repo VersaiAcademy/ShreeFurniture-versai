@@ -1,76 +1,108 @@
-import React, { useEffect, useState } from "react";
-import API from '../utils/api';
+
+import React from "react";
 import { faStar, faTruck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import StoreLocator from "../components/store";
 
 const Homepage = () => {
-  const [banners, setBanners] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadBanners = async () => {
-      setLoading(true);
-      try {
-        const res = await API.get('/api/banners');
-        console.log("Homepage banners response:", res.data);
-        // Handle both formats: {banners: [...]} or direct array
-        const bannersData = Array.isArray(res.data) ? res.data : (res.data.banners || []);
-        setBanners(bannersData);
-      } catch (e) {
-        console.error("Error loading banners:", e);
-        setBanners([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadBanners();
-  }, []);
+  // Hardcoded banners - yaha apni images ka path daal do
+  const mainBanner = {
+    id: 1,
+    imageUrl: "/product/Banner.jpg",
+    title: "Dining Set"
+  };
 
-  const mainBanners = banners.filter(b => b.type === 'main').slice(0, 4);
-  const rightBanner = banners.find(b => b.type === 'sale');
+  const topSmallBanner = {
+    id: 2,
+    imageUrl: "/product/Banner.jpg",
+    title: "Bed Special Deal",
+    tag: "SPECIAL DEAL",
+    price: "₹50000 OFF",
+    subtitle: "INSTANT DISCOUNT",
+    buttonText: "BUY NOW"
+  };
+
+  const bottomSmallBanner = {
+    id: 3,
+    imageUrl: "/product/Banner.jpg",
+    title: "Mattress Deal",
+    tag: "Ships In 2 Days",
+    price: "₹9,999",
+    subtitle: "FREE Delivery Available",
+    buttonText: "BUY NOW"
+  };
 
   return (
     <div>
-      <div className="px-4 md:px-6 pt-4">
+      <div className="px-10 md:px-6 pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
-          {/* Left: Horizontal scrollable carousel (4 images) */}
+          {/* Left: Main large banner */}
           <div className="lg:col-span-3">
             <div className="relative h-[260px] sm:h-[320px] md:h-[420px] lg:h-[500px] rounded-xl overflow-hidden bg-gray-100">
-              {loading ? (
-              <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg">
-                <div className="text-lg text-gray-500">Loading banners...</div>
-              </div>
-              ) : mainBanners.length === 0 ? (
-              <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg">
-                <div className="text-lg text-gray-500">No banners found. Add banners from admin.</div>
-              </div>
-              ) : (
-                <div className="h-full w-full">
-                  <div className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth gap-3 md:gap-4 [&::-webkit-scrollbar]:hidden -mb-2 pb-2">
-                    {mainBanners.map((banner, i) => (
-                      <div key={banner._id || i} className="snap-start shrink-0 w-full h-full">
-                        <img
-                          src={banner.imageUrl}
-                          alt={banner.title || `Banner ${i + 1}`}
-                          className="w-full h-full object-cover rounded-xl"
-                          loading={i === 0 ? 'eager' : 'lazy'}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <img
+                src={mainBanner.imageUrl}
+                alt={mainBanner.title}
+                className="w-full h-full object-cover rounded-xl"
+                loading="eager"
+              />
             </div>
           </div>
-          {/* Right: Static image from admin (sale/right) */}
+
+          {/* Right: Top and Bottom small banners with overlay */}
           <div className="hidden lg:block lg:col-span-1">
-            <div className="h-[260px] sm:h-[320px] md:h-[420px] lg:h-[500px] rounded-xl overflow-hidden shadow-card bg-gray-100">
-              {rightBanner ? (
-                <img src={rightBanner.imageUrl} alt={rightBanner.title || 'Offer'} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-500">Add right-side banner</div>
-              )}
+            <div className="flex flex-col gap-4 h-[260px] sm:h-[320px] md:h-[420px] lg:h-[500px]">
+              {/* Top Small Banner */}
+              <div className="relative h-1/2 rounded-xl overflow-hidden shadow-card bg-gray-100">
+                <img 
+                  src={topSmallBanner.imageUrl} 
+                  alt={topSmallBanner.title} 
+                  className="w-full h-full object-cover" 
+                />
+                {/* Overlay content */}
+                <div className="absolute inset-0 flex flex-col justify-between p-4">
+                  <div className="flex justify-start">
+                    <span className="bg-orange-500 text-white px-3 py-1 text-xs font-semibold rounded">
+                      {topSmallBanner.tag}
+                    </span>
+                  </div>
+                  <div className="text-white">
+                    <div className="mb-2">
+                      <p className="text-xs font-medium opacity-90">{topSmallBanner.subtitle}</p>
+                      <p className="text-xl font-bold">{topSmallBanner.price}</p>
+                    </div>
+                    <button className="bg-white text-black px-4 py-1.5 text-xs font-semibold rounded hover:bg-gray-100 transition-colors">
+                      {topSmallBanner.buttonText}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Small Banner */}
+              <div className="relative h-1/2 rounded-xl overflow-hidden shadow-card bg-gray-100">
+                <img 
+                  src={bottomSmallBanner.imageUrl} 
+                  alt={bottomSmallBanner.title} 
+                  className="w-full h-full object-cover" 
+                />
+                {/* Overlay content */}
+                <div className="absolute inset-0 flex flex-col justify-between p-4">
+                  <div className="flex justify-start">
+                    <span className="bg-blue-500 text-white px-3 py-1 text-xs font-semibold rounded flex items-center gap-1">
+                      <span>🚚</span> {bottomSmallBanner.tag}
+                    </span>
+                  </div>
+                  <div className="text-white">
+                    <div className="mb-2">
+                      <p className="text-xs font-medium opacity-90">{bottomSmallBanner.subtitle}</p>
+                      <p className="text-xl font-bold">{bottomSmallBanner.price}</p>
+                    </div>
+                    <button className="bg-white text-black px-4 py-1.5 text-xs font-semibold rounded hover:bg-gray-100 transition-colors">
+                      {bottomSmallBanner.buttonText}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -84,13 +116,13 @@ const Homepage = () => {
         <div className="flex gap-10 flex-col md:flex-row pt-5">
           <div className="flex justify-between gap-5 ">
             <div className="items-center cursor-pointer">
-              <img src="/images/icon1.jpg" alt="" width={"150px"} />
+              <img src="/product/sofa .png" alt="" width={"150px"} />
               <p className="text-center pt-2 hover:text-orange-400">
                 Sofa Sets
               </p>
             </div>
             <div className="items-center cursor-pointer">
-              <img src="/images/icon2.jpg" alt="" width={"150px"} />
+              <img src="/product/bed .png" alt="" width={"150px"} />
               <p className="text-center pt-2 hover:text-orange-400">Beds</p>
             </div>
             <div className="items-center cursor-pointer">

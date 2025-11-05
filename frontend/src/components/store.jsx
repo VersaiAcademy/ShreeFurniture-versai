@@ -74,7 +74,7 @@ export default function StoreLocator() {
   };
 
   return (
-    <div className="px-6 py-8 max-w-7xl mx-auto">
+    <div className="px-6 py-8 max-w-7xl mx-auto" id='location'>
       <p className="text-center text-3xl font-semibold pb-10 pt-5">
         14+ Experience Stores Across India
       </p>
