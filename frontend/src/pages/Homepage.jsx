@@ -4,112 +4,44 @@ import { faStar, faTruck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import StoreLocator from "../components/store";
 import Toppicks from "../components/ProductCategory";
+import Hero from "../components/Hero";
 
 const Homepage = () => {
 
   // Hardcoded banners - yaha apni images ka path daal do
-  const mainBanner = {
-    id: 1,
-    imageUrl: "/Sri/IMG_5693.jpeg",
-    title: "Dining Set"
-  };
+  // const mainBanner = {
+  //   id: 1,
+  //   imageUrl: "/Sri/IMG_5693.jpeg",
+  //   title: "Dining Set"
+  // };
 
-  const topSmallBanner = {
-    id: 2,
-    imageUrl: "/Sri/IMG_5694.JPG",
-    title: "Bed Special Deal",
-    tag: "SPECIAL DEAL",
-    price: "₹50000 OFF",
-    subtitle: "INSTANT DISCOUNT",
-    buttonText: "BUY NOW"
-  };
+  // const topSmallBanner = {
+  //   id: 2,
+  //   imageUrl: "/Sri/IMG_5694.JPG",
+  //   title: "Bed Special Deal",
+  //   tag: "SPECIAL DEAL",
+  //   price: "₹50000 OFF",
+  //   subtitle: "INSTANT DISCOUNT",
+  //   buttonText: "BUY NOW"
+  // };
 
-  const bottomSmallBanner = {
-    id: 3,
-    imageUrl: "/product/Banner.jpg",
-    title: "Mattress Deal",
-    tag: "Ships In 2 Days",
-    price: "₹9,999",
-    subtitle: "FREE Delivery Available",
-    buttonText: "BUY NOW"
-  };
+  // const bottomSmallBanner = {
+  //   id: 3,
+  //   imageUrl: "/product/Banner.jpg",
+  //   title: "Mattress Deal",
+  //   tag: "Ships In 2 Days",
+  //   price: "₹9,999",
+  //   subtitle: "FREE Delivery Available",
+  //   buttonText: "BUY NOW"
+  // };
 
   return (
     <div>
-      <div className="px-10 md:px-6 pt-4">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
-          {/* Left: Main large banner */}
-          <div className="lg:col-span-3">
-            <div className="relative h-[260px] sm:h-[320px] md:h-[420px] lg:h-[500px] rounded-xl overflow-hidden bg-gray-100">
-              <img
-                src={mainBanner.imageUrl}
-                alt={mainBanner.title}
-                className="w-full h-full object-cover rounded-xl"
-                loading="eager"
-              />
-            </div>
-          </div>
-
-          {/* Right: Top and Bottom small banners with overlay */}
-          <div className="hidden lg:block lg:col-span-1">
-            <div className="flex flex-col gap-4 h-[260px] sm:h-[320px] md:h-[420px] lg:h-[500px]">
-              {/* Top Small Banner */}
-              <div className="relative h-1/2 rounded-xl overflow-hidden shadow-card bg-gray-100">
-                <img 
-                  src={topSmallBanner.imageUrl} 
-                  alt={topSmallBanner.title} 
-                  className="w-full h-full object-cover" 
-                />
-                {/* Overlay content */}
-                <div className="absolute inset-0 flex flex-col justify-between p-4">
-                  <div className="flex justify-start">
-                    <span className="bg-orange-500 text-white px-3 py-1 text-xs font-semibold rounded">
-                      {topSmallBanner.tag}
-                    </span>
-                  </div>
-                  <div className="text-white">
-                    <div className="mb-2">
-                      <p className="text-xs font-medium opacity-90">{topSmallBanner.subtitle}</p>
-                      <p className="text-xl font-bold">{topSmallBanner.price}</p>
-                    </div>
-                    <button className="bg-white text-black px-4 py-1.5 text-xs font-semibold rounded hover:bg-gray-100 transition-colors">
-                      {topSmallBanner.buttonText}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom Small Banner */}
-              <div className="relative h-1/2 rounded-xl overflow-hidden shadow-card bg-gray-100">
-                <img 
-                  src={bottomSmallBanner.imageUrl} 
-                  alt={bottomSmallBanner.title} 
-                  className="w-full h-full object-cover" 
-                />
-                {/* Overlay content */}
-                <div className="absolute inset-0 flex flex-col justify-between p-4">
-                  <div className="flex justify-start">
-                    <span className="bg-blue-500 text-white px-3 py-1 text-xs font-semibold rounded flex items-center gap-1">
-                      <span>🚚</span> {bottomSmallBanner.tag}
-                    </span>
-                  </div>
-                  <div className="text-white">
-                    <div className="mb-2">
-                      <p className="text-xs font-medium opacity-90">{bottomSmallBanner.subtitle}</p>
-                      <p className="text-xl font-bold">{bottomSmallBanner.price}</p>
-                    </div>
-                    <button className="bg-white text-black px-4 py-1.5 text-xs font-semibold rounded hover:bg-gray-100 transition-colors">
-                      {bottomSmallBanner.buttonText}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="banner">
-        <img src="/images/emi-banner.jpg" alt="" />
+     <Hero/>
+      
+      <div className="banner pt-5 px-10 rounded-md">
+        <img className="rounded-md" 
+         src="/india/IMG_5695.JPG" alt="" />
       </div>
       
       <Toppicks/>

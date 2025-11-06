@@ -39,6 +39,16 @@ export default function StoreLocator() {
       image: "/Sri/autonagar vijaywada.jpg",
       location: "https://www.google.com/maps/place/Sri+Furniture+Village/@16.4909597,80.6694336,814m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3a35e5c4c3f6821f:0x3a6979786c6f84e3!8m2!3d16.4909597!4d80.6694336!16s%2Fg%2F11h03dsz0n?entry=ttu&g_ep=EgoyMDI1MTEwMi4wIKXMDSoASAFQAw%3D%3D"
     },
+      {
+      name: "Pune ",
+      image: "/Sri/Pune (1).jpg",
+      location: "https://maps.app.goo.gl/LSyWZ8k7VHu6cjep6"
+    },
+     {
+      name: "Kondapur",
+      image: "/Sri/Kondapur.jpg",
+      location: "https://maps.app.goo.gl/ihLKTMDoi2LT1yAr9"
+    },
      {
       name: "Seetapuram Vijaywada",
       image: "/Sri/seetapuram, vijaywada.jpg",
@@ -48,6 +58,11 @@ export default function StoreLocator() {
       name: "Pawan Handicrafft",
       image: "/Sri/pawan handicrafft.png",
       location: "https://www.google.com/maps/search/shree+furniture+village+pawan+handicrafts/@50.5455636,71.490629,8843607m/data=!3m1!1e3?entry=ttu&g_ep=EgoyMDI1MTEwMi4wIKXMDSoASAFQAw%3D%3D"
+    },
+    {
+      name: "Narsingi",
+      image: "/Sri/Narsingi.jpeg",
+      location: "https://maps.app.goo.gl/nFTLzp5nZrWMqnnV9"
     },
      {
       name: "Satun Art Palace",
