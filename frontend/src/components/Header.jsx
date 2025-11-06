@@ -4,15 +4,16 @@ import { ChevronDown, Search, User, ShoppingCart, Menu, X, Heart, MapPin } from 
 const Header = () => {
   const [categories] = useState([
     { _id: '1', name: 'Sofas', slug: 'sofas' },
-    { _id: '2', name: 'Bedroom', slug: 'bedroom' },
-    { _id: '3', name: 'Living', slug: 'living' },
+    { _id: '2', name: 'Living', slug: 'living' },
+    { _id: '3', name: 'Bedroom', slug: 'bedroom' },
+   
     { _id: '4', name: 'Dining & Kitchen', slug: 'dining-kitchen' },
     { _id: '5', name: 'Storage', slug: 'storage' },
     { _id: '6', name: 'Study & Office', slug: 'study-office' },
-    { _id: '7', name: 'Mattresses', slug: 'mattresses' },
-    { _id: '8', name: 'Home Furnishing', slug: 'home-furnishing' },
-    { _id: '9', name: 'Lighting & Decor', slug: 'lighting-decor' },
-    { _id: '10', name: 'Interiors', slug: 'interiors' }
+    { _id: '7', name: 'Custom Furniture', slug: 'custom-furnitures' },
+    // { _id: '8', name: 'Home Furnishing', slug: 'home-furnishing' },
+    // { _id: '9', name: 'Lighting & Decor', slug: 'lighting-decor' },
+    // { _id: '10', name: 'Interiors', slug: 'interiors' }
   ]);
   
   const [activeMenu, setActiveMenu] = useState(null);

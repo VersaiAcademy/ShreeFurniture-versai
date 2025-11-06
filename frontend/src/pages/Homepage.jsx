@@ -3,19 +3,20 @@ import React from "react";
 import { faStar, faTruck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import StoreLocator from "../components/store";
+import Toppicks from "../components/ProductCategory";
 
 const Homepage = () => {
 
   // Hardcoded banners - yaha apni images ka path daal do
   const mainBanner = {
     id: 1,
-    imageUrl: "/product/Banner.jpg",
+    imageUrl: "/Sri/IMG_5693.jpeg",
     title: "Dining Set"
   };
 
   const topSmallBanner = {
     id: 2,
-    imageUrl: "/product/Banner.jpg",
+    imageUrl: "/Sri/IMG_5694.JPG",
     title: "Bed Special Deal",
     tag: "SPECIAL DEAL",
     price: "₹50000 OFF",
@@ -110,91 +111,8 @@ const Homepage = () => {
       <div className="banner">
         <img src="/images/emi-banner.jpg" alt="" />
       </div>
-      <div className="pt-5 px-0 md:px-60">
-        <h1 className=" text-center text-2xl">Top Picks For You</h1>
-        <p className="text-center">Immensive Collection For Your Dream Home</p>
-        <div className="flex gap-10 flex-col md:flex-row pt-5">
-          <div className="flex justify-between gap-5 ">
-            <div className="items-center cursor-pointer">
-              <img src="/product/sofa .png" alt="" width={"150px"} />
-              <p className="text-center pt-2 hover:text-orange-400">
-                Sofa Sets
-              </p>
-            </div>
-            <div className="items-center cursor-pointer">
-              <img src="/product/bed .png" alt="" width={"150px"} />
-              <p className="text-center pt-2 hover:text-orange-400">Beds</p>
-            </div>
-            <div className="items-center cursor-pointer">
-              <img src="/images/icon3.jpg" alt="" width={"150px"} />
-              <p className="text-center pt-2 hover:text-orange-400">
-                Dining Table Sets
-              </p>
-            </div>
-          </div>
-          <div className="flex justify-between gap-5 ">
-            <div className="items-center cursor-pointer">
-              <img src="/images/icon4.jpg" alt="" width={"150px"} />
-              <p className="text-center pt-2 hover:text-orange-400">
-                Sofa Cum Bed
-              </p>
-            </div>
-            <div className="items-center cursor-pointer">
-              <img src="/images/icon6.jpg" alt="" width={"150px"} />
-              <p className="text-center pt-2 hover:text-orange-400">
-                Study Table
-              </p>
-            </div>
-            <div className="items-center cursor-pointer">
-              <img src="/images/icon7.jpg" alt="" width={"150px"} />
-              <p className="text-center pt-2 hover:text-orange-400">
-                Book Shelf
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="flex gap-10 flex-col md:flex-row pt-5 pb-3">
-          <div className="flex justify-between gap-5">
-            <div className="items-center cursor-pointer">
-              <img src="/images/icon8.jpg" alt="" width={"150px"} />
-              <p className="text-center pt-2 hover:text-orange-400">
-                Coffee Tables
-              </p>
-            </div>
-            <div className="items-center cursor-pointer">
-              <img src="/images/icon9.jpg" alt="" width={"150px"} />
-              <p className="text-center pt-2 hover:text-orange-400">
-                Study Tables
-              </p>
-            </div>
-            <div className="items-center cursor-pointer">
-              <img src="/images/icon10.jpg" alt="" width={"150px"} />
-              <p className="text-center pt-2 hover:text-orange-400">
-                Home Decor
-              </p>
-            </div>
-          </div>
-          <div className="flex justify-between gap-5">
-            <div className="items-center cursor-pointer">
-              <img src="/images/icon11.jpg" alt="" width={"150px"} />
-              <p className="text-center pt-2 hover:text-orange-400">
-                Home Furnishing
-              </p>
-            </div>
-            <div className="items-center cursor-pointer">
-              <img src="/images/icon12.jpg" alt="" width={"150px"} />
-              <p className="text-center pt-2 hover:text-orange-400">
-                Lamp And Light
-              </p>
-            </div>
-            <div className="items-center cursor-pointer">
-              <img src="/images/icon5.jpg" alt="" width={"150px"} />
-              <p className="text-center pt-2 hover:text-orange-400">Sale</p>
-            </div>
-          </div>
-        </div>
-        <hr className="" />
-      </div>
+      
+      <Toppicks/>
 
       <div className="banner pt-5 px-10 rounded-md ">
         <img
@@ -216,21 +134,21 @@ const Homepage = () => {
             <div className=" w-48 md:w-[30rem] h-52 md:h-96 overflow-hidden ">
               <img
                 className="object-cover rounded-md transition-transform transform-gpu hover:scale-105 "
-                src="/images/beds-banner.jpg"
+                src="/india/IMG_5698.JPG"
                 alt="Image"
               />
             </div>
             <div className="relative w-48 md:w-[30rem] h-96 overflow-hidden">
               <img
                 className="object-cover rounded-md transition-transform transform-gpu hover:scale-105"
-                src="/images/dining-set-banner.jpg"
+                src="/india/IMG_5696.JPG"
                 alt="Image"
               />
             </div>
             <div className="relative w-48 md:w-[30rem] h-96 overflow-hidden">
               <img
                 className="object-cover rounded-md transition-transform transform-gpu hover:scale-105"
-                src="/images/dressing-table-banner.jpg"
+                src="/india/IMG_5697.JPG"
                 alt="Image"
               />
             </div>
@@ -942,7 +860,7 @@ const Homepage = () => {
         </div>
         <hr />
       </div>
-      <div className="p-5 flex gap-3 flex-col md:flex-row justify-center">
+      {/* <div className="p-5 flex gap-3 flex-col md:flex-row justify-center">
         <img
           src="/images/new-mattress-banner.jpg"
           alt=""
@@ -953,7 +871,7 @@ const Homepage = () => {
           alt=""
           className="w-auto md:w-[45rem]"
         />
-      </div>
+      </div> */}
 
       <div className="pt-5 px-5">
         <div className="flex justify-between items-center">

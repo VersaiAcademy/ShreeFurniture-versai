@@ -247,43 +247,46 @@ const DetailProduct = () => {
               </div>
             </div>
 
-            {/* Visible Product Overview (matches admin style) */}
+            {/* Product Overview */}
             <div className="bg-white rounded-lg p-6 shadow-md">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Product Overview</h3>
-
               {(() => {
                 const overviewItems = [
-                  { label: 'Designs', value: product.design },
-                  { label: 'Material', value: product.material },
-                  { label: 'Color', value: product.color || product.fabric_color },
-                  { label: 'Seater', value: product.seater },
-                  { label: 'Finish', value: product.finish },
-                  { label: 'Upholstery Material', value: product.fabric_color },
-                  { label: 'Leg Material', value: product.leg_material },
-                  { label: 'Brand', value: product.brand },
-                  { label: 'Dimensions (Inch)', value: product.dimensions },
-                  { label: 'Dimensions (cm)', value: product.dimensions_cm },
-                  { label: 'Foam', value: product.foam },
-                  { label: 'Armrest', value: product.armrest },
-                  { label: 'Shape', value: product.shape },
-                  { label: 'Product Quantity', value: product.product_quantity || product.quantity || '1 Unit' },
-                  { label: 'Storage', value: product.storage || 'Without Storage' },
-                  { label: 'Sku', value: product.sku },
-                  { label: 'Delivery Condition', value: product.delivery_condition }
-                ];
+                    { label: 'Designs', value: product.design },
+                    { label: 'Material', value: product.material },
+                    { label: 'Color', value: product.color || product.fabric_color },
+                    { label: 'Seater', value: product.seater },
+                    { label: 'Finish', value: product.finish },
+                    { label: 'Upholstery Material', value: product.fabric_color },
+                    { label: 'Leg Material', value: product.leg_material },
+                    { label: 'Brand', value: product.brand },
+                    { label: 'Dimensions (Inch)', value: product.dimensions },
+                    { label: 'Dimensions (cm)', value: product.dimensions_cm },
+                    { label: 'Foam', value: product.foam },
+                    { label: 'Armrest', value: product.armrest },
+                    { label: 'Shape', value: product.shape },
+                    { label: 'Product Quantity', value: product.product_quantity || product.quantity || '1 Unit' },
+                    { label: 'Storage', value: product.storage || 'Without Storage' },
+                    { label: 'Sku', value: product.sku },
+                    { label: 'Delivery Condition', value: product.delivery_condition }
+                  ];
 
-                return (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6 text-sm text-gray-700">
-                    {overviewItems.map((it) => (
-                      <div key={it.label} className="flex items-start">
-                        <div className="w-40 text-gray-600">{it.label}</div>
-                        <div className="flex-1">: <span className="text-gray-800">{it.value ?? '—'}</span></div>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })()}
+                  return (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6 text-sm text-gray-700">
+                      {overviewItems.map((it) => (
+                        <div key={it.label} className="flex items-start">
+                          <div className="w-40 text-gray-600">{it.label}</div>
+                          <div className="flex-1">: <span className="text-gray-800">{it.value ?? '—'}</span></div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
             </div>
+
+            {/* Product Details Section */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <h2 className="text-2xl font-bold p-6 border-b bg-gray-50">Product Details</h2>
 
             {/* Product Details Sections */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -555,6 +558,7 @@ const DetailProduct = () => {
                     <p>{product.customization}</p>
                   </div>
                 )}
+                </div>
               </div>
             </div>
           </div>
