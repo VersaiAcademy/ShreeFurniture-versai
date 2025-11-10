@@ -4,23 +4,23 @@ const ProductCategoryGrid = () => {
   const categories = [
     // Top Row (5 items)
     [
-      { name: 'Beds', image: '/product/bed .png', route: '/beds' },
-      { name: 'Sofas', image: '/product/sofa .png', route: '/sofas' }, 
-      { name: 'Dining', image: '/product/Dinning.png', route: '/dining-tables' },
-      { name: 'Study Table', image: '/product/Study.png', route: '/study-tables' },
-       { name: 'Coffee Tables', image: '/product/Coffee Table.png', route: '/coffee-tables' },
+      { name: 'Beds', image: '/product/1.png', route: '/beds' },
+      { name: 'Sofas', image: '/product/2.png', route: '/sofas' }, 
+      { name: 'Dining', image: '/product/3.png', route: '/dining-tables' },
+      { name: 'Study Table', image: '/product/4.png', route: '/study-tables' },
+       { name: 'Temple', image: '/product/5.png', route: '/coffee-tables' },
       
     ],
     // Bottom Row (5 items)
     [
-     
       
-       { name: 'TV Unit', image: '/product/TV unit.png', route: '/tv-units' },
-      { name: 'Side Board', image: '/product/Side board.png', route: '/sideboards' },
+      
+       { name: 'Coffee Tables', image: '/product/6.png', route: '/tv-units' },
+      { name: 'Side Board', image: '/product/7.png', route: '/sideboards' },
 
-      { name: 'Shoes Rack', image: '/product/Shoes Rack.png', route: '/shoe-racks' },
-       { name: 'Book Shelf', image: '/product/Book Shelf.png', route: '/book-shelves' },
-       { name: 'Temple', image: '/product/temple (1).png', route: '/temples' }
+      { name: 'TV Unit ', image: '/product/8.png', route: '/shoe-racks' },
+       { name: 'Book Shelf', image: '/product/9.png', route: '/book-shelves' },
+       { name: ' Shoes Rack', image: '/product/10.png', route: '/temples' }
     ]
   ];
 

@@ -91,7 +91,7 @@ const Homepage = () => {
         <div className="lg:col-span-2">
           <div className="relative h-[300px] sm:h-[380px] md:h-[450px] lg:h-[500px] rounded-lg overflow-hidden bg-gray-100 shadow-lg group">
             {/* Carousel Images */}
-            <div className="relative w-full h-[620px]">
+            <div className="relative w-full h-full">
               {mainBanners.map((banner, index) => (
                 <div
                   key={banner.id}
@@ -102,7 +102,7 @@ const Homepage = () => {
                   <img
                     src={banner.imageUrl}
                     alt={banner.title}
-                    className="w-full h-[426px] object-cover"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               ))}
@@ -125,7 +125,7 @@ const Homepage = () => {
             </button>
 
             {/* Dots Indicator */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
               {mainBanners.map((_, index) => (
                 <button
                   key={index}
@@ -142,30 +142,28 @@ const Homepage = () => {
         </div>
 
         {/* Right: Top and Bottom Small Banners */}
-        <div className="hidden lg:block lg:col-span-1">
-          <div className="flex flex-col gap-2">
-            {/* Top Small Banner */}
-            <div className="aspect-[2/1] rounded-lg overflow-hidden shadow-lg group">
-              <img
-                src={topSmallBanner.imageUrl}
-                alt="Top Banner"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 flex flex-col justify-between p-5">
-                {/* Optional Text or Tag */}
-              </div>
+        <div className="hidden lg:flex lg:col-span-1 flex-col gap-2">
+          {/* Top Small Banner */}
+          <div className="relative flex-1 rounded-lg overflow-hidden shadow-lg group">
+            <img
+              src={topSmallBanner.imageUrl}
+              alt="Top Banner"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 flex flex-col justify-between p-5">
+              {/* Optional Text or Tag */}
             </div>
+          </div>
 
-            {/* Bottom Small Banner */}
-            <div className="aspect-[2/1] rounded-lg overflow-hidden shadow-lg group">
-              <img
-                src={bottomSmallBanner.imageUrl}
-                alt="Bottom Banner"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 flex flex-col justify-between p-5">
-                {/* Optional Text or Tag */}
-              </div>
+          {/* Bottom Small Banner */}
+          <div className="relative flex-1 rounded-lg overflow-hidden shadow-lg group">
+            <img
+              src={bottomSmallBanner.imageUrl}
+              alt="Bottom Banner"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 flex flex-col justify-between p-5">
+              {/* Optional Text or Tag */}
             </div>
           </div>
         </div>
