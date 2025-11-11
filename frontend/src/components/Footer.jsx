@@ -1,267 +1,131 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAward,
-  faCreditCard,
-  faMedal,
-  faStore,
-  faThumbsUp,
-  faTruck,
-} from "@fortawesome/free-solid-svg-icons";
+import { MapPin, Phone, Mail } from "lucide-react";
 
-import { faFacebook, faInstagram, faXTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
-import { Link } from "react-router-dom";
 const Footer = () => {
   return (
-    <div className="mt-10">
-      <div className="content pt-3 md:px-32 px-10">
-        <h4>
-          Buy Furniture Online at WoodenStreet- India’s One-Stop Solution for
-          All Your Needs
-        </h4>
-        <p className="text-gray-600 text-justify pt-4">
-          Getting wooden furniture online in India, which perfectly blends with
-          your home decor is now easy. Wooden Street provides you with
-          ready-made and customized solid wood furniture online. At
-          WoodenStreet, we are committed to serving our customers an exclusive
-          range of home furniture products like sofa set, coffee tables,
-          wardrobes, dining tables, all crafted from premium-quality solid wood.
-          Along with this, you can explore our home decor range which includes
-          wall art, photo frames, indoor plants, tableware, glassware, kitchen
-          organizer and many more which are just few clicks away from you. We
-          offer you a huge variety of online furniture to choose from. You can
-          browse among various designs, dimensions, colors and finish options,
-          all at your convenience. From modern to traditional styles,
-          contemporary to loft ones, space saving furniture pieces to huge ones,
-          we provide every type of modern furniture online to match your home
-          needs. Take a pick from the exquisite collection of home furniture or
-          get it customized as per your requirements, all possible at
-          WoodenStreet.
-        </p>
-      </div>
-      <div className="content pt-3 md:px-32 px-10">
-        <h4>
-          Explore Different Products at WoodenStreet for Your Humble Abode
-        </h4>
-        <p className="text-gray-600 text-justify pt-4">
-          WoodenStreet houses an extensive range of furniture and furnishing,
-          available in various designs to meet every liking. Once you visit our
-          furniture store or check our website, you can understand how diverse
-          how designs are. Here's a list of categories that you can expect on
-          visiting our furniture stores or website:
-        </p>
-      </div>
-      <div className="content pt-3 md:px-32 px-10">
-        <h4>
-          Buy Amazing Furniture Online at Affordable Prices On WoodenStreet
-        </h4>
-        <p className="text-gray-600 text-justify pt-4">
-          Buying an item of furniture online with a package of high quality and
-          matches the budget is a difficult task. A lot of people think it's a
-          huge investment and settle up with what they have. WoodenStreet
-          understands this and ensures no one will disappoint at India’s prime
-          furniture online store. Browse to any category, either the living
-          room, dining room, bedroom, study room, outdoor furniture, and even
-          home furnishings, and we offer premium quality home furniture at
-          reasonable prices you can afford. Trust us with your furniture styles
-          and preferences and buy beautiful furniture online at WoodenStreet
-          without worrying about the prices. 90+ Experience Stores Across India
-          350
-        </p>
-      </div>
-      <hr className="mt-5" />
-      <div className=" md:px-40 px-10 pt-10 pb-10 flex justify-between items-center flex-col md:flex-row gap-10">
-        {/* card start */}
-        <div className="flex justify-between">
-          <FontAwesomeIcon
-            icon={faStore}
-            className="text-orange-400 text-4xl"
-          />
-          <div className="pl-5 text-xl">
-            90+
-            <p className="text-sm w-32">Experience Stores Across India</p>
-          </div>
-        </div>
-        {/* card end */}
-        <div className="flex justify-between">
-          <FontAwesomeIcon
-            icon={faTruck}
-            className="text-orange-400 text-4xl"
-          />
-          <div className="pl-5 text-xl">
-            350+
-            <p className="text-sm w-32">Delivery Centers Across India </p>
-          </div>
-        </div>
-        {/* card start */}
-        <div className="flex justify-between">
-          <FontAwesomeIcon
-            icon={faThumbsUp}
-            className="text-orange-400 text-4xl"
-          />
-          <div className="pl-5 text-xl">
-            10 Lakh <span>+</span>
-            <p className="text-sm w-32">Satisfied Customers</p>
-          </div>
-        </div>
-        {/* card end */}
-        {/* card start */}
-        <div className="flex justify-between">
-          <FontAwesomeIcon
-            icon={faAward}
-            className="text-orange-400 text-4xl"
-          />
-          <div className="pl-5 text-xl">
-            Lowest Price
-            <p className="text-sm w-32">Guarantee</p>
-          </div>
-        </div>
-        {/* card end */}
-        {/* card start */}
-        <div className="flex justify-between">
-          <FontAwesomeIcon
-            icon={faMedal}
-            className="text-orange-400 text-4xl"
-          />
-          <div className="pl-5 text-xl">
-            36 Months <span>*</span>
-            <p className="text-sm w-32">Warranty</p>
-          </div>
-        </div>
-        {/* card end */}
-      </div>
-      <hr className="" />
-
-      <div className="mt-10 bg-gray-100 px-10 md:px-32 pt-10 pb-10">
-        <div className="flex  flex-col md:flex-row gap-10 md:gap-20 justify-center">
-          <div className="flex justify-between gap-10">
-            <div>
-              <h4 className="text-lg">OUR COMPANY</h4>
-              <ul className="cursor-pointer pt-5 ">
-                <li className="hover:text-orange-300">About Us</li>
-                <li className="hover:text-orange-300">Career</li>
-                <li className="hover:text-orange-300">Media</li>
-                <li className="hover:text-orange-300">Blog</li>
-                <li className="hover:text-orange-300">Customer Stories</li>
-                <li className="hover:text-orange-300">Our Stories</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg">USEFUL LINKS</h4>
-              <ul className="cursor-pointer pt-5">
-                <li className="hover:text-orange-300">Custom Furniture</li>
-                <li className="hover:text-orange-300">Exporters</li>
-                <li className="hover:text-orange-300">Buy in Bulk</li>
-                <li className="hover:text-orange-300">Blog</li>
-                <li className="hover:text-orange-300">Hotel Furniture</li>
-                <li className="hover:text-orange-300">Our Stories</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="flex justify-between gap-10">
-            <div>
-              <h4 className="text-lg">SHOP BY ROOM</h4>
-              <ul className="cursor-pointer pt-5">
-                <li className="hover:text-orange-300">Living Room</li>
-                <li className="hover:text-orange-300">Bedroom</li>
-                <li className="hover:text-orange-300">Dining Room</li>
-                <li className="hover:text-orange-300">Kids Room</li>
-                <li className="hover:text-orange-300">Modular Furniturew</li>
-                <li className="hover:text-orange-300">Modular Kitchen</li>
-
-                <li className="hover:text-orange-300">Modular Wardrobe</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg"> PARTNERS</h4>
-              <ul className="cursor-pointer pt-5">
-                <li className="hover:text-orange-300">Become a Franchise </li>
-                <li className="hover:text-orange-300">Sell on Wooden Street</li>
-                <li className="hover:text-orange-300">Design Partner</li>
-                <li className="hover:text-orange-300">Design Services</li>
-              </ul>
-            </div>
-          </div>
-          <div className="flex justify-between gap-10">
-            <div>
-              <h4 className="text-lg">NEED HELP</h4>
-              <ul className="cursor-pointer pt-5">
-                <li className="hover:text-orange-300">Help Center</li>
-                <Link to={'/contactus'} className="hover:text-orange-300">Contact Us</Link>
-                <li className="hover:text-orange-300"> Ask Experts</li>
-                <li className="hover:text-orange-300">Track yor Order</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div className="px-30 pt-10 pb-10">
-          <hr />
-          <div className="flex justify-between pt-5">
-            <div className="w-2/3 md:w-1/3 ">
-              <p>
-                <b>We Deliver in </b>: Ahmedabad, Bangalore, Bhopal, Chandigarh,
-                Chennai, Coimbatore, Faridabad, Ghaziabad, Goa, Gurgaon,
-                Hyderabad, Indore, Jaipur and
-                <span className="text-orange-300">More Cities</span>
-              </p>
-            </div>
-            <div>
-              <p>We accept All cards</p>
-              <FontAwesomeIcon
-                icon={faCreditCard}
-                className="text-orange-400 text-4xl pt-3"
-              />
-            </div>
-            <div>
-              <p>Download App</p>
-              <img
-                src="/images/stores.jpeg"
-                alt=""
-                width={"50px"}
-                className="cursor-pointer"
-              />
-            </div>
-          </div>
-        </div>
-        <div className="flex justify-between items-center flex-col md:flex-row">
-          <div className="flex">
-            <img
-              src="/images/Wooden_Street-Logo.wine.png"
-              alt="logo"
-              width={"180px"}
-            />
-            <div className="text-xs md:text-sm cursor-pointer pt-10 pl-20 ">
-              <div className="mb-2">
-                <span className="hover:text-orange-300"> Terms Of Use</span> |{" "}
-                <span className="hover:text-orange-300"> Security</span> |{" "}
-                <span className="hover:text-orange-300"> Return & Refund</span>{" "}
-                |<span className="hover:text-orange-300"> Payment Policy</span>{" "}
-                | <span className="hover:text-orange-300"> Gerevance Cell</span>{" "}
-                |
+    <div className="bg-gray-50 mt-10 border-t border-gray-200">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 py-10">
+        {/* Main Footer Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+          {/* Contact Info */}
+          <div>
+            <h3 className="text-base font-bold mb-4 text-gray-900">Contact Info.</h3>
+            <div className="space-y-3 text-xs text-gray-700">
+              <div className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
+                <p className="leading-relaxed">
+                  Address – Plot No. G1-58 to G1-62, Ricco Industrial Area, Ramgarh Shekhawa, Disrict - Sikar, State - Rajasthan, Pin – 331024
+                </p>
               </div>
-         
-              <p>©️ 2024 WoodenStreet . All rights reserved</p>
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                <p className="font-semibold text-gray-900">+91 1231231230</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                <p className="break-all">Srifurniturevillageofficial@gmail.com</p>
+              </div>
             </div>
           </div>
-          <div className="flex justify-between gap-5 pt-5 md;pt-0">
-            <FontAwesomeIcon
-              icon={faFacebook}
-              className="text-blue-400 text-2xl cursor-pointer hover:text-blue-600"
-            />
-            <FontAwesomeIcon
-              icon={faInstagram}
-              className="text-pink-400 text-2xl cursor-pointer hover:text-pink-600"
-            />
-             <FontAwesomeIcon
-              icon={faXTwitter}
-              className="text-gray-600 text-2xl cursor-pointer hover:text-black"
-            />
-             <FontAwesomeIcon
-              icon={faYoutube}
-              className="text-red-500 text-2xl cursor-pointer hover:text-red-600"
-            />
+
+          {/* Useful Links */}
+          <div>
+            <h3 className="text-base font-bold mb-4 text-gray-900">Useful Links</h3>
+            <ul className="space-y-2 text-xs text-gray-700">
+              <li><a href="/about" className="hover:text-orange-500 transition cursor-pointer">About Us</a></li>
+              <li><a href="/track-order" className="hover:text-orange-500 transition cursor-pointer">Track your Order</a></li>
+              <li><a href="/bulk-order" className="hover:text-orange-500 transition cursor-pointer">Bulk Order</a></li>
+              <li><a href="/custom-furniture" className="hover:text-orange-500 transition cursor-pointer">Custom Furniture</a></li>
+              <li><a href="/blog" className="hover:text-orange-500 transition cursor-pointer">Blog</a></li>
+            </ul>
+          </div>
+
+          {/* Customer Service */}
+          <div>
+            <h3 className="text-base font-bold mb-4 text-gray-900">Customer Service</h3>
+            <ul className="space-y-2 text-xs text-gray-700">
+              <li><a href="/help" className="hover:text-orange-500 transition cursor-pointer">Help</a></li>
+              <li><a href="/return-refunds" className="hover:text-orange-500 transition cursor-pointer">Return & Refunds</a></li>
+              <li><a href="/terms" className="hover:text-orange-500 transition cursor-pointer">Terms of Use</a></li>
+              <li><a href="/security-privacy" className="hover:text-orange-500 transition cursor-pointer">Security and privacy</a></li>
+              <li><a href="/delivery-policy" className="hover:text-orange-500 transition cursor-pointer">Delivery & Shipping Policy</a></li>
+            </ul>
+          </div>
+
+          {/* Top Categories */}
+          <div>
+            <h3 className="text-base font-bold mb-4 text-gray-900">Top Categories</h3>
+            <ul className="space-y-2 text-xs text-gray-700">
+              <li><a href="/bedroom" className="hover:text-orange-500 transition cursor-pointer">Bedroom</a></li>
+              <li><a href="/sofas" className="hover:text-orange-500 transition cursor-pointer">Sofas</a></li>
+              <li><a href="/living-room" className="hover:text-orange-500 transition cursor-pointer">Living Room</a></li>
+              <li><a href="/dinning" className="hover:text-orange-500 transition cursor-pointer">Dinning</a></li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Popular Categories */}
+        <div className="mb-6">
+          <h4 className="font-bold text-gray-900 mb-2 text-sm">Popular Furniture Categories</h4>
+          <p className="text-xs text-gray-700 leading-relaxed">
+            Beds, King Size Bed, Queen Size Bed, Single Bed, Sofa Set, Recliners, Sofa cum Bed, Coffee Table, Chair, Study Chair, Study Table, Dining Table Set, Dining Chair, Office Table, Office Chair, Wardrobe, Bookshelves, Shoe Rack, Chest of Drawers
+          </p>
+        </div>
+
+        {/* Delivering In */}
+        <div className="mb-8">
+          <h4 className="font-bold text-gray-900 mb-2 text-sm">Delivering In</h4>
+          <p className="text-xs text-gray-700 leading-relaxed">
+            Ahmedabad, Amritsar, Bangalore, Chandigarh, Chennai, Coimbatore, Faridabad, Ghaziabad, Gurgaon, Hyderabad, Indore, Jaipur, Jodhpur, Kochi, Lucknow, Ludhiana, Madurai, Mangalore, Mumbai, Mysore, Delhi, Noida, Patna, Pune, Raipur, Ranchi, Surat, Trivandrum, Udaipur, Visakhapatnam (Vizag), Kanpur, Bhopal & Across India.
+          </p>
+        </div>
+
+        {/* Bottom Footer */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-6 border-t border-gray-200">
+          <div className="text-center md:text-left order-2 md:order-1">
+            <p className="text-xs text-gray-900 font-medium">
+              © 2023 - 2025 Sri Furniture Village All Rights Reserved
+            </p>
+            <p className="text-xs text-gray-600 mt-1">
+              Made by <span className="font-semibold text-orange-500">Versai Technology Pvt Ltd</span>
+            </p>
+          </div>
+
+          {/* Social Media Icons */}
+          <div className="order-1 md:order-2">
+            <p className="text-xs text-gray-900 mb-3 text-center">Like what you're seeing? Follow us for more.</p>
+            <div className="flex justify-center gap-3">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-pink-600 transition">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+              </a>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-600 transition">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-700 transition">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+              </a>
+              <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-red-600 transition">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/>
+                </svg>
+              </a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-red-600 transition">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+              </a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-gray-900 transition">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </a>
+            </div>
           </div>
         </div>
       </div>

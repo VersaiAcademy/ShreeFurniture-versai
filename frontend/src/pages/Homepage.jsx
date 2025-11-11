@@ -424,71 +424,52 @@ const Homepage = () => {
         <hr />
       </div>
       <div className="pt-5 px-5">
-        <div className="flex justify-between items-center">
-          <div>
-            {" "}
-            <h3 className="text-2xl  font-bold">
-              Living Room Furniture
-            </h3>
-            <small className="pb-3 font-bold text-gray-400 ">
-              Let’s Brew N Binge
-            </small>
-          </div>
-          <div>
-            <button className="bg-gray-300 p-2 border-black border focus:border-orange-300 rounded-sm">
-              VIEW ALL <span className="text-xl">{">"}</span>
-            </button>
-          </div>
+  <div className="flex flex-col md:flex-row mb-10">
+    <div className="pt-0 md:pt-10 cursor-pointer" onClick={() => window.location.href = '/living-room'}>
+      <img
+        src="/india/Living Room 2.jpg"
+        alt="Living Room"
+        className="w-[50rem]"
+      />
+    </div>
+    <div className="flex flex-col gap-3">
+      <div className="flex pl-0 md:pl-10 gap-3 pt-5 md:pt-10">
+        <div className="cursor-pointer" onClick={() => window.location.href = '/living-room'}>
+          <img
+            src="/Sri/5.jpg"
+            alt="Living Room"
+            className="w-96"
+          />
         </div>
-        <div className="flex flex-col md:flex-row mb-10">
-          <div className="pt-0 md:pt-10">
-            <img
-              src="/images/living-furniture1.jpg"
-              alt=""
-              className="w-[50rem]"
-            />
-          </div>
-          <div className="flex flex-col gap-3">
-            <div className="flex pl-0 md:pl-10 gap-3 pt-5 md:pt-10">
-              <div>
-                <img
-                  src="/Sri/5.jpg"
-                  alt=""
-                  className="w-96"
-                />
-                {/* <p className="text-xl font-mono">Fabric sofa</p> */}
-              </div>
-              <div>
-                <img
-                  src="/Sri/6.jpg"
-                  alt=""
-                  className="w-96"
-                />
-                {/* <p className="text-xl font-mono">Fabric sofa</p> */}
-              </div>
-            </div>
-            <div className="flex justify-between gap-3 pl-0 md:pl-10">
-              <div>
-                <img
-                  src="/Sri/7.jpg"
-                  alt=""
-                  className="w-96"
-                />
-                {/* <p className="text-xl font-mono">Fabric sofa</p> */}
-              </div>
-              <div>
-                <img
-                  src="/Sri/8.jpg"
-                  alt=""
-                  className="w-96"
-                />
-                {/* <p className="text-xl font-mono">Fabric sofa</p> */}
-              </div>
-            </div>
-          </div>
+        <div className="cursor-pointer" onClick={() => window.location.href = '/living-room'}>
+          <img
+            src="/Sri/6.jpg"
+            alt="Living Room"
+            className="w-96"
+          />
         </div>
-        <hr />
       </div>
+      <div className="flex justify-between gap-3 pl-0 md:pl-10">
+        <div className="cursor-pointer" onClick={() => window.location.href = '/living-room'}>
+          <img
+            src="/Sri/7.jpg"
+            alt="Living Room"
+            className="w-96"
+          />
+        </div>
+        <div className="cursor-pointer" onClick={() => window.location.href = '/living-room'}>
+          <img
+            src="/Sri/8.jpg"
+            alt="Living Room"
+            className="w-96"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr />
+</div>
+
 
   
 
@@ -599,51 +580,56 @@ const Homepage = () => {
       </div> */}
 
      <div className="pt-5 px-5">
-        <div className="flex flex-col md:flex-row mb-10 gap-5">
-          <a href="/dining" className="pt-0 md:pt-10 cursor-pointer group">
-            <img 
-              src="/dining/Web Dining table Sets.jpg" 
-              alt="Dining Table Sets" 
-              className="w-full md:w-[50rem] rounded-lg transition-transform transform-gpu group-hover:scale-[1.02] shadow-md hover:shadow-xl" 
-            />
-          </a>
-          <div className="flex flex-col gap-5">
-            <div className="flex pl-0 md:pl-10 gap-5 pt-5 md:pt-10">
-              <a href="/dining" className="flex-1 group cursor-pointer">
-                <img
-                  src="/dining/1.jpg"
-                  alt="Dining Furniture"
-                  className="object-cover rounded-lg transition-transform transform-gpu group-hover:scale-105 w-full h-72 shadow-md hover:shadow-xl"
-                />
-              </a>
-              <a href="/dining" className="flex-1 group cursor-pointer">
-                <img
-                  src="/dining/2.jpg"
-                  alt="Dining Furniture"
-                  className="object-cover rounded-lg transition-transform transform-gpu group-hover:scale-105 w-full h-72 shadow-md hover:shadow-xl"
-                />
-              </a>
-            </div>
-            <div className="flex pl-0 md:pl-10 gap-5">
-              <a href="/dining" className="flex-1 group cursor-pointer">
-                <img
-                  src="/dining/3.jpg"
-                  alt="Dining Furniture"
-                  className="object-cover rounded-lg transition-transform transform-gpu group-hover:scale-105 w-full h-72 shadow-md hover:shadow-xl"
-                />
-              </a>
-              <a href="/dining" className="flex-1 group cursor-pointer">
-                <img
-                  src="/dining/4.jpg"
-                  alt="Dining Furniture"
-                  className="object-cover rounded-lg transition-transform transform-gpu group-hover:scale-105 w-full h-72 shadow-md hover:shadow-xl"
-                />
-              </a>
-            </div>
-          </div>
-        </div>
-        <hr />
+  <div className="flex flex-col md:flex-row mb-10 gap-5">
+    {/* Main Big Image */}
+    <a href="/dining" className="pt-0 md:pt-10 cursor-pointer group">
+      <img 
+        src="/dining/Web Dining table Sets.jpg" 
+        alt="Dining Table Sets" 
+        className="w-full md:w-[50rem]  transition-transform transform-gpu group-hover:scale-[1.02] shadow-md hover:shadow-xl" 
+      />
+    </a>
+
+    {/* Right Section (Smaller Images) */}
+    <div className="flex flex-col gap-5">
+      <div className="flex pl-0 md:pl-10 gap-5 pt-5 md:pt-10">
+        <a href="/dining" className="flex-1 group cursor-pointer">
+          <img
+            src="/dining/1.jpg"
+            alt="Dining Furniture"
+            className="object-cover  transition-transform transform-gpu group-hover:scale-105 w-full h-72 shadow-md hover:shadow-xl"
+          />
+        </a>
+        <a href="/dining" className="flex-1 group cursor-pointer">
+          <img
+            src="/dining/2.jpg"
+            alt="Dining Furniture"
+            className="object-cover  transition-transform transform-gpu group-hover:scale-105 w-full h-72 shadow-md hover:shadow-xl"
+          />
+        </a>
       </div>
+
+      <div className="flex pl-0 md:pl-10 gap-5">
+        <a href="/dining" className="flex-1 group cursor-pointer">
+          <img
+            src="/dining/3.jpg"
+            alt="Dining Furniture"
+            className="object-cover  transition-transform transform-gpu group-hover:scale-105 w-full h-72 shadow-md hover:shadow-xl"
+          />
+        </a>
+        <a href="/dining" className="flex-1 group cursor-pointer">
+          <img
+            src="/dining/4.jpg"
+            alt="Dining Furniture"
+            className="object-cover transition-transform transform-gpu group-hover:scale-105 w-full h-72 shadow-md hover:shadow-xl"
+          />
+        </a>
+      </div>
+    </div>
+  </div>
+  <hr />
+</div>
+
 
       
 
@@ -764,6 +750,7 @@ const Homepage = () => {
       </div>
     </div>
   );
+
 };
 
 export default Homepage;
