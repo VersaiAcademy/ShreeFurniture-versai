@@ -122,10 +122,17 @@ const Products = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!formData.pname?.trim() || !formData.pdesc?.trim() || !formData.price || !formData.category) {
-      alert('Please fill in all required fields');
-      return;
-    }
+    // Basic required fields (match backend express-validator requirements)
+    if (!formData.pname?.trim() || !formData.pdesc?.trim() || !formData.price || !formData.category) {
+      alert('Please fill in Product Name, Description, Price and Category');
+      return;
+    }
+
+    // Backend also requires material, warranty and brand — validate on client to avoid 400
+    if (!formData.material?.trim() || !formData.warranty?.trim() || !formData.brand?.trim()) {
+      alert('Please provide Material, Warranty and Brand');
+      return;
+    }
 
     const token = localStorage.getItem('adminToken');
     if (!token) {
@@ -133,7 +140,17 @@ const Products = () => {
       return;
     }
 
-    setUploading(true);
+    setUploading(true);
+
+    // Ensure at least one image is present (main images, or stone/natural variants, or editing existing)
+    const hasMainFiles = (formData.imageFiles && formData.imageFiles.length > 0) || (imagePreviews && imagePreviews.length > 0);
+    const hasStone = (formData.stoneFinishFiles && formData.stoneFinishFiles.length > 0) || (stoneFinishPreviews && stoneFinishPreviews.length > 0) || (editingProduct && (editingProduct.stone_finish_image || editingProduct.stone_finish_img2));
+    const hasNatural = (formData.naturalFinishFiles && formData.naturalFinishFiles.length > 0) || (naturalFinishPreviews && naturalFinishPreviews.length > 0) || (editingProduct && (editingProduct.natural_finish_image || editingProduct.natural_finish_img2));
+    if (!hasMainFiles && !hasStone && !hasNatural) {
+      alert('Please upload at least one image: main image or Stone/Natural variant');
+      setUploading(false);
+      return;
+    }
 
     let submitData = {
       pname: formData.pname.trim(),
@@ -190,14 +207,82 @@ const Products = () => {
         submitData.img4 = urls[3] || submitData.img4;
         submitData.img5 = urls[4] || submitData.img5;
       }
-      
-      setShowForm(false);
-      setEditingProduct(null);
-      resetForm();
-      await loadProducts();
-    } catch (error) {
-      console.error('Failed to save product:', error);
-      alert(`Error: ${error.response?.data?.message || error.message}`);
+
+      // --- 2. Upload variant images (stone / natural) if any ---
+      if (formData.stoneFinishFiles && formData.stoneFinishFiles.length > 0) {
+        const stoneUrls = await uploadImagesToCloudinary(formData.stoneFinishFiles);
+        submitData.stone_finish_image = stoneUrls[0] || submitData.stone_finish_image;
+        submitData.stone_finish_img2 = stoneUrls[1] || submitData.stone_finish_img2;
+        submitData.stone_finish_img3 = stoneUrls[2] || submitData.stone_finish_img3;
+        submitData.stone_finish_img4 = stoneUrls[3] || submitData.stone_finish_img4;
+      }
+      if (formData.naturalFinishFiles && formData.naturalFinishFiles.length > 0) {
+        const natUrls = await uploadImagesToCloudinary(formData.naturalFinishFiles);
+        submitData.natural_finish_image = natUrls[0] || submitData.natural_finish_image;
+        submitData.natural_finish_img2 = natUrls[1] || submitData.natural_finish_img2;
+        submitData.natural_finish_img3 = natUrls[2] || submitData.natural_finish_img3;
+        submitData.natural_finish_img4 = natUrls[3] || submitData.natural_finish_img4;
+      }
+
+      // Ensure backend validation (at least one variant image) is satisfied.
+      // If no stone/natural provided but img1 exists, use img1 as fallback for stone_finish_image.
+      if (!submitData.stone_finish_image && !submitData.natural_finish_image && submitData.img1) {
+        submitData.stone_finish_image = submitData.img1;
+      }
+
+      // --- 3. Send create/update request ---
+      let saveRes;
+      if (editingProduct && editingProduct._id) {
+        console.log('Submitting update for product:', editingProduct._id, submitData);
+        saveRes = await axios.put(`/api/admin/products/${editingProduct._id}`, submitData, {
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+        });
+        console.log('Update response:', saveRes?.data);
+        alert('Product updated successfully!');
+      } else {
+        console.log('Submitting new product:', submitData);
+        saveRes = await axios.post(`/api/admin/products`, submitData, {
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+        });
+        console.log('Create response:', saveRes?.data);
+        alert('Product added successfully!');
+      }
+
+      // If server returned the product, optimistically add it to the list to ensure visibility
+      try {
+        const returnedProduct = saveRes?.data?.product || saveRes?.data;
+        if (returnedProduct && returnedProduct._id) {
+          setProducts(prev => [returnedProduct, ...prev.filter(p => p._id !== returnedProduct._id)]);
+        }
+      } catch (e) {
+        console.warn('Could not append returned product:', e);
+      }
+
+      setShowForm(false);
+      setEditingProduct(null);
+      resetForm();
+      await loadProducts();
+    } catch (error) {
+      // Dump full error for easier debugging
+      console.error('Failed to save product (full error):', error);
+      try {
+        console.error('Axios error toJSON:', error.toJSON ? error.toJSON() : null);
+      } catch (e) {
+        // ignore
+      }
+      const serverData = error.response?.data;
+      if (serverData) {
+        console.error('Server response data:', serverData);
+        if (serverData.errors) {
+          alert(`Error: ${serverData.message || 'Validation failed'}\n` + serverData.errors.map(er=>`${er.param||er.field}: ${er.msg||er.message}`).join('\n'));
+        } else if (serverData.message) {
+          alert(`Error: ${serverData.message}`);
+        } else {
+          alert(`Error: ${JSON.stringify(serverData)}`);
+        }
+      } else {
+        alert(`Error: ${error.message || 'Unknown error'}`);
+      }
     } finally {
       setUploading(false);
     }
