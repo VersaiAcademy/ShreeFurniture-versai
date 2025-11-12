@@ -8,33 +8,6 @@ import Hero from "../components/Hero";
 
 const Homepage = () => {
 
-  // Hardcoded banners - yaha apni images ka path daal do
-  // const mainBanner = {
-  //   id: 1,
-  //   imageUrl: "/Sri/IMG_5693.jpeg",
-  //   title: "Dining Set"
-  // };
-
-  // const topSmallBanner = {
-  //   id: 2,
-  //   imageUrl: "/Sri/IMG_5694.JPG",
-  //   title: "Bed Special Deal",
-  //   tag: "SPECIAL DEAL",
-  //   price: "₹50000 OFF",
-  //   subtitle: "INSTANT DISCOUNT",
-  //   buttonText: "BUY NOW"
-  // };
-
-  // const bottomSmallBanner = {
-  //   id: 3,
-  //   imageUrl: "/product/Banner.jpg",
-  //   title: "Mattress Deal",
-  //   tag: "Ships In 2 Days",
-  //   price: "₹9,999",
-  //   subtitle: "FREE Delivery Available",
-  //   buttonText: "BUY NOW"
-  // };
-
   return (
     <div>
      <Hero/>
@@ -634,82 +607,7 @@ const Homepage = () => {
       
 
       <StoreLocator/>
-      {/* <div className="p-3 ">
-        <p className="text-center text-3xl  pb-10 pt-5">
-          14+ Experience Stores Across India
-        </p>
-        <div className="flex text-center gap-3 flex-col ">
-          <div className="flex items-center  justify-center gap-5">
-            <div className="relative group">
-              <img
-                className="h-auto w-96 rounded-lg transition-transform transform-gpu group-hover:scale-105"
-                src="/Sri/bangalore.jpg"
-                alt="image description"
-              />
-              <p className="absolute bottom-0 left-0 right-0 text-center text-white font-bold text-xl opacity-0 group-hover:opacity-100 bg-gradient-to-b from-transparent to-gray-700 p-3 rounded-lg  ">
-                Banglore
-              </p>
-            </div>
-            <div className="relative group">
-              <img
-                className="h-auto w-96 rounded-lg transition-transform transform-gpu group-hover:scale-105"
-                src="/Sri/Bhubaneshwar.jpg"
-                alt="image description"
-              />
-              <p className="absolute bottom-0 left-0 right-0 text-center text-white font-bold text-xl opacity-0 group-hover:opacity-100 bg-gradient-to-b from-transparent to-gray-700 p-3 rounded-lg  ">
-                Bhubaneshwar
-              </p>
-            </div>
-            <div className="relative group">
-              <img
-                className="h-auto w-96 rounded-lg transition-transform transform-gpu group-hover:scale-105"
-                src="/Sri/HYDRABAD Miyapur.png"
-                alt="image description"
-              />
-              <p className="absolute bottom-0 left-0 right-0 text-center text-white font-bold text-xl opacity-0 group-hover:opacity-100 bg-gradient-to-b from-transparent to-gray-700 p-3 rounded-lg  ">
-                Hydrabad
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center  justify-center gap-5">
-            <div className="relative group">
-              <img
-                className="h-auto w-96 rounded-lg transition-transform transform-gpu group-hover:scale-105"
-                src="/images/37.jpg"
-                alt="image description"
-              />
-              <p className="absolute bottom-0 left-0 right-0 text-center text-white font-bold text-xl opacity-0 group-hover:opacity-100 bg-gradient-to-b from-transparent to-gray-700 p-3 rounded-lg  ">
-                Udaipur
-              </p>
-            </div>
-            <div className="relative group">
-              <img
-                className="h-auto w-96 rounded-lg transition-transform transform-gpu group-hover:scale-105"
-                src="/images/lucknow.jpg"
-                alt="image description"
-              />
-              <p className="absolute bottom-0 left-0 right-0 text-center text-white font-bold text-xl opacity-0 group-hover:opacity-100 bg-gradient-to-b from-transparent to-gray-700 p-3 rounded-lg  ">
-                Lucknow
-              </p>
-            </div>
-            <div className="relative group">
-              <img
-                className="h-auto w-96 rounded-lg transition-transform transform-gpu group-hover:scale-105"
-                src="/images/kirtinagar.jpg"
-                alt="image description"
-              />
-              <p className="absolute bottom-0 left-0 right-0 text-center text-white font-bold text-xl opacity-0 group-hover:opacity-100 bg-gradient-to-b from-transparent to-gray-700 p-3 rounded-lg  ">
-                Krithinagar
-              </p>
-            </div>
-          </div>
-          <div>
-            <button className="bg-orange-600 rounded-md text-white h-10 w-60 cursor-pointer capitalize hover:translate-x-1 items-center text-center">
-              explore all experience stores
-            </button>
-          </div>{" "}
-        </div>
-      </div> */}
+     
 
       <div className="pt-10 pb-10 px-5 md:px-10 bg-gradient-to-b from-blue-50 to-white">
         <div className="max-w-7xl mx-auto">
