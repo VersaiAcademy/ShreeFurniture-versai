@@ -43,13 +43,22 @@ const DetailProduct = () => {
         const data = response.data;
         setProduct(data);
 
-        // Prefer product.img1 as the initial selected image. If not present, use first natural or stone variant.
+        // Collect all main images (img1-5) in order - respects admin upload order
+        const mainImgs = [data.img1, data.img2, data.img3, data.img4, data.img5].filter(Boolean);
         const naturalImgs = [data.natural_finish_image, data.natural_finish_img2, data.natural_finish_img3, data.natural_finish_img4].filter(Boolean);
         const stoneImgs = [data.stone_finish_image, data.stone_finish_img2, data.stone_finish_img3, data.stone_finish_img4].filter(Boolean);
-        const primary = data.img1 || naturalImgs[0] || stoneImgs[0] || '';
-        if (primary) setSelectedImage(primary);
-        if (naturalImgs.length > 0) setActiveImageSet('natural');
-        else if (stoneImgs.length > 0) setActiveImageSet('stone');
+
+        // Prefer main images first (admin-selected order), then fall back to variants
+        if (mainImgs.length > 0) {
+          setSelectedImage(mainImgs[0]);
+          setActiveImageSet('main');
+        } else if (naturalImgs.length > 0) {
+          setSelectedImage(naturalImgs[0]);
+          setActiveImageSet('natural');
+        } else if (stoneImgs.length > 0) {
+          setSelectedImage(stoneImgs[0]);
+          setActiveImageSet('stone');
+        }
 
         setError(null);
       } catch (err) {
@@ -199,6 +208,11 @@ const DetailProduct = () => {
   const originalPrice = _price ? _price.toLocaleString('en-IN') : 'N/A';
   const finalPrice = discountedPrice.toLocaleString('en-IN');
 
+  // Collect all image sets
+  const mainImages = [
+    product.img1, product.img2, product.img3, product.img4, product.img5,
+  ].filter(Boolean);
+
   const stoneFinishImages = [
     product.stone_finish_image, product.stone_finish_img2,
     product.stone_finish_img3, product.stone_finish_img4,
@@ -209,22 +223,32 @@ const DetailProduct = () => {
     product.natural_finish_img3, product.natural_finish_img4,
   ].filter(Boolean);
 
+  // Show appropriate thumbnails based on active image set
   let currentThumbnails = [];
-  if (activeImageSet === 'stone' && stoneFinishImages.length > 0) {
+  if (activeImageSet === 'main' && mainImages.length > 0) {
+    currentThumbnails = mainImages;
+  } else if (activeImageSet === 'stone' && stoneFinishImages.length > 0) {
     currentThumbnails = stoneFinishImages;
   } else if (activeImageSet === 'natural' && naturalFinishImages.length > 0) {
     currentThumbnails = naturalFinishImages;
   } else {
-    currentThumbnails = []; // Fallback empty if no variant is ready
+    currentThumbnails = [];
   }
 
-  const colorOptions = [
-    { name: 'Natural', key: 'natural', images: naturalFinishImages, thumbnail: product.natural_finish_image },
-    { name: 'Stone', key: 'stone', images: stoneFinishImages, thumbnail: product.stone_finish_image },
-  ].filter(option => option.images.length > 0); 
+  // Build color/finish options: main images + variants (only if they exist)
+  const colorOptions = [];
+  if (mainImages.length > 0) {
+    colorOptions.push({ name: 'Product Images', key: 'main', images: mainImages, thumbnail: product.img1 });
+  }
+  if (naturalFinishImages.length > 0) {
+    colorOptions.push({ name: 'Natural', key: 'natural', images: naturalFinishImages, thumbnail: product.natural_finish_image });
+  }
+  if (stoneFinishImages.length > 0) {
+    colorOptions.push({ name: 'Stone', key: 'stone', images: stoneFinishImages, thumbnail: product.stone_finish_image });
+  } 
   
-  // Default image if no variant is ready
-  const displayImage = selectedImage || product.img1 || 'placeholder-image-url';
+  // Default image: prefer currently selected, or first available
+  const displayImage = selectedImage || mainImages[0] || naturalFinishImages[0] || stoneFinishImages[0] || 'placeholder-image-url';
 
 
   // --- JSX Render ---
@@ -242,20 +266,29 @@ const DetailProduct = () => {
                   className="w-full h-96 object-contain bg-white rounded-lg mb-4"
                 />
                 <div className="flex gap-2 overflow-x-auto pb-2">
-                  {/* Thumbnails */}
-                  {currentThumbnails.map((img, index) => (
-                    <img
-                      key={index}
-                      src={img}
-                      alt={`${activeImageSet} View ${index + 1}`}
-                      className={`w-20 h-20 object-contain cursor-pointer rounded-md flex-shrink-0 transition-all ${
-                        selectedImage === img
-                          ? 'border-4 border-orange-500'
-                          : 'border-2 border-gray-300 hover:border-orange-300'
-                      }`}
-                      onClick={() => setSelectedImage(img)}
-                    />
-                  ))}
+                  {/* Thumbnails - show all images from current set */}
+                  {currentThumbnails && currentThumbnails.length > 0 ? (
+                    currentThumbnails.map((img, index) => (
+                      <button
+                        key={`${activeImageSet}-${index}`}
+                        onClick={() => setSelectedImage(img)}
+                        className={`flex-shrink-0 transition-all ${
+                          selectedImage === img
+                            ? 'border-4 border-orange-500'
+                            : 'border-2 border-gray-300 hover:border-orange-300'
+                        } rounded-md overflow-hidden`}
+                        type="button"
+                      >
+                        <img
+                          src={img}
+                          alt={`${activeImageSet} View ${index + 1}`}
+                          className="w-20 h-20 object-contain"
+                        />
+                      </button>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 text-sm">No images available</p>
+                  )}
                 </div>
               </div>
 

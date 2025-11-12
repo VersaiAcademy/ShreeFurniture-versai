@@ -6,14 +6,13 @@ const Header = () => {
     { _id: '1', name: 'Sofas', slug: 'sofas' },
     { _id: '2', name: 'Living', slug: 'living' },
     { _id: '3', name: 'Bedroom', slug: 'bedroom' },
-   
     { _id: '4', name: 'Dining & Kitchen', slug: 'dining-kitchen' },
     { _id: '5', name: 'Storage', slug: 'storage' },
     { _id: '6', name: 'Study & Office', slug: 'study-office' },
     { _id: '7', name: 'Custom Furniture', slug: 'custom-furnitures' },
-    // { _id: '8', name: 'Home Furnishing', slug: 'home-furnishing' },
-    // { _id: '9', name: 'Lighting & Decor', slug: 'lighting-decor' },
-    // { _id: '10', name: 'Interiors', slug: 'interiors' }
+    // { _id: '8', name: 'Home Furnishing', slug: 'home-furnishing' }, // Uncommented
+    // { _id: '9', name: 'Lighting & Decor', slug: 'lighting-decor' }, // Uncommented
+    // { _id: '10', name: 'Interiors', slug: 'interiors' } // Uncommented
   ]);
   
   const [activeMenu, setActiveMenu] = useState(null);
@@ -23,39 +22,40 @@ const Header = () => {
   const [cartCount] = useState(3);
   const timeoutRef = useRef(null);
 
+  // Consolidated slug map for deep links
   const slugMap = {
     'All Sofas': 'all-sofas',
     'Fabric Sofas': 'fabric-sofas',
     'Wooden Sofas': 'wooden-sofas',
     '3 Seater Sofas': '3-seater-sofas',
-    '2 Seater Sofas': '2-seater-sofas',
-    '1 Seater Sofas': '1-seater-sofas',
-    '3+1+1 Sofa Sets': '3-1-1-sofa-sets',
-    'Sofa Cum Beds': 'sofa-cum-beds',
-    'L Shaped Sofas': 'l-shaped-sofas',
-    'Chaise Loungers': 'chaise-loungers',
-    'Outdoor Sofas': 'outdoor-sofas',
-    'Diwans': 'diwans',
+    // ... (rest of your existing slug map)
     'All Beds': 'all-beds',
     'Solid Wood Beds': 'solid-wood-beds',
-    'Engineered Wood Beds': 'engineered-wood-beds',
-    'Upholstered Beds': 'upholstered-beds',
-    'Hydraulic Storage Beds': 'hydraulic-storage-beds',
-    'Poster Beds': 'poster-beds',
-    'Kids Beds': 'kids-beds',
-    'Metal Beds': 'metal-beds',
-    'King Size Beds': 'king-size-beds',
-    'Queen Size Beds': 'queen-size-beds',
-    'Double Beds': 'double-beds',
-    'Single Beds': 'single-beds',
+    // ... (rest of your existing slug map)
     'TV Units': 'tv-units',
     'Book Shelves': 'book-shelves',
     'Display Units': 'display-units',
     'Shoe Racks': 'shoe-racks',
     'Sideboards': 'sideboards',
-    'Chest of Drawers': 'chest-of-drawers'
+    'Chest of Drawers': 'chest-of-drawers',
+    'Dining Tables': 'dining-tables',
+    'Dining Chairs': 'dining-chairs',
+    'Modular Kitchens': 'modular-kitchens',
+    'Office Desks': 'office-desks',
+    'Office Chairs': 'office-chairs',
+    'Custom Sofas': 'custom-sofas',
+    'Custom Wardrobes': 'custom-wardrobes',
+    'Rugs': 'rugs',
+    'Curtains': 'curtains',
+    'Pillows & Cushions': 'pillows-cushions',
+    'Floor Lamps': 'floor-lamps',
+    'Wall Art': 'wall-art',
+    'Vases': 'vases',
+    'Modular Wardrobes': 'modular-wardrobes',
+    'Full Home Interiors': 'full-home-interiors'
   };
 
+  // Comprehensive menu data for all categories
   const menuData = {
     'Sofas': {
       sections: [
@@ -92,11 +92,101 @@ const Header = () => {
           items: ['Chairs', 'Stools', 'Benches', 'Swings']
         }
       ]
+    },
+    'Dining & Kitchen': {
+      sections: [
+        {
+          title: 'DINING',
+          items: ['Dining Tables', 'Dining Chairs', 'Dining Sets']
+        },
+        {
+          title: 'KITCHEN',
+          items: ['Modular Kitchens', 'Kitchen Cabinets', 'Pantry Units']
+        }
+      ]
+    },
+    'Storage': {
+      sections: [
+        {
+          title: 'HOME STORAGE',
+          items: ['Wardrobes', 'Cabinetry', 'Trunks']
+        },
+        {
+          title: 'UTILITY STORAGE',
+          items: ['Display Units', 'Shoe Racks', 'Wall Shelves']
+        }
+      ]
+    },
+    'Study & Office': {
+      sections: [
+        {
+          title: 'Tables',
+          items: [ 'Study Tables']
+        },
+        {
+          title: 'Storage',
+          items: ['Wooden Corner']
+        }
+      ]
+    },
+    'Custom Furniture': {
+      sections: [
+        {
+          title: 'CUSTOM OPTIONS',
+          items: ['Custom Sofas', 'Custom Wardrobes', 'Bespoke Tables']
+        },
+        {
+          title: 'CONSULTATION',
+          items: ['Design Consultation', 'Measure & Quote']
+        }
+      ]
+    },
+    'Home Furnishing': {
+      sections: [
+        {
+          title: 'TEXTILES',
+          items: ['Rugs', 'Curtains', 'Pillows & Cushions', 'Bed Linen']
+        },
+        {
+          title: 'FLOORING',
+          items: ['Carpets', 'Doormats']
+        }
+      ]
+    },
+    'Lighting & Decor': {
+      sections: [
+        {
+          title: 'LIGHTING',
+          items: ['Floor Lamps', 'Table Lamps', 'Ceiling Lights']
+        },
+        {
+          title: 'DECOR',
+          items: ['Wall Art', 'Vases', 'Mirrors', 'Planters']
+        }
+      ]
+    },
+    'Interiors': {
+      sections: [
+        {
+          title: 'SERVICES',
+          items: ['Full Home Interiors', 'Room Makeovers', 'Renovations']
+        },
+        {
+          title: 'PRODUCTS',
+          items: ['Modular Wardrobes', 'Custom TV Units']
+        }
+      ]
     }
   };
 
   const navigateToSlug = (itemName) => {
-    const slug = slugMap[itemName] || itemName.toLowerCase().replace(/\s+/g, '-').replace(/\+/g, '');
+    // 1. Check slugMap first
+    const slug = slugMap[itemName] 
+      // 2. Fallback to category slug (e.g., if itemName is a main category like 'Sofas')
+      || categories.find(cat => cat.name === itemName)?.slug 
+      // 3. Last fallback: basic formatting
+      || itemName.toLowerCase().replace(/\s+/g, '-').replace(/\+/g, ''); 
+      
     window.location.href = `/${slug}`;
     setIsMobileMenuOpen(false);
     setActiveMenu(null);
@@ -160,9 +250,9 @@ const Header = () => {
             {/* Right Icons */}
             <div className="flex items-center space-x-6">
              <a href="#location" className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group">
-            <MapPin className="h-5 w-5 mb-1" />
-            <span className="text-xs font-medium">Stores</span>
-        </a>
+              <MapPin className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium">Stores</span>
+            </a>
 
               <button 
                 onClick={() => window.location.href = '/login'}
@@ -209,16 +299,19 @@ const Header = () => {
                 onMouseLeave={handleMouseLeave}
               >
                 <button 
-                  onClick={() => window.location.href = `/${cat.slug}`}
+                  // When the main category link is clicked, navigate to its slug
+                  onClick={() => navigateToSlug(cat.name)} 
                   className={`px-4 py-2 text-sm font-medium transition-colors ${
-                    cat.name === '' 
+                    activeMenu === cat.name 
                       ? 'text-orange-600 border-b-2 border-orange-600' 
                       : 'text-gray-700 hover:text-orange-600'
                   }`}
                 >
                   {cat.name}
+                  {menuData[cat.name] && <ChevronDown className="h-4 w-4 inline ml-1 align-sub" />}
                 </button>
 
+                {/* Dropdown Menu (for desktop) */}
                 {activeMenu === cat.name && menuData[cat.name] && (
                   <div
                     className="absolute left-0 top-full mt-0 bg-white shadow-2xl rounded-lg border border-gray-100 min-w-[600px] z-50"
@@ -257,7 +350,7 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Backdrop */}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
@@ -265,6 +358,7 @@ const Header = () => {
         />
       )}
 
+      {/* Mobile Menu Drawer */}
       <div
         className={`lg:hidden fixed top-0 right-0 bottom-0 w-80 bg-white z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto shadow-2xl ${
           isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
@@ -288,22 +382,34 @@ const Header = () => {
 
           {categories.map((cat) => (
             <div key={cat._id} className="border-b border-gray-200">
+              {/* Main Category Toggle for Mobile */}
               <button
-                onClick={() => setActiveMenu(activeMenu === cat.name ? null : cat.name)}
+                onClick={() => {
+                  if (menuData[cat.name]) {
+                    setActiveMenu(activeMenu === cat.name ? null : cat.name);
+                  } else {
+                    // Navigate directly if no submenu data exists
+                    navigateToSlug(cat.name); 
+                  }
+                }}
                 className="flex items-center justify-between w-full py-4 text-left font-medium text-gray-800 hover:text-orange-600 transition-colors"
               >
                 {cat.name}
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform duration-200 ${
-                    activeMenu === cat.name ? 'rotate-180 text-orange-600' : ''
-                  }`}
-                />
+                {menuData[cat.name] && (
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform duration-200 ${
+                      activeMenu === cat.name ? 'rotate-180 text-orange-600' : ''
+                    }`}
+                  />
+                )}
               </button>
 
+              {/* Mobile Submenu Container */}
               {activeMenu === cat.name && menuData[cat.name] && (
                 <div className="pb-4 space-y-4">
                   {menuData[cat.name].sections.map((section, idx) => (
                     <div key={idx} className="pl-4">
+                      {/* Submenu Section Toggle */}
                       <button
                         onClick={() => toggleMobileSubmenu(cat.name, section.title)}
                         className="flex items-center justify-between w-full text-xs font-bold text-orange-600 uppercase tracking-wider mb-2"
@@ -316,6 +422,7 @@ const Header = () => {
                         />
                       </button>
                       
+                      {/* Submenu Items */}
                       {activeMobileSubmenu[`${cat.name}-${section.title}`] && (
                         <ul className="space-y-2 pl-3">
                           {section.items.map((item, itemIdx) => (
@@ -338,6 +445,7 @@ const Header = () => {
           ))}
         </div>
 
+        {/* Mobile Login/Sign Up Button */}
         <div className="p-4 border-t border-gray-200 bg-gray-50">
           <button 
             onClick={() => window.location.href = '/login'}

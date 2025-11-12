@@ -74,6 +74,17 @@ const Products = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Drag and drop reorder for main images
+  const handleMainImageReorder = (fromIndex, toIndex) => {
+    if (fromIndex === toIndex) return;
+    const newFiles = Array.from(formData.imageFiles || []);
+    const [removed] = newFiles.splice(fromIndex, 1);
+    newFiles.splice(toIndex, 0, removed);
+    setFormData({ ...formData, imageFiles: newFiles });
+    const previews = newFiles.map(file => URL.createObjectURL(file));
+    setImagePreviews(previews);
+  };
+
   // Handle main images change
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files || []);
@@ -603,9 +614,9 @@ const Products = () => {
               </div>
             </div>
 
-            {/* Images - ONLY COLOR VARIANTS */}
+            {/* Images - COLOR VARIANTS with REORDERING */}
             <div className="form-section">
-              <h4>🎨 Stone Finish Images (Max 4) *</h4>
+              <h4>🎨 Stone Finish Images (Max 4) - Drag to Reorder *</h4>
               <div className="form-group">
                 <input 
                   type="file" 
@@ -625,13 +636,49 @@ const Products = () => {
                           className="product-image-preview" 
                         />
                         <div className="image-tag">Stone #{i+1}</div>
+                        <div style={{display: 'flex', gap: '4px', marginTop: '4px', justifyContent: 'center', fontSize: '11px'}}>
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              if (i > 0) {
+                                const newFiles = Array.from(formData.stoneFinishFiles || []);
+                                const [removed] = newFiles.splice(i, 1);
+                                newFiles.splice(i - 1, 0, removed);
+                                setFormData({ ...formData, stoneFinishFiles: newFiles });
+                                const previews = newFiles.map(file => URL.createObjectURL(file));
+                                setStoneFinishPreviews(previews);
+                              }
+                            }}
+                            disabled={i === 0}
+                            style={{padding: '4px 6px', fontSize: '10px', background: i === 0 ? '#ccc' : '#10B981', color: 'white', border: 'none', borderRadius: '3px', cursor: i === 0 ? 'not-allowed' : 'pointer'}}
+                          >
+                            ↑
+                          </button>
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              if (i < stoneFinishPreviews.length - 1) {
+                                const newFiles = Array.from(formData.stoneFinishFiles || []);
+                                const [removed] = newFiles.splice(i, 1);
+                                newFiles.splice(i + 1, 0, removed);
+                                setFormData({ ...formData, stoneFinishFiles: newFiles });
+                                const previews = newFiles.map(file => URL.createObjectURL(file));
+                                setStoneFinishPreviews(previews);
+                              }
+                            }}
+                            disabled={i === stoneFinishPreviews.length - 1}
+                            style={{padding: '4px 6px', fontSize: '10px', background: i === stoneFinishPreviews.length - 1 ? '#ccc' : '#3B82F6', color: 'white', border: 'none', borderRadius: '3px', cursor: i === stoneFinishPreviews.length - 1 ? 'not-allowed' : 'pointer'}}
+                          >
+                            ↓
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
 
-              <h4>🎨 Natural Finish Images (Max 4) *</h4>
+              <h4>🎨 Natural Finish Images (Max 4) - Drag to Reorder *</h4>
               <div className="form-group">
                 <input 
                   type="file" 
@@ -651,12 +698,49 @@ const Products = () => {
                           className="product-image-preview" 
                         />
                         <div className="image-tag">Natural #{i+1}</div>
-                    </div>
+                        <div style={{display: 'flex', gap: '4px', marginTop: '4px', justifyContent: 'center', fontSize: '11px'}}>
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              if (i > 0) {
+                                const newFiles = Array.from(formData.naturalFinishFiles || []);
+                                const [removed] = newFiles.splice(i, 1);
+                                newFiles.splice(i - 1, 0, removed);
+                                setFormData({ ...formData, naturalFinishFiles: newFiles });
+                                const previews = newFiles.map(file => URL.createObjectURL(file));
+                                setNaturalFinishPreviews(previews);
+                              }
+                            }}
+                            disabled={i === 0}
+                            style={{padding: '4px 6px', fontSize: '10px', background: i === 0 ? '#ccc' : '#10B981', color: 'white', border: 'none', borderRadius: '3px', cursor: i === 0 ? 'not-allowed' : 'pointer'}}
+                          >
+                            ↑
+                          </button>
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              if (i < naturalFinishPreviews.length - 1) {
+                                const newFiles = Array.from(formData.naturalFinishFiles || []);
+                                const [removed] = newFiles.splice(i, 1);
+                                newFiles.splice(i + 1, 0, removed);
+                                setFormData({ ...formData, naturalFinishFiles: newFiles });
+                                const previews = newFiles.map(file => URL.createObjectURL(file));
+                                setNaturalFinishPreviews(previews);
+                              }
+                            }}
+                            disabled={i === naturalFinishPreviews.length - 1}
+                            style={{padding: '4px 6px', fontSize: '10px', background: i === naturalFinishPreviews.length - 1 ? '#ccc' : '#3B82F6', color: 'white', border: 'none', borderRadius: '3px', cursor: i === naturalFinishPreviews.length - 1 ? 'not-allowed' : 'pointer'}}
+                          >
+                            ↓
+                          </button>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 )}
               </div>
-            </div>            
+            </div>
+
             <div className="form-actions">
               <button type="submit" className="btn btn-success flex-1" disabled={uploading}>
                 {uploading ? '⏳ Uploading...' : (editingProduct ? '✅ Update Product' : '➕ Add Product')}
