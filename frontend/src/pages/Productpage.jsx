@@ -10,6 +10,7 @@ import {
   faTh,
   faThList
 } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 import API from '../utils/api';
 
 const Productpage = () => {
@@ -157,26 +158,32 @@ const Productpage = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('Please login to add items to cart');
+        toast.warning('Please login to add items to cart');
         navigate('/login');
         return;
       }
-      await API.post('/api/cart', {
+      const response = await API.post('/api/cart', {
         product: product._id,
         product_name: product.pname,
         price: calcDiscountedPrice(product.price, product.offer),
         qty: 1
       });
-      alert('Product added to cart!');
+      toast.success(response.data.message || 'Product added to cart!');
     } catch (error) {
       console.error('Failed to add to cart:', error);
-      alert('Failed to add product to cart');
+      toast.error(error.response?.data?.message || 'Failed to add product to cart');
     }
   };
 
   const handleAddToWishlist = (e, product) => {
     e.stopPropagation();
-    alert('Wishlist feature coming soon!');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.warning('Please login to add to wishlist');
+      navigate('/login');
+      return;
+    }
+    toast.info('Wishlist feature coming soon!');
   };
 
   const renderStars = (rating) => {

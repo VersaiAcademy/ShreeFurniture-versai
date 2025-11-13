@@ -2,15 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 import { Star, Heart, ShoppingCart, Zap, ChevronRight, ChevronDown } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getProduct } from '../utils/api';
 import Loader from '../components/Loader';
+import { toast } from 'react-toastify';
+import API from '../utils/api';
 
 const DetailProduct = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // State for Quantity
+  const [quantity, setQuantity] = useState(1);
+  const [addingToCart, setAddingToCart] = useState(false);
   
   // State for Similar Products
   const [similarProducts, setSimilarProducts] = useState([]);
@@ -95,8 +102,86 @@ const DetailProduct = () => {
     }));
   };
 
-  const handleAddToCart = () => {
-    alert('Added to cart! (Connect this to your backend)');
+  const handleAddToCart = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.warning('Please login to add items to cart');
+        navigate('/login');
+        return;
+      }
+
+      setAddingToCart(true);
+      
+      const discountedPrice = Math.floor(product.price - (product.price * product.offer) / 100);
+      
+      const response = await API.post('/api/cart', {
+        product: product._id,
+        product_name: product.pname,
+        price: discountedPrice,
+        qty: quantity
+      });
+      
+      toast.success(response.data.message || 'Added to cart successfully!');
+      setQuantity(1); // Reset quantity
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      toast.error(error.response?.data?.message || 'Failed to add to cart');
+    } finally {
+      setAddingToCart(false);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.warning('Please login to proceed');
+        navigate('/login');
+        return;
+      }
+
+      setAddingToCart(true);
+      
+      const discountedPrice = Math.floor(product.price - (product.price * product.offer) / 100);
+      const totalPrice = discountedPrice * quantity;
+      const totalOffer = product.offer;
+      
+      // Add to cart first, then navigate to checkout
+      await API.post('/api/cart', {
+        product: product._id,
+        product_name: product.pname,
+        price: discountedPrice,
+        qty: quantity
+      });
+      
+      // Navigate to Address/Checkout page with order details
+      navigate(`/address/${totalOffer}/${totalPrice}/${product.offer}`);
+      toast.success('Proceeding to checkout...');
+    } catch (error) {
+      console.error('Failed to process buy now:', error);
+      toast.error(error.response?.data?.message || 'Failed to proceed to checkout');
+    } finally {
+      setAddingToCart(false);
+    }
+  };
+
+  const handleAddToWishlist = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.warning('Please login to add to wishlist');
+        navigate('/login');
+        return;
+      }
+
+      // Check if wishlist API exists, otherwise show coming soon
+      // TODO: Implement wishlist API endpoint at /api/wishlist
+      toast.info('Wishlist feature coming soon!');
+    } catch (error) {
+      console.error('Failed to add to wishlist:', error);
+      toast.error('Failed to add to wishlist');
+    }
   };
 
   const handleFinishSelect = (finishType, imageSet) => {
@@ -319,7 +404,10 @@ const DetailProduct = () => {
               <div className="flex items-center gap-3 mb-4">
                 <RatingStars rating={product.rating || 5} />
                 <span className="text-gray-700">({product.rating_count || 55})</span>
-                <button className="ml-auto flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors">
+                <button 
+                  onClick={handleAddToWishlist}
+                  className="ml-auto flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors"
+                >
                   <Heart size={18} />
                   <span className="text-sm">Add to wishlist</span>
                 </button>
@@ -406,7 +494,11 @@ const DetailProduct = () => {
               {/* Quantity Selector */}
               <div className="flex items-center gap-4 mb-6">
                 <span className="font-semibold text-gray-900">Quantity:</span>
-                <select className="border border-gray-400 rounded-md p-2 focus:ring-orange-500 focus:border-orange-500">
+                <select 
+                  value={quantity}
+                  onChange={(e) => setQuantity(parseInt(e.target.value))}
+                  className="border border-gray-400 rounded-md p-2 focus:ring-orange-500 focus:border-orange-500"
+                >
                     {[...Array(10)].map((_, i) => (
                         <option key={i + 1} value={i + 1}>{i + 1}</option>
                     ))}
@@ -416,16 +508,18 @@ const DetailProduct = () => {
               {/* Action Buttons (Buy Now / Add to Cart) */}
               <div className="flex flex-col sm:flex-row gap-3 mb-6">
                 <button
-                  onClick={handleAddToCart}
-                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg"
+                  onClick={handleBuyNow}
+                  disabled={addingToCart}
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 text-white font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg"
                 >
-                  BUY NOW
+                  {addingToCart ? 'Processing...' : 'BUY NOW'}
                 </button>
                 <button
                   onClick={handleAddToCart}
-                  className="flex-1 bg-white border border-orange-500 text-orange-500 hover:bg-orange-50 hover:text-orange-600 font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg"
+                  disabled={addingToCart}
+                  className="flex-1 bg-white border border-orange-500 text-orange-500 hover:bg-orange-50 hover:text-orange-600 disabled:opacity-60 font-semibold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 text-lg"
                 >
-                  ADD TO CART
+                  {addingToCart ? 'Adding...' : 'ADD TO CART'}
                 </button>
               </div>
 
