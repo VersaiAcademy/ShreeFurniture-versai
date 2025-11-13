@@ -16,6 +16,12 @@ import Address from "./pages/Address";
 import Detailedorder from "./pages/Detailedorder";
 import Contactus from "./pages/Contactus";
 import AboutUs from "./pages/aboutus";
+import TermsConditions from "./pages/TermsConditions";
+import CancellationRefundPolicy from "./pages/CancellationRefundPolicy";
+import HelpPage from "./pages/HelpPage";
+import SecurityPrivacyPage from "./pages/SecurityPrivacyPage";
+import DeliveryShippingPage from "./pages/DeliveryShippingPage";
+
 
 function App() {
   return (
@@ -45,7 +51,12 @@ function App() {
         <Route path="/address/:totaloffer/:totalprice/:todaydeal" element={<Address />} />
         <Route path="/detailorder/:id" element={<Detailedorder />} />
         <Route path="/contactus" element={<Contactus />} />
-        <Route path="/about-us" element={<AboutUs />} />
+        <Route path="//about" element={<AboutUs />} />
+        <Route path="/help" element={<HelpPage />} />
+        <Route path="/security-privacy" element={<SecurityPrivacyPage />} />
+        <Route path="/terms" element={<TermsConditions />} />
+        <Route path="/return-refunds" element={< CancellationRefundPolicy/>} />
+        <Route path="/delivery-policy" element={<DeliveryShippingPage />} />
         {/* ✅ NEW: Dynamic slug-based routing - handles all category/subcategory pages */}
         <Route path="/:slug" element={<Productpage />} />
       </Routes>

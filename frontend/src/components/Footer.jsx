@@ -24,7 +24,14 @@ const Footer = () => {
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
-                  Address – Plot No. G1-58 to G1-62, Ricco Industrial Area, Ramgarh Shekhawa, Disrict - Sikar, State - Rajasthan, Pin – 331024
+                  Factory Address – Plot No. G1-58 to G1-62, Ricco Industrial Area, Ramgarh Shekhawa, Disrict - Sikar, State - Rajasthan, Pin – 331024
+                </p>
+    
+              </div>
+             <div className="flex items-start gap-2">
+              <MapPin className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
+                <p className="leading-relaxed">
+                  Registered Address – Plot No. 233/2,Mayuri Nagar,Near Nizampet Sub Post Office, Nizampet,Hyderabad,Disrict- Medchalmalkajgiri, Telangana, Pin – 500090
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -47,7 +54,7 @@ const Footer = () => {
             <h3 className="hidden md:block text-base font-bold mb-4 text-gray-900">Useful Links</h3>
             <ul className={`${openSections.useful ? 'block' : 'hidden'} md:block space-y-2 text-xs text-gray-700`}>
               <li><a href="/about" className="hover:text-orange-500 transition cursor-pointer">About Us</a></li>
-              <li><a href="/track-order" className="hover:text-orange-500 transition cursor-pointer">Track your Order</a></li>
+              <li><a href="/contactus" className="hover:text-orange-500 transition cursor-pointer">Contact Us</a></li>
               <li><a href="/bulk-order" className="hover:text-orange-500 transition cursor-pointer">Bulk Order</a></li>
               <li><a href="/custom-furniture" className="hover:text-orange-500 transition cursor-pointer">Custom Furniture</a></li>
               <li><a href="/blog" className="hover:text-orange-500 transition cursor-pointer">Blog</a></li>

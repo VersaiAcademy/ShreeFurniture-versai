@@ -1,0 +1,241 @@
+import React, { useState, useEffect } from 'react';
+import { Heart, ShoppingCart, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import API from '../utils/api';
+import Loader from './Loader';
+
+const RecommendedProducts = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(5);
+  const [imageErrors, setImageErrors] = useState({});
+  const navigate = useNavigate();
+
+  // Base URL from environment or default
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://shreefurniture-backend-production.up.railway.app';
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await API.get('/api/products?limit=20&page=1');
+        console.log('✅ Products fetched:', response.data.products);
+        setProducts(response.data.products || []);
+      } catch (error) {
+        console.error('❌ Error fetching recommended products:', error);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const handleViewMore = () => {
+    setVisibleCount(products.length);
+  };
+
+  const handleProductClick = (productId) => {
+    navigate(`/dtproduct/${productId}`);
+  };
+
+  const handleImageError = (productId, imageUrl) => {
+    console.error(`❌ Image failed to load for product ${productId}:`, imageUrl);
+    setImageErrors(prev => ({ ...prev, [productId]: true }));
+  };
+
+  // ✅ Improved image URL handler
+  const getImageUrl = (product) => {
+    // Try different image field names
+    const imgField = product.img1 || product.image || product.img || product.images?.[0];
+    
+    if (!imgField) {
+      console.warn('⚠️ No image field found for product:', product._id);
+      return null;
+    }
+
+    // If already a complete URL (http:// or https://)
+    if (imgField.startsWith('http://') || imgField.startsWith('https://')) {
+      console.log('🌐 Using absolute URL:', imgField);
+      return imgField;
+    }
+
+    // If starts with /, construct full URL
+    if (imgField.startsWith('/')) {
+      const fullUrl = `${API_BASE_URL}${imgField}`;
+      console.log('🔗 Constructed URL from path:', fullUrl);
+      return fullUrl;
+    }
+
+    // If it's just a filename, try common paths
+    const possiblePaths = [
+      `${API_BASE_URL}/uploads/${imgField}`,
+      `${API_BASE_URL}/images/${imgField}`,
+      `${API_BASE_URL}/${imgField}`,
+    ];
+
+    console.log('🔍 Trying possible paths for:', imgField, possiblePaths);
+    // Return first possible path (will handle error with onError)
+    return possiblePaths[0];
+  };
+
+  const displayedProducts = products.slice(0, visibleCount);
+
+  if (loading) {
+    return (
+      <div className="pt-5 px-5">
+        <h3 className="text-2xl font-bold">Recommended For You</h3>
+        <p className="pb-3">Dive Into Your Tailored Selections Today!</p>
+        <div className="flex justify-center py-10">
+          <Loader />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pt-5 px-5">
+      <h3 className="text-2xl font-bold">Recommended For You</h3>
+      <p className="pb-3">Dive Into Your Tailored Selections Today!</p>
+
+      {/* Products Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6">
+        {displayedProducts.map((product) => {
+          const imageUrl = getImageUrl(product);
+          const hasImageError = imageErrors[product._id];
+
+          return (
+            <div
+              key={product._id}
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
+              onClick={() => handleProductClick(product._id)}
+            >
+              {/* Product Image */}
+              <div className="relative overflow-hidden bg-gray-100 h-48 sm:h-56 flex items-center justify-center">
+                {imageUrl && !hasImageError ? (
+                  <img
+                    src={imageUrl}
+                    alt={product.pname || 'Product'}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    onError={() => handleImageError(product._id, imageUrl)}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
+                    <ShoppingCart size={48} className="text-gray-400 mb-2" />
+                    <span className="text-xs text-gray-500 font-medium">Image Not Available</span>
+                  </div>
+                )}
+                
+                {/* Discount Badge */}
+                {product.offer > 0 && (
+                  <div className="absolute top-2 right-2 flex items-center z-10">
+                    <span className="bg-orange-400 text-white rounded-l-md px-2 py-1 text-xs font-bold">
+                      BIG DEAL
+                    </span>
+                    <span className="bg-black text-white rounded-r-md px-2 py-1 text-xs font-bold">
+                      {product.offer}%
+                    </span>
+                  </div>
+                )}
+                
+                {/* Wishlist Button */}
+                <button
+                  className="absolute top-2 left-2 bg-white p-2 rounded-full shadow hover:bg-orange-50 transition-colors z-10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alert('Added to wishlist!');
+                  }}
+                  aria-label="Add to wishlist"
+                >
+                  <Heart size={18} className="text-red-500" />
+                </button>
+              </div>
+
+              {/* Product Info */}
+              <div className="p-3 sm:p-4">
+                {/* Product Name */}
+                <p className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2 h-9">
+                  {product.pname || 'Unnamed Product'}
+                </p>
+
+                {/* Brand */}
+                <p className="text-xs text-gray-500 mb-2">
+                  {product.brand || 'SRI Furniture Village'}
+                </p>
+
+                {/* Rating */}
+                <div className="flex items-center gap-1 mb-2">
+                  <div className="flex">
+                    {[...Array(Math.floor(product.rating || 4))].map((_, i) => (
+                      <Star key={i} size={14} className="fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <span className="text-xs text-gray-600">
+                    ({product.rating_count || 0})
+                  </span>
+                </div>
+
+                {/* Price */}
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-lg font-bold text-gray-900">
+                    ₹{Math.floor(product.price - (product.price * (product.offer || 0)) / 100).toLocaleString('en-IN')}
+                  </span>
+                  {product.offer > 0 && (
+                    <span className="text-xs text-gray-400 line-through">
+                      ₹{product.price.toLocaleString('en-IN')}
+                    </span>
+                  )}
+                </div>
+
+                {/* Add to Cart Button */}
+                <button
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-md text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alert('Added to cart!');
+                  }}
+                  aria-label="Add to cart"
+                >
+                  <ShoppingCart size={16} />
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* View More Button */}
+      {visibleCount < products.length && (
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={handleViewMore}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg"
+          >
+            View More Products →
+          </button>
+        </div>
+      )}
+
+      {/* Show All Products Message */}
+      {visibleCount === products.length && products.length > 5 && (
+        <div className="text-center py-6 text-gray-600">
+          Showing all {products.length} products
+        </div>
+      )}
+
+      {/* Empty State */}
+      {products.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">No products available at the moment</p>
+        </div>
+      )}
+
+      <hr className="mt-6" />
+    </div>
+  );
+};
+
+export default RecommendedProducts;

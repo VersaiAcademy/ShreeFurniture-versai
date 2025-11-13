@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import StoreLocator from "../components/store";
 import Toppicks from "../components/ProductCategory";
 import Hero from "../components/Hero";
+import RecommendedProducts from "../components/RecommendedProducts";
 
 const Homepage = () => {
 
@@ -95,77 +96,9 @@ const Homepage = () => {
 
         <hr className="mt-10 border-gray-200" />
       </div>
-      <div className="pt-5 px-5">
-        <h3 className="text-2xl  font-bold">Recomended For You</h3>
-        <p className="pb-3 ">Dive Into Your Tailored Selections Today!</p>
-        <div className="flex flex-col md:flex-row mb-10">
-          <div className="pt-0 md:pt-10">
-            <div className="cursor-pointer relative top-8">
-              <span className="bg-orange-400 text-white rounded-l-md p-1">
-                BIG DEAL
-              </span>
-              <span className="bg-black text-white p-1 rounded-r-md">58%</span>
-            </div>
-            <img src="/images/cst1.webp" alt="" />
-            <p className="text-xl font-mono">Fabric sofa</p>
-          </div>
-          <div className="flex flex-col gap-3">
-            <div className="flex pl-0 md:pl-10 gap-3">
-              <div>
-                <div className="cursor-pointer relative top-8">
-                  <span className="bg-orange-400 text-white rounded-l-md p-1">
-                    BIG DEAL
-                  </span>
-                  <span className="bg-black text-white p-1 rounded-r-md">
-                    58%
-                  </span>
-                </div>
-                <img src="/images/cst2.webp" alt="" className="w-full md:w-96" />
-                <p className="text-xl font-mono">Fabric sofa</p>
-              </div>
-              <div>
-                <div className="cursor-pointer relative top-8">
-                  <span className="bg-orange-400 text-white rounded-l-md p-1">
-                    BIG DEAL
-                  </span>
-                  <span className="bg-black text-white p-1 rounded-r-md">
-                    58%
-                  </span>
-                </div>
-                <img src="/images/cst3.webp" alt="" className="w-full md:w-96" />
-                <p className="text-xl font-mono">Fabric sofa</p>
-              </div>
-            </div>
-            <div className="flex justify-between gap-3 pl-0 md:pl-10">
-              <div>
-                <div className="cursor-pointer relative top-8">
-                  <span className="bg-orange-400 text-white rounded-l-md p-1">
-                    BIG DEAL
-                  </span>
-                  <span className="bg-black text-white p-1 rounded-r-md">
-                    58%
-                  </span>
-                </div>
-                <img src="/images/cst1.webp" alt="" className="w-full md:w-96" />
-                <p className="text-xl font-mono">Fabric sofa</p>
-              </div>
-              <div>
-                <div className="cursor-pointer relative top-8">
-                  <span className="bg-orange-400 text-white rounded-l-md p-1">
-                    BIG DEAL
-                  </span>
-                  <span className="bg-black text-white p-1 rounded-r-md">
-                    58%
-                  </span>
-                </div>
-                <img src="/images/cst1.webp" alt="" className="w-full md:w-96" />
-                <p className="text-xl font-mono">Fabric sofa</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <hr />
-      </div>
+      
+      {/* Recommended Products Component */}
+      <RecommendedProducts />
 
       {/* setcion start */}
       <div className="pt-5 px-5">

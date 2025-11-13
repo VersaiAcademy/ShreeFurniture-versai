@@ -20,7 +20,7 @@ export default function StoreLocator() {
       location: "https://www.google.com/maps/search/shree+furniture+village+HYDERABAD+Miyapur/@17.4958037,78.3561454,17z?entry=s&sa=X&ved=1t%3A199789"
     },
     {
-      name: "Mangalapuram Vijaywada",
+      name: "Moghalrajpuram Vijaywada",
       image: "/Sri/mangalapuram vijaywada.jpg",
       location: "https://www.google.com/maps/search/shree+furniture+village+Guntur/@16.3280899,80.4383042,815m/data=!3m1!1e3?entry=ttu&g_ep=EgoyMDI1MTEwMi4wIKXMDSoASAFQAw%3D%3D"
     },
@@ -50,12 +50,12 @@ export default function StoreLocator() {
       location: "https://maps.app.goo.gl/ihLKTMDoi2LT1yAr9"
     },
      {
-      name: "Seetapuram Vijaywada",
+      name: "Seethapuram Vijaywada",
       image: "/Sri/seetapuram, vijaywada.jpg",
       location: "https://www.google.com/maps/place/Sri+Furniture+Village/@16.4909597,80.6694336,814m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3a35e5c4c3f6821f:0x3a6979786c6f84e3!8m2!3d16.4909597!4d80.6694336!16s%2Fg%2F11h03dsz0n?entry=ttu&g_ep=EgoyMDI1MTEwMi4wIKXMDSoASAFQAw%3D%3D"
     },
     {
-      name: "Pawan Handicrafft",
+      name: "Pawan Handicraft",
       image: "/Sri/pawan handicrafft.png",
       location: "https://www.google.com/maps/search/shree+furniture+village+pawan+handicrafts/@50.5455636,71.490629,8843607m/data=!3m1!1e3?entry=ttu&g_ep=EgoyMDI1MTEwMi4wIKXMDSoASAFQAw%3D%3D"
     },
@@ -70,12 +70,17 @@ export default function StoreLocator() {
       location: "https://maps.google.com/?q=Pune+India"
     },
      {
-      name: "Satyun Handicrafft",
+      name: "Satyun Handicraft",
       image: "/Sri/satyun handicraftt.png",
       location: "https://www.google.com/maps/place/Satyun+Handicrafts+-+Satyun/data=!4m2!3m1!1s0x0:0xe69db63cf2566155?sa=X&ved=1t:2428&ictx=111"
     },
      {
-      name: "Satyyun Art Export",
+      name: "Satyun Art Export",
+      image: "/Sri/satyyun art export.png",
+      location: "https://maps.google.com/?q=Pune+India"
+    },
+     {
+      name: "Satyun Art Export",
       image: "/Sri/satyyun art export.png",
       location: "https://maps.google.com/?q=Pune+India"
     },
