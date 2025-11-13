@@ -109,7 +109,7 @@ const Footer = () => {
               © 2023 - 2025 Sri Furniture Village All Rights Reserved
             </p>
             <p className="text-xs text-gray-600 mt-1">
-              Made by <span className="font-semibold text-orange-500">Versai Technology Pvt Ltd</span>
+              Design & Developed By <span className="font-semibold text-orange-500">Versai Technology</span>
             </p>
           </div>
 

@@ -38,15 +38,19 @@ const Login = () => {
       if (response.data.status === 200) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("id", response.data.id);
+        localStorage.setItem("username", response.data.username || values.name);
+        localStorage.setItem("first_name", response.data.first_name || response.data.username || values.name);
+        localStorage.setItem("email", response.data.email || "");
         toast.success(response.data.message);
         dispatch(addCustomer(response.data.username));
-        navigate("/");
+        // Redirect to profile page after successful login
+        navigate("/profile");
       } else {
         toast.warning(response.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      toast.error(error.response?.data?.message || "Something went wrong");
       setSubmitting(false);
     }
   };
@@ -107,7 +111,7 @@ const Login = () => {
               )}
             </Formik>
             <p className="pt-3 pb-3 text-base text-center">
-              New to Woodenstreet?{" "}
+              New to SRI Furniture Village?{" "}
               <Link to="/register" className="text-orange-400 cursor-pointer">
                 Register Here
               </Link>{" "}

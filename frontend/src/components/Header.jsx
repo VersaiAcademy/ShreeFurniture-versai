@@ -1,7 +1,56 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Search, User, ShoppingCart, Menu, X, Heart, MapPin } from 'lucide-react';
+import { ChevronDown, Search, User, ShoppingCart, Menu, X, Heart, MapPin, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
+  
+  // Check login status on mount and when storage changes
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      const token = localStorage.getItem('token');
+      const id = localStorage.getItem('id');
+      const name = localStorage.getItem('username') || localStorage.getItem('first_name') || 'User';
+      
+      if (token && id) {
+        setIsLoggedIn(true);
+        setUserName(name);
+      } else {
+        setIsLoggedIn(false);
+        setUserName('');
+      }
+    };
+    
+    checkAuthStatus();
+    
+    // Listen for storage changes (login/logout from other tabs/windows)
+    window.addEventListener('storage', checkAuthStatus);
+    return () => window.removeEventListener('storage', checkAuthStatus);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('id');
+    localStorage.removeItem('username');
+    localStorage.removeItem('first_name');
+    localStorage.removeItem('last_name');
+    localStorage.removeItem('email');
+    setIsLoggedIn(false);
+    setUserName('');
+    navigate('/');
+    window.location.reload();
+  };
+
+  const handleProfileClick = () => {
+    if (isLoggedIn) {
+      navigate('/userprofile');
+    } else {
+      navigate('/login');
+    }
+  };
+
   const [categories] = useState([
     { _id: '1', name: 'Sofas', slug: 'sofas' },
     { _id: '2', name: 'Living', slug: 'living' },
@@ -275,12 +324,24 @@ const Header = () => {
             </a>
 
               <button 
-                onClick={() => window.location.href = '/login'}
+                onClick={handleProfileClick}
                 className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group p-2"
+                title={isLoggedIn ? `View ${userName}'s Profile` : "Login to view profile"}
               >
                 <User className="h-5 w-5 mb-1" />
-                <span className="text-xs font-medium">Profile</span>
+                <span className="text-xs font-medium">{isLoggedIn ? 'Profile' : 'Login'}</span>
               </button>
+
+              {isLoggedIn && (
+                <button 
+                  onClick={handleLogout}
+                  className="hidden lg:flex flex-col items-center text-gray-700 hover:text-red-600 transition-colors group p-2"
+                  title="Logout"
+                >
+                  <LogOut className="h-5 w-5 mb-1" />
+                  <span className="text-xs font-medium">Logout</span>
+                </button>
+              )}
 
               <button className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group p-2">
                 <Heart className="h-5 w-5 mb-1" />
@@ -485,12 +546,41 @@ const Header = () => {
 
         {/* Mobile Login/Sign Up Button */}
         <div className="p-4 border-t border-gray-200 bg-gray-50">
-          <button 
-            onClick={() => window.location.href = '/login'}
-            className="w-full py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors mb-2"
-          >
-            Login / Sign Up
-          </button>
+          {isLoggedIn ? (
+            <>
+              <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200">
+                <p className="text-sm font-semibold text-gray-800">Welcome, {userName}!</p>
+              </div>
+              <button 
+                onClick={() => {
+                  navigate('/userprofile');
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors mb-2"
+              >
+                View Profile
+              </button>
+              <button 
+                onClick={() => {
+                  handleLogout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <button 
+              onClick={() => {
+                window.location.href = '/login';
+                setIsMobileMenuOpen(false);
+              }}
+              className="w-full py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors mb-2"
+            >
+              Login / Sign Up
+            </button>
+          )}
         </div>
       </div>
     </>

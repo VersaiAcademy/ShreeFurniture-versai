@@ -41,7 +41,7 @@ const DetailProduct = () => {
     disclaimer: false,
   });
 
-  // --- Data Fetching Effect ---
+  // --- Data Fetching Effect for Main Product and Related Products ---
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -67,6 +67,11 @@ const DetailProduct = () => {
           setActiveImageSet('stone');
         }
 
+        // Fetch related products based on category
+        if (data.category) {
+          await fetchRelatedProducts(data.category, data._id);
+        }
+
         setError(null);
       } catch (err) {
         if (err.response?.status === 404) {
@@ -84,6 +89,30 @@ const DetailProduct = () => {
       fetchProduct();
     }
   }, [id]);
+
+  // --- Fetch Related Products by Category ---
+  const fetchRelatedProducts = async (category, currentProductId) => {
+    try {
+      setSimilarLoading(true);
+      console.log('🔍 Fetching related products for category:', category);
+      
+      const response = await API.get(`/api/products/related/${encodeURIComponent(category)}`, {
+        params: {
+          excludeId: currentProductId,
+          limit: 6
+        }
+      });
+      
+      const data = response.data;
+      setSimilarProducts(data.relatedProducts || []);
+      console.log(`✅ Fetched ${data.relatedProducts?.length || 0} related products`);
+    } catch (error) {
+      console.error('Error fetching related products:', error);
+      setSimilarProducts([]); // Set empty array on error, section won't be visible
+    } finally {
+      setSimilarLoading(false);
+    }
+  };
   // Small stars renderer used in multiple places
   const RatingStars = ({ rating = 0 }) => {
     const count = Math.max(0, Number(rating) || 0);
@@ -857,14 +886,16 @@ const DetailProduct = () => {
 
       {/* Visually Similar Products Section */}
       <div className="max-w-7xl mx-auto mt-12 mb-8">
-        <h2 className="text-3xl font-bold text-orange-600 mb-6">Visually Similar Divan Beds</h2>
+        <h2 className="text-3xl font-bold text-orange-600 mb-6">
+          Visually Similar {product?.category || 'Products'}
+        </h2>
         
         {similarLoading ? (
           <div className="flex justify-center items-center py-12">
             <Loader />
           </div>
         ) : similarProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {similarProducts.map((item) => {
               const itemDiscountedPrice = Math.floor(item.price - (item.price * item.offer) / 100);
               const itemOriginalPrice = item.price ? item.price.toLocaleString('en-IN') : 'N/A';
@@ -874,7 +905,7 @@ const DetailProduct = () => {
                 <div 
                   key={item._id || item.id} 
                   className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
-                  onClick={() => window.location.href = `/product/${item._id || item.id}`}
+                  onClick={() => window.location.href = `/dtproduct/${item._id || item.id}`}
                 >
                   <div className="relative">
                     <img
@@ -897,7 +928,7 @@ const DetailProduct = () => {
                       {item.pname}
                     </h3>
                     <p className="text-xs text-gray-500 mb-2">
-                      By {item.brand || 'Sri Furniture Village'}
+                      By {item.brand || 'SRI Furniture Village'}
                     </p>
                     <div className="flex items-center gap-1 mb-3">
                       <RatingStars rating={item.rating || 4} />

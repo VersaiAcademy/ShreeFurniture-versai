@@ -227,9 +227,9 @@ const Address = () => {
 
           const options = {
             key: import.meta.env.VITE_RAZORPPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
-            name: "Wooden Street",
-            description: "Wooden Street Furnitures",
-            image: "/images/Wooden_Street-Logo.wine.png",
+            name: "SRI Furniture Village",
+            description: "Premium Wooden Furniture",
+            image: "/SFV Log 637x154 Pxl.png",
             order_id: order_id, //This is a sample Order ID. Pass the `id` obtained in the response of createOrder().
             handler: function (response) {
               toast.success(

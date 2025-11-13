@@ -1,0 +1,311 @@
+# 📌 Quick Reference Card - Address Updates
+
+**Print This!** 📄
+
+---
+
+## 📱 FIELD REQUIREMENTS
+
+| Field | Required? | Rules |
+|-------|-----------|-------|
+| Address Line 1 | ✅ YES | Text, any length |
+| Area / Locality | ✅ YES | Text, any length |
+| City | ✅ YES | Text, city name |
+| State | ✅ YES | Text, state name |
+| Pin Code | ✅ YES | 5-6 digits only |
+| **Phone** | ✅ **YES** | **Exactly 10 digits** |
+| Landmark | ❌ NO | Optional text |
+| Alt Phone | ❌ NO | Optional (greyed out) |
+
+---
+
+## ⚠️ VALIDATION ERRORS
+
+```
+❌ "Phone must be 10 digits"
+   → Enter exactly 10 numbers
+   → Examples: 9876543210, 9988776655
+
+❌ "Zip code must be 5-6 digits"
+   → Enter 5 or 6 numbers
+   → Examples: 40000 or 400001
+
+❌ "Address line 1 is required"
+   → Fill in your street address
+   → Don't leave it blank
+
+❌ All other required field errors
+   → Check the asterisk (*) fields
+   → Fill them all before save
+```
+
+---
+
+## ✅ CORRECT EXAMPLES
+
+### Valid Address Entry:
+```
+Address Line 1:    123 Main Street
+Area / Locality:   Sector 5
+City:              Mumbai
+State:             Maharashtra
+Pin Code:          400001
+Phone:             9876543210
+Landmark:          [leave empty - optional]
+```
+
+### Valid Phone Numbers:
+```
+✅ 9876543210
+✅ 9988776655
+✅ 8765432109
+✅ 7654321098
+```
+
+### Valid Pin Codes:
+```
+✅ 40000     (5 digits)
+✅ 400001    (6 digits)
+✅ 411001
+✅ 302001
+```
+
+---
+
+## ❌ INCORRECT EXAMPLES
+
+### Invalid Phone Numbers:
+```
+❌ 987654321     (9 digits)
+❌ 98765432109   (11 digits)
+❌ 9876543AB0    (contains letters)
+❌ 98765 43210   (contains space)
+❌ 9876-543-210  (contains dashes)
+❌ (987) 654-3210 (formatted)
+```
+
+### Invalid Pin Codes:
+```
+❌ 4000       (4 digits)
+❌ 4000001    (7 digits)
+❌ 40000A     (contains letter)
+```
+
+---
+
+## 📊 FORM CHECKLIST
+
+Before clicking "Save Address":
+
+- [ ] Address Line 1 filled? (required)
+- [ ] Area / Locality filled? (required)
+- [ ] City filled? (required)
+- [ ] State filled? (required)
+- [ ] Pin Code filled? (5-6 digits only)
+- [ ] Phone filled? (exactly 10 digits!)
+- [ ] Landmark filled? (optional - can skip!)
+
+✅ All checklist items done? Click "Save Address"
+
+---
+
+## 👀 WHAT ADMIN SEES
+
+### When placing order, admin can see:
+
+```
+✅ Customer Name:    John Doe
+✅ Phone:            9876543210  ← NOW VISIBLE
+✅ Full Address:     123 Main Street
+                     Sector 5
+                     Mumbai - 400001  ← COMPLETE
+✅ Landmark:         Near Park (if provided)
+✅ Can call/SMS:     YES - has phone
+✅ Ready for:        Delivery ✅
+```
+
+---
+
+## 📲 MOBILE VIEW
+
+```
+┌───────────────────┐
+│ Saved Address     │
+│ ┌─────────────────┤
+│ │ Address Line 1  │
+│ │ Area/Locality   │
+│ │ City            │
+│ │ State           │
+│ │ Pin Code        │
+│ │ Phone (10 dig)  │
+│ │ Landmark (Opt)  │
+│ │ Alt Phone (Opt) │
+│ ├─────────────────┤
+│ │ [Edit] [Save]   │
+│ └─────────────────┘
+└───────────────────┘
+```
+
+---
+
+## 🔄 EDITING ADDRESS
+
+### Steps:
+1. Click "Edit" button
+2. Update any field as needed
+3. **Phone is required** - don't delete it!
+4. Landmark is optional - can be empty
+5. Click "Save Address"
+6. See success message ✅
+
+---
+
+## 💡 TIPS
+
+✅ **DO:**
+- Fill all required fields (marked with *)
+- Use 10-digit phone number
+- Enter pin code correctly (5-6 digits)
+- Use real address for delivery
+- Provide landmark if possible (helps delivery)
+
+❌ **DON'T:**
+- Leave required fields empty
+- Enter phone with spaces or dashes
+- Use 9 or 11 digit phone numbers
+- Enter pin code with letters
+- Skip this form - it's important for delivery!
+
+---
+
+## 📞 PHONE FIELD RULES
+
+```
+Must be exactly 10 digits
+
+┌──┬──┬──┬──┬──┬──┬──┬──┬──┬──┐
+│ 9│ 8│ 7│ 6│ 5│ 4│ 3│ 2│ 1│ 0│
+└──┴──┴──┴──┴──┴──┴──┴──┴──┴──┘
+  1  2  3  4  5  6  7  8  9  10
+
+Each box = 1 digit
+Total = 10 digits
+```
+
+---
+
+## 🗺️ PIN CODE GUIDE
+
+```
+India Pin Code Format: XXXXXX
+
+5 Digits:     40000  ✅
+6 Digits:     400001 ✅
+4 Digits:     4000   ❌ (too short)
+7 Digits:     4000001❌ (too long)
+
+Common Examples:
+  Mumbai:       400001, 400002
+  Pune:         411001, 411002
+  Delhi:        110001, 110002
+  Bangalore:    560001, 560002
+```
+
+---
+
+## 🆘 IF YOU GET AN ERROR
+
+| Error | What it means | How to fix |
+|-------|---------------|-----------|
+| "Phone must be 10 digits" | Phone is wrong | Enter 10 numbers |
+| "Zip code must be 5-6 digits" | Pin code is wrong | Check pin code |
+| "Address line 1 is required" | Address empty | Fill it in |
+| "City is required" | City empty | Enter city name |
+| "State is required" | State empty | Enter state name |
+| Form won't submit | Missing required | Check all * fields |
+
+---
+
+## 📋 REQUIRED FIELDS CHECKLIST
+
+### Mark these * (MUST FILL):
+- ✅ Address Line 1 *
+- ✅ Area / Locality *
+- ✅ City *
+- ✅ State *
+- ✅ Pin Code (5-6) *
+- ✅ Phone (10 digits) *
+
+### These ❌ (CAN SKIP):
+- ❌ Address Line 2 (optional)
+- ❌ Landmark (optional)
+- ❌ Alt Phone (optional)
+
+---
+
+## 🎯 SUCCESS FLOW
+
+```
+1. Fill form ↓
+2. Click Save ↓
+3. Green check ✅ ↓
+4. Toast: "Updated!" ↓
+5. Address saved ✓
+```
+
+---
+
+## ❌ ERROR FLOW
+
+```
+1. Fill form ↓
+2. Click Save ↓
+3. Red error ✗ ↓
+4. Read error message ↓
+5. Fix the issue ↓
+6. Try again ↓
+7. Success! ✅
+```
+
+---
+
+## 📞 EMERGENCY CONTACT
+
+If you have questions:
+- Check "Landmark (Optional)" field - you CAN skip it
+- Phone is REQUIRED - you CANNOT skip it
+- Contact support for help
+
+---
+
+## ✅ FINAL CHECKLIST
+
+Before placing order:
+
+```
+Address form:
+  [ ] Phone: 10 digits ✅
+  [ ] Pin Code: 5-6 digits ✅
+  [ ] Address: Filled ✅
+  [ ] City: Filled ✅
+  [ ] Landmark: Optional ✅
+
+Admin will see:
+  [ ] Your phone ✅
+  [ ] Full address ✅
+  [ ] Can contact you ✅
+  [ ] Can deliver ✅
+
+You're ready to order! 🚀
+```
+
+---
+
+**Version:** 1.0  
+**Date:** November 13, 2025  
+**Status:** ✅ Active
+
+---
+
+**Print & Share! 📄** Keep this guide handy!
+
