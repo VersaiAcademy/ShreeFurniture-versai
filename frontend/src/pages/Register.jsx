@@ -59,7 +59,14 @@ const Register = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (error.response?.data?.errors) {
+        const errorMsg = error.response.data.errors.map(e => e.msg).join(', ');
+        toast.error(errorMsg);
+      } else {
+        toast.error(error.message || "Something went wrong");
+      }
     }
   };
 
@@ -84,7 +91,7 @@ const Register = () => {
               <input
                 type="text"
                 name="name"
-                id=""
+                id="username-field"
                 value={datas.name}
                 placeholder=" User Name"
                 className="w-full md:w-80 rounded-md px-3 py-2"
@@ -118,7 +125,7 @@ const Register = () => {
                 type="email"
                 name="email"
                 value={datas.email}
-                id=""
+                id="email-field"
                 placeholder="Email"
                 className="w-full md:w-80 rounded-md mt-5 px-3 py-2"
                 required
@@ -131,7 +138,7 @@ const Register = () => {
                   type="password"
                   name="password"
                   value={datas.password}
-                  id=""
+                  id="password-field"
                   placeholder="Password"
                   className="w-50 md:w-80 rounded-md mt-5 mr-1"
                   required
