@@ -141,8 +141,8 @@ const Homepage = () => {
           </div>
         </div>
 
-        {/* Right: Top and Bottom Small Banners */}
-        <div className="hidden lg:flex lg:col-span-1 flex-col gap-2">
+  {/* Right: Top and Bottom Small Banners (desktop) */}
+  <div className="hidden lg:flex lg:col-span-1 flex-col gap-2">
           {/* Top Small Banner */}
           <div className="relative flex-1 rounded-lg overflow-hidden shadow-lg group">
             <img
@@ -165,6 +165,16 @@ const Homepage = () => {
             <div className="absolute inset-0 flex flex-col justify-between p-5">
               {/* Optional Text or Tag */}
             </div>
+          </div>
+        </div>
+
+        {/* On small screens show the two small banners under the main carousel */}
+        <div className="lg:hidden mt-3 w-full flex flex-col gap-2">
+          <div className="relative w-full rounded-lg overflow-hidden shadow-lg">
+            <img src={topSmallBanner.imageUrl} alt="Top Banner" className="w-full h-40 md:h-48 object-cover" />
+          </div>
+          <div className="relative w-full rounded-lg overflow-hidden shadow-lg">
+            <img src={bottomSmallBanner.imageUrl} alt="Bottom Banner" className="w-full h-40 md:h-48 object-cover" />
           </div>
         </div>
       </div>

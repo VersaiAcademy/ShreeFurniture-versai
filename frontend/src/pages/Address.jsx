@@ -326,120 +326,121 @@ const Address = () => {
         </>
       ) : (
         <>
-          <div className=" x-10 md:px-20 pt-5 pb-5  flex flex-col md:flex-row justify-center items-center gap-5 md:gap-10 ">
+          <div className=" x-10 md:px-20 pt-5 pb-5  flex flex-col lg:flex-row justify-center items-start gap-6 md:gap-10 ">
             <form
-              className="bg-white border p-3 border-orange-400 shadow-sm w-96 md:w-[35rem] rounded-md"
+              className="bg-white border p-4 border-orange-400 shadow-sm w-full md:w-[35rem] rounded-md"
               onSubmit={handleOnSubmit}
             >
               <p className="text-lg font-medium">Delivery & Billing Address</p>
               <hr className="pt-3 pb-3" />
-              <div className="flex justify-start gap-10 items-center text-gray-500 pb-3">
-                <p>Mobile No 1*</p>
-                <input
-                  type="number"
-                  name="mob1"
-                  id=""
-                  className="w-56 md:w-96"
-                  placeholder="95XXXXXX09"
-                  onChange={handleOnChange}
-                  value={data.mob1}
-                  minLength={10}
-                  maxLength={10}
-                  required
-                />
-              </div>
-              <div className="flex justify-start gap-10 items-center text-gray-500 pb-3">
-                <p>Mobile No 2*</p>
-                <input
-                  type="number"
-                  name="mob2"
-                  id=""
-                  value={data.mob2}
-                  onChange={handleOnChange}
-                  className="w-56 md:w-96"
-                  placeholder="95XXXXXX09"
-                  minLength={10}
-                  maxLength={10}
-                  required
-                />
-              </div>
-              <div className="flex justify-start gap-10 items-center text-gray-500 pb-3">
-                <p>Postal Code *</p>
-                <input
-                  type="number"
-                  name="postalcode"
-                  id=""
-                  onChange={handleOnChange}
-                  value={data.postalcode}
-                  className="w-56 md:w-96"
-                  placeholder="Enter PinCode"
-                  minLength={6}
-                  maxLength={6}
-                  required
-                />
-              </div>
-              <div className="flex justify-start gap-[4.5rem] items-center text-gray-500 pb-3">
-                <p>Society *</p>
-                <input
-                  type="text"
-                  name="society"
-                  id=""
-                  value={data.society}
-                  onChange={handleOnChange}
-                  className="w-56 md:w-96"
-                  placeholder="Flat,House no,Building,Company,Appartment"
-                  required
-                />
-              </div>
-              <div className="flex justify-start gap-[5.5rem] items-center text-gray-500 pb-3">
-                <p>Area *</p>
-                <input
-                  type="text"
-                  name="area"
-                  id=""
-                  onChange={handleOnChange}
-                  value={data.area}
-                  className="w-56 md:w-96"
-                  placeholder="Area,Street,Sector,Village"
-                  required
-                />
-              </div>
-              <div className="flex justify-start gap-12 items-center text-gray-500 pb-3">
-                <p>Landmark *</p>
-                <input
-                  type="text"
-                  name="landmark"
-                  id=""
-                  onChange={handleOnChange}
-                  value={data.landmark}
-                  className="w-56 md:w-96"
-                  placeholder="Landmark"
-                  required
-                />
-              </div>
-              <div className="flex justify-start gap-[5.5rem] items-center text-gray-500 pb-3">
-                <p>City *</p>
-                <input
-                  type="text"
-                  name="city"
-                  id=""
-                  onChange={handleOnChange}
-                  value={data.city}
-                  className="w-56 md:w-96"
-                  placeholder="City"
-                  required
-                />
-              </div>
-              <div className="flex justify-start gap-[5rem] items-center text-gray-500 pb-3">
-                <p>State *</p>
-                <select
-                  name="state"
-                  id=""
-                  onChange={handleOnChange}
-                  value={data.state}
-                  className="w-56 md:w-96 h-10 text-center"
-                  required
-                >
+              <div className="grid grid-cols-1 gap-4">
+                <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+                  <label className="w-full md:w-36 text-gray-700">Mobile No 1*</label>
+                  <input
+                    type="number"
+                    name="mob1"
+                    id=""
+                    className="w-full md:w-72 border rounded px-3 py-2"
+                    placeholder="95XXXXXX09"
+                    onChange={handleOnChange}
+                    value={data.mob1}
+                    minLength={10}
+                    maxLength={10}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+                  <label className="w-full md:w-36 text-gray-700">Mobile No 2*</label>
+                  <input
+                    type="number"
+                    name="mob2"
+                    id=""
+                    value={data.mob2}
+                    onChange={handleOnChange}
+                    className="w-full md:w-72 border rounded px-3 py-2"
+                    placeholder="95XXXXXX09"
+                    minLength={10}
+                    maxLength={10}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+                  <label className="w-full md:w-36 text-gray-700">Postal Code *</label>
+                  <input
+                    type="number"
+                    name="postalcode"
+                    id=""
+                    onChange={handleOnChange}
+                    value={data.postalcode}
+                    className="w-full md:w-72 border rounded px-3 py-2"
+                    placeholder="Enter PinCode"
+                    minLength={6}
+                    maxLength={6}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+                  <label className="w-full md:w-36 text-gray-700">Society *</label>
+                  <input
+                    type="text"
+                    name="society"
+                    id=""
+                    value={data.society}
+                    onChange={handleOnChange}
+                    className="w-full md:w-72 border rounded px-3 py-2"
+                    placeholder="Flat,House no,Building,Company,Appartment"
+                    required
+                  />
+                </div>
+                <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+                  <label className="w-full md:w-36 text-gray-700">Area *</label>
+                  <input
+                    type="text"
+                    name="area"
+                    id=""
+                    onChange={handleOnChange}
+                    value={data.area}
+                    className="w-full md:w-72 border rounded px-3 py-2"
+                    placeholder="Area,Street,Sector,Village"
+                    required
+                  />
+                </div>
+                <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+                  <label className="w-full md:w-36 text-gray-700">Landmark *</label>
+                  <input
+                    type="text"
+                    name="landmark"
+                    id=""
+                    onChange={handleOnChange}
+                    value={data.landmark}
+                    className="w-full md:w-72 border rounded px-3 py-2"
+                    placeholder="Landmark"
+                    required
+                  />
+                </div>
+                <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+                  <label className="w-full md:w-36 text-gray-700">City *</label>
+                  <input
+                    type="text"
+                    name="city"
+                    id=""
+                    onChange={handleOnChange}
+                    value={data.city}
+                    className="w-full md:w-72 border rounded px-3 py-2"
+                    placeholder="City"
+                    required
+                  />
+                </div>
+                <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+                  <label className="w-full md:w-36 text-gray-700">State *</label>
+                  <select
+                    name="state"
+                    id=""
+                    onChange={handleOnChange}
+                    value={data.state}
+                    className="w-full md:w-72 h-10 text-center border rounded"
+                    required
+                  >
                   <option value="">Select state</option>
                   <option value="Andaman and Nicobar Islands">
                     Andaman and Nicobar Islands
@@ -486,16 +487,18 @@ const Address = () => {
                   <option value="West Bengal">West Bengal</option>
                 </select>
               </div>
+              </div>
+
               <div className="flex justify-center items-center mt-5">
                 <button
-                  className="p-2 rounded-lg text-white bg-gradient-to-r from-orange-300 to-orange-500 w-60 md:w-96 h-10 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-300 "
+                  className="p-2 rounded-lg text-white bg-gradient-to-r from-orange-300 to-orange-500 w-full md:w-60 h-10 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-300 "
                   type="submit"
                 >
                   Submit
                 </button>
               </div>
             </form>
-            <div className="w-96 bg-white shadow-sm mt-5 p-2 border border-orange-400 h-96">
+            <div className="w-full md:w-96 bg-white shadow-sm mt-5 p-4 border border-orange-400">
               <p className="text-lg font-medium">Price Detail</p>
               <hr />
               <p className="text-sm font-medium pt-3 pb-3 flex justify-start gap-40">
@@ -570,7 +573,7 @@ const Address = () => {
               </div>
               <div className="flex justify-center items-center mt-5">
                 <button
-                  className="p-2 rounded-lg text-white bg-gradient-to-r from-orange-300 to-orange-500 w-60 h-14 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-300 "
+                  className="p-2 rounded-lg text-white bg-gradient-to-r from-orange-300 to-orange-500 w-full md:w-60 h-12 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-300 "
                   onClick={handleOrder}
                 >
                   <FontAwesomeIcon icon={faBuyNLarge} className="pr-3" /> Buy

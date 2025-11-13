@@ -64,17 +64,17 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center mt-10">
-      <div className="  border  shadow-lg hover:shadow-2xl bg-white  rounded-lg  md:w-[55rem] ">
-        <div className="flex items-center gap-5 flex-col md:flex-row   md:p-0">
-          <div className="">
+    <div className="flex justify-center items-center mt-10 px-4">
+      <div className="border shadow-lg hover:shadow-2xl bg-white rounded-lg w-full max-w-4xl">
+        <div className="flex items-center gap-5 flex-col md:flex-row md:p-0">
+          <div className="w-full md:w-1/3">
             <img
               src="/images/reg.jpg"
               alt=""
-              className="object-fill w-96 h-96 md:h-[35rem]  md:w-[28em]"
+              className="object-cover w-full h-40 md:h-[35rem] md:w-full rounded-t-lg md:rounded-none"
             />
           </div>
-          <div className="font-mono">
+          <div className="font-mono w-full md:w-2/3 p-6">
             <h2 className="text-xl md:text-2xl">Register</h2>
             <small>Get exclusive discounts, newsletters and more</small>
             <form
@@ -87,7 +87,7 @@ const Register = () => {
                 id=""
                 value={datas.name}
                 placeholder=" User Name"
-                className="w-50 md:w-80 rounded-md "
+                className="w-full md:w-80 rounded-md px-3 py-2"
                 required
                 minLength={3}
                 onChange={handleOnChange}
@@ -98,7 +98,7 @@ const Register = () => {
                   name="fname"
                   value={datas.fname}
                   placeholder=" First Name"
-                  className="w-40 md:w-40 rounded-md "
+                  className="w-1/2 md:w-40 rounded-md px-2"
                   required
                   minLength={3}
                   onChange={handleOnChange}
@@ -108,7 +108,7 @@ const Register = () => {
                   name="lname"
                   value={datas.lname}
                   placeholder=" Last Name"
-                  className="w-40 md:w-40 rounded-md "
+                  className="w-1/2 md:w-40 rounded-md px-2"
                   required
                   minLength={3}
                   onChange={handleOnChange}
@@ -120,7 +120,7 @@ const Register = () => {
                 value={datas.email}
                 id=""
                 placeholder="Email"
-                className="w-50 md:w-80 rounded-md mt-5"
+                className="w-full md:w-80 rounded-md mt-5 px-3 py-2"
                 required
                 minLength={5}
                 onChange={handleOnChange}
@@ -167,7 +167,7 @@ const Register = () => {
                   Privacy Policy
                 </span>
               </p>
-              <button className="p-2 ml-5 rounded-lg text-white bg-gradient-to-r mt-3 from-orange-500 to-orange-300 w-60 h-10 hover:bg-gradient-to-r hover:from-orange-300 hover:to-orange-500 ">
+              <button className="p-2 ml-0 rounded-lg text-white bg-gradient-to-r mt-3 from-orange-500 to-orange-300 w-full md:w-60 h-10 hover:bg-gradient-to-r hover:from-orange-300 hover:to-orange-500 ">
                 REGISTER
               </button>
             </form>

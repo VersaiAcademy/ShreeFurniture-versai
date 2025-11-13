@@ -52,17 +52,17 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center mt-10">
-      <div className="border shadow-lg hover:shadow-2xl bg-white rounded-lg md:w-[55rem]">
+    <div className="flex justify-center items-center mt-10 px-4">
+      <div className="border shadow-lg hover:shadow-2xl bg-white rounded-lg w-full max-w-4xl">
         <div className="flex items-center gap-5 flex-col md:flex-row md:p-0">
-          <div className="">
+          <div className="w-full md:w-1/3">
             <img
               src="/images/login-bg.jpg"
               alt=""
-              className="object-fill w-96 h-96 md:h-[35rem] md:w-[28em]"
+              className="object-cover w-full h-40 md:h-[35rem] md:w-full rounded-t-lg md:rounded-none"
             />
           </div>
-          <div className="font-mono">
+          <div className="font-mono w-full md:w-2/3 p-6">
             <h2 className="text-xl md:text-2xl">Login</h2>
             <small>Track your order, create wishlist & more</small>
             <Formik
@@ -71,12 +71,12 @@ const Login = () => {
               onSubmit={onSubmit}
             >
               {({ isSubmitting }) => (
-                <Form className="pt-3 flex flex-col justify-between items-center pr-2">
+                <Form className="pt-3 flex flex-col justify-between items-center pr-2 w-full">
                   <Field
                     type="text"
                     name="name"
                     placeholder="User Name"
-                    className="w-50 md:w-80 rounded-md"
+                    className="w-full md:w-80 rounded-md px-3 py-2"
                   />
                   <ErrorMessage
                     name="name"
@@ -88,7 +88,7 @@ const Login = () => {
                     type="password"
                     name="password"
                     placeholder="Password"
-                    className="w-50 md:w-80 rounded-md mt-5 mr-1"
+                    className="w-full md:w-80 rounded-md mt-5 mr-1 px-3 py-2"
                   />
                   <ErrorMessage
                     name="password"
@@ -99,7 +99,7 @@ const Login = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="p-2 ml-5 rounded-lg text-white bg-gradient-to-r mt-5 from-orange-500 to-orange-300 w-60 h-10 hover:bg-gradient-to-r hover:from-orange-300 hover:to-orange-500"
+                    className="p-2 rounded-lg text-white bg-gradient-to-r mt-5 from-orange-500 to-orange-300 w-full md:w-60 h-10 hover:bg-gradient-to-r hover:from-orange-300 hover:to-orange-500"
                   >
                     {isSubmitting ? "Logging in..." : "Login"}
                   </button>

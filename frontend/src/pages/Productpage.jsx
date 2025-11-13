@@ -405,7 +405,7 @@ const Productpage = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {filteredProducts.map((product) => (
                   <div
                     key={product._id}
@@ -414,12 +414,30 @@ const Productpage = () => {
                   >
                     {/* Image Container */}
                     <div className="relative overflow-hidden aspect-[4/3]">
-                      <img
-                        src={product.img1}
-                        alt={product.pname}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        onError={(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'}
-                      />
+                      {(() => {
+                        // Get main image or first variant image
+                        let displayImage = product.img1;
+                        
+                        // If no main image, use first Stone finish image
+                        if (!displayImage && product.stone_finish_image) {
+                          displayImage = product.stone_finish_image;
+                        }
+                        
+                        // If no Stone image, use first Natural finish image
+                        if (!displayImage && product.natural_finish_image) {
+                          displayImage = product.natural_finish_image;
+                        }
+                        
+                        return (
+                          <img
+                            src={displayImage}
+                            alt={product.pname}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            onError={(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'}
+                          />
+                        );
+                      })()}
+                      
                       
                       {/* Wishlist Button */}
                       <button

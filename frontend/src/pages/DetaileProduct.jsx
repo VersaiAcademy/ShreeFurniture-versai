@@ -263,7 +263,7 @@ const DetailProduct = () => {
                 <img
                   src={displayImage}
                   alt={product.pname}
-                  className="w-full h-96 object-contain bg-white rounded-lg mb-4"
+                  className="w-full h-64 sm:h-80 md:h-96 object-contain bg-white rounded-lg mb-4"
                 />
                 <div className="flex gap-2 overflow-x-auto pb-2">
                   {/* Thumbnails - show all images from current set */}
@@ -282,7 +282,7 @@ const DetailProduct = () => {
                         <img
                           src={img}
                           alt={`${activeImageSet} View ${index + 1}`}
-                          className="w-20 h-20 object-contain"
+                          className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
                         />
                       </button>
                     ))
@@ -293,12 +293,12 @@ const DetailProduct = () => {
               </div>
 
               {/* BANNER SECTION */}
-              <div className="mt-6">
+                  <div className="mt-6">
                 <div className="bg-gray-200 h-24 rounded-lg flex items-center justify-center overflow-hidden">
                   <img 
                     src="/Sri/2624x308 Pixle.jpg" 
                     alt="Discount Banner" 
-                    className="w-full h-full object-cover" 
+                        className="w-full h-full object-cover" 
                   />
                 </div>
               </div>

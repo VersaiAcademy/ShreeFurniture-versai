@@ -120,7 +120,7 @@ const Homepage = () => {
                     58%
                   </span>
                 </div>
-                <img src="/images/cst2.webp" alt="" className="w-96" />
+                <img src="/images/cst2.webp" alt="" className="w-full md:w-96" />
                 <p className="text-xl font-mono">Fabric sofa</p>
               </div>
               <div>
@@ -132,7 +132,7 @@ const Homepage = () => {
                     58%
                   </span>
                 </div>
-                <img src="/images/cst3.webp" alt="" className="w-96" />
+                <img src="/images/cst3.webp" alt="" className="w-full md:w-96" />
                 <p className="text-xl font-mono">Fabric sofa</p>
               </div>
             </div>
@@ -146,7 +146,7 @@ const Homepage = () => {
                     58%
                   </span>
                 </div>
-                <img src="/images/cst1.webp" alt="" className="w-96" />
+                <img src="/images/cst1.webp" alt="" className="w-full md:w-96" />
                 <p className="text-xl font-mono">Fabric sofa</p>
               </div>
               <div>
@@ -158,7 +158,7 @@ const Homepage = () => {
                     58%
                   </span>
                 </div>
-                <img src="/images/cst1.webp" alt="" className="w-96" />
+                <img src="/images/cst1.webp" alt="" className="w-full md:w-96" />
                 <p className="text-xl font-mono">Fabric sofa</p>
               </div>
             </div>
@@ -175,7 +175,7 @@ const Homepage = () => {
 
         <div
           id="default-carousel"
-          className="relative w-[29rem] md:w-[1450px] h-60 md:h-[500px] "
+          className="relative w-full md:max-w-[1450px] h-56 md:h-[500px] mx-auto"
           data-carousel="slide"
         >
           {/* Carousel wrapper */}
@@ -186,7 +186,7 @@ const Homepage = () => {
               data-carousel-item=""
             >
               <div className="flex justify-between">
-                <div className="relative w-48 md:w-[30rem] h-96 md:h-[40rem] overflow-hidden cursor-pointer">
+                <div className="relative w-full md:w-[30rem] h-56 md:h-[40rem] overflow-hidden cursor-pointer">
                   <img
                     className="object-cover rounded-md transition-transform transform-gpu hover:scale-105"
                     src="/images/cs1.webp"
@@ -204,7 +204,7 @@ const Homepage = () => {
                     Ship in 2 Days
                   </p>
                 </div>
-                <div className="relative w-48 md:w-[30rem] h-96 md:h-[40rem] overflow-hidden cursor-pointer">
+                <div className="relative w-full md:w-[30rem] h-56 md:h-[40rem] overflow-hidden cursor-pointer">
                   <img
                     className="object-cover rounded-md transition-transform transform-gpu hover:scale-105"
                     src="/images/cs2.webp"
@@ -222,7 +222,7 @@ const Homepage = () => {
                     Ship in 2 Days
                   </p>
                 </div>
-                <div className="relative w-48 md:w-[30rem] h-96 md:h-[40rem] overflow-hidden cursor-pointer">
+                <div className="relative w-full md:w-[30rem] h-56 md:h-[40rem] overflow-hidden cursor-pointer">
                   <img
                     className="object-cover rounded-md transition-transform transform-gpu hover:scale-105"
                     src="/images/cs4.webp"

@@ -140,10 +140,10 @@ const Cart = () => {
         <>
           {cartleng > 0 ? (
             <>
-              <div className="pt-3 pb-2 px-5 md:px-32 bg-blue-50">
-                <div className="flex flex-col md:flex-row gap-3">
-                  <div className="w-[35rem] md:w-[50rem] mt-5 border-2 bg-white shadow-lg rounded-md mb-3 pb-3">
-                    <div className="flex pt-2 px-2 justify-between items-center">
+              <div className="pt-3 pb-2 px-4 md:px-8 bg-blue-50">
+                <div className="flex flex-col lg:flex-row gap-6 lg:items-start">
+                  <div className="flex-1 mt-5 border-2 bg-white shadow-lg rounded-md mb-3 pb-3">
+                    <div className="flex flex-col md:flex-row pt-2 px-2 justify-between items-center gap-3">
                       <span className="font-semibold text-lg pr-10">
                         My Cart ({cartleng})
                       </span>
@@ -155,7 +155,7 @@ const Cart = () => {
                           />
                           Deliver to
                         </span>
-                        <div className="relative w-60 ">
+                          <div className="relative w-full md:w-60 ">
                               <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                             <svg
                               className="w-4 h-4 text-gray-500 dark:text-gray-400"
@@ -195,11 +195,11 @@ const Cart = () => {
 
                     {cartItems[0]?.map((item) => (
                       <div key={item._id}>
-                        <div className="pt-3 flex justify-start items-center px-2 pb-2 gap-10 ">
-                          <div className="w-32 h-28">
-                            <img src={item.product.img1} alt="" />
+                        <div className="pt-3 flex flex-col sm:flex-row justify-start items-center px-2 pb-2 gap-4">
+                          <div className="w-32 h-28 flex-shrink-0">
+                            <img src={item.product.img1} alt="" className="w-full h-full object-cover" />
                           </div>
-                          <div>
+                          <div className="flex-1">
                             <h2 className="text-sm font-semibold cursor-pointer hover:text-orange-300">
                               {item.product_name}
                             </h2>
@@ -239,7 +239,7 @@ const Cart = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="px-20 md:px-52 text-gray-400 flex gap-5">
+                        <div className="px-4 md:px-20 text-gray-400 flex gap-5">
                           <p>
                             <FontAwesomeIcon icon={faHeart} className="pr-3" />
                             <span className="hover:text-orange-400 cursor-pointer">
@@ -263,44 +263,34 @@ const Cart = () => {
                     ))}
                     {/* end sinle item */}
                   </div>
-                  <div className="w-96 bg-white shadow-sm mt-5 p-2 border border-orange-400 h-96">
+                  <div className="w-full lg:w-96 bg-white shadow-sm mt-5 p-4 border border-orange-400">
                     <p className="text-lg font-medium">Price Detail</p>
                     <hr />
-                    <p className="text-sm font-medium pt-3 pb-3 flex justify-start gap-40">
-                      <span className="">MRP</span>
-                      <span>Rs {totalPrice}</span>
-                    </p>
-                    <hr />
-                    <p className="text-sm font-medium pt-3 flex justify-start gap-40">
-                      <span className="">OFFER</span>
-                      <span className="text-green-400">
-                        {averageOfferPercent}%
-                      </span>
-                    </p>
-                    <hr />
-                    <p className="text-sm font-medium pt-3 flex justify-start gap-32">
-                      <span className="">Today Deal</span>
-                      <span className="text-green-400">Rs {todaysDeal}</span>
-                    </p>
-                    <hr />
-                    <p className="text-xl font-medium pt-3 flex justify-start gap-32 mt-3">
-                      <span className="">Total Payable</span>
-                      <span className="text-orange-400">
-                        Rs {totalPrice - todaysDeal}
-                        <br />
-                        <small className="text-gray-400 text-xs">
-                          (Inclusive of all taxes)
-                        </small>
-                      </span>
-                    </p>
+                    <div className="space-y-3 pt-3">
+                      <div className="flex justify-between text-sm">
+                        <span>MRP</span>
+                        <span>Rs {totalPrice || 0}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>OFFER</span>
+                        <span className="text-green-400">{averageOfferPercent || 0}%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Today Deal</span>
+                        <span className="text-green-400">Rs {todaysDeal}</span>
+                      </div>
+                      <div className="flex justify-between text-base font-semibold pt-2">
+                        <span>Total Payable</span>
+                        <span className="text-orange-400">Rs { (totalPrice || 0) - (todaysDeal || 0) }</span>
+                      </div>
+                    </div>
+
                     <Link
                       className="flex justify-center items-center mt-5"
                       to={`/address/${averageOfferPercent}/${totalPrice}/${todaysDeal}`}
                     >
-                      {/* <Link className="flex justify-center items-center mt-5" to={{pathname:'/address',state:{states}}}> */}
-                      <button className="p-2 rounded-lg text-white bg-gradient-to-r from-orange-300 to-orange-500 w-60 h-14 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-300 ">
-                        <FontAwesomeIcon icon={faBuyNLarge} className="pr-3" />{" "}
-                        Continue
+                      <button className="p-2 rounded-lg text-white bg-gradient-to-r from-orange-300 to-orange-500 w-full md:w-60 h-12 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-300 ">
+                        <FontAwesomeIcon icon={faBuyNLarge} className="pr-3" /> Continue
                       </button>
                     </Link>
                   </div>

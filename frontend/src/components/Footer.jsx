@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { MapPin, Phone, Mail } from "lucide-react";
 
 const Footer = () => {
+  const [openSections, setOpenSections] = useState({});
+
+  const toggleSection = (key) => {
+    setOpenSections((s) => ({ ...s, [key]: !s[key] }));
+  };
+
   return (
     <div className="bg-gray-50 mt-10 border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-10">
@@ -9,8 +15,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Contact Info */}
           <div>
-            <h3 className="text-base font-bold mb-4 text-gray-900">Contact Info.</h3>
-            <div className="space-y-3 text-xs text-gray-700">
+            <div className="md:hidden flex items-center justify-between">
+              <h3 className="text-base font-bold mb-0 text-gray-900">Contact Info.</h3>
+              <button onClick={() => toggleSection('contact')} className="text-sm text-orange-500">{openSections.contact ? '−' : '+'}</button>
+            </div>
+            <h3 className="hidden md:block text-base font-bold mb-4 text-gray-900">Contact Info.</h3>
+            <div className={`${openSections.contact ? 'block' : 'hidden'} md:block space-y-3 text-xs text-gray-700`}>
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
@@ -30,8 +40,12 @@ const Footer = () => {
 
           {/* Useful Links */}
           <div>
-            <h3 className="text-base font-bold mb-4 text-gray-900">Useful Links</h3>
-            <ul className="space-y-2 text-xs text-gray-700">
+            <div className="md:hidden flex items-center justify-between">
+              <h3 className="text-base font-bold mb-0 text-gray-900">Useful Links</h3>
+              <button onClick={() => toggleSection('useful')} className="text-sm text-orange-500">{openSections.useful ? '−' : '+'}</button>
+            </div>
+            <h3 className="hidden md:block text-base font-bold mb-4 text-gray-900">Useful Links</h3>
+            <ul className={`${openSections.useful ? 'block' : 'hidden'} md:block space-y-2 text-xs text-gray-700`}>
               <li><a href="/about" className="hover:text-orange-500 transition cursor-pointer">About Us</a></li>
               <li><a href="/track-order" className="hover:text-orange-500 transition cursor-pointer">Track your Order</a></li>
               <li><a href="/bulk-order" className="hover:text-orange-500 transition cursor-pointer">Bulk Order</a></li>
@@ -42,8 +56,12 @@ const Footer = () => {
 
           {/* Customer Service */}
           <div>
-            <h3 className="text-base font-bold mb-4 text-gray-900">Customer Service</h3>
-            <ul className="space-y-2 text-xs text-gray-700">
+            <div className="md:hidden flex items-center justify-between">
+              <h3 className="text-base font-bold mb-0 text-gray-900">Customer Service</h3>
+              <button onClick={() => toggleSection('customer')} className="text-sm text-orange-500">{openSections.customer ? '−' : '+'}</button>
+            </div>
+            <h3 className="hidden md:block text-base font-bold mb-4 text-gray-900">Customer Service</h3>
+            <ul className={`${openSections.customer ? 'block' : 'hidden'} md:block space-y-2 text-xs text-gray-700`}>
               <li><a href="/help" className="hover:text-orange-500 transition cursor-pointer">Help</a></li>
               <li><a href="/return-refunds" className="hover:text-orange-500 transition cursor-pointer">Return & Refunds</a></li>
               <li><a href="/terms" className="hover:text-orange-500 transition cursor-pointer">Terms of Use</a></li>
@@ -54,8 +72,12 @@ const Footer = () => {
 
           {/* Top Categories */}
           <div>
-            <h3 className="text-base font-bold mb-4 text-gray-900">Top Categories</h3>
-            <ul className="space-y-2 text-xs text-gray-700">
+            <div className="md:hidden flex items-center justify-between">
+              <h3 className="text-base font-bold mb-0 text-gray-900">Top Categories</h3>
+              <button onClick={() => toggleSection('topcats')} className="text-sm text-orange-500">{openSections.topcats ? '−' : '+'}</button>
+            </div>
+            <h3 className="hidden md:block text-base font-bold mb-4 text-gray-900">Top Categories</h3>
+            <ul className={`${openSections.topcats ? 'block' : 'hidden'} md:block space-y-2 text-xs text-gray-700`}>
               <li><a href="/bedroom" className="hover:text-orange-500 transition cursor-pointer">Bedroom</a></li>
               <li><a href="/sofas" className="hover:text-orange-500 transition cursor-pointer">Sofas</a></li>
               <li><a href="/living-room" className="hover:text-orange-500 transition cursor-pointer">Living Room</a></li>

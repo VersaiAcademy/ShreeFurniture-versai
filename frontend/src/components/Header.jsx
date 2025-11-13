@@ -61,11 +61,11 @@ const Header = () => {
       sections: [
         {
           title: 'SOFA SETS',
-          items: ['All Sofas', 'Fabric Sofas', 'Wooden Sofas', '3 Seater Sofas', '2 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets']
+          items: [ 'Wooden Sofas', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas']
         },
         {
-          title: 'SOFA TYPES',
-          items: ['Sofa Cum Beds', 'L Shaped Sofas', 'Chaise Loungers', 'Outdoor Sofas', 'Diwans']
+          title: 'Seating',
+          items: ['Wooden Diwan', 'Benaches', 'Wooden Stools' ]
         }
       ]
     },
@@ -73,18 +73,18 @@ const Header = () => {
       sections: [
         {
           title: 'BEDS',
-          items: ['All Beds', 'Solid Wood Beds', 'Engineered Wood Beds', 'Upholstered Beds', 'Hydraulic Storage Beds', 'Poster Beds', 'Kids Beds', 'Metal Beds']
+          items: ['King Size Beds', 'Queen Size Beds', 'Double Beds', 'Single Beds',  'Hydraulic Storage Beds', 'Poster Beds', ]
         },
         {
-          title: 'BY SIZE',
-          items: ['King Size Beds', 'Queen Size Beds', 'Double Beds', 'Single Beds']
+          title: 'Wardrobes',
+          items: ['1 Door Wardrobe', 'Queen Size Beds', 'Double Beds', 'Single Beds']
         }
       ]
     },
     'Living': {
       sections: [
         {
-          title: 'STORAGE',
+          title: 'Living-Storage',
           items: ['TV Units', 'Book Shelves', 'Display Units', 'Shoe Racks', 'Sideboards', 'Chest of Drawers']
         },
         {
@@ -96,24 +96,33 @@ const Header = () => {
     'Dining & Kitchen': {
       sections: [
         {
-          title: 'DINING',
-          items: ['Dining Tables', 'Dining Chairs', 'Dining Sets']
+          title: 'DINING FURNITURE',
+          items: ['Dining Tables', '2 Seater Dining Sets','4 Seater Dining Sets','6 Seater Dining Sets', 'Dining Tables', 'Dining Chairs', 'Benaches']
         },
         {
-          title: 'KITCHEN',
-          items: ['Modular Kitchens', 'Kitchen Cabinets', 'Pantry Units']
+          title: 'KITCHEN FURNITURE' ,
+          items: [ 'Kitchen Cabinets & SideBoards' , 'Crockery Units', ]
+        },
+         {
+          title: 'KITCHENWARE' ,
+          items: [ 'Wooden Tray' , 'Wooden Jars', 'Spice Box','Chopping Board' ,'Coasters' ,'Tissue Box' ]
         }
+
       ]
     },
     'Storage': {
       sections: [
         {
-          title: 'HOME STORAGE',
-          items: ['Wardrobes', 'Cabinetry', 'Trunks']
+          title: 'LIVING STORAGE',
+          items: ['TV Units', 'Book Shelves' ,'Display Units' , 'Shoe Racks' ,'Home Temples' ,'Magazine Racks' ,'Wooden Corner' ]
         },
         {
-          title: 'UTILITY STORAGE',
-          items: ['Display Units', 'Shoe Racks', 'Wall Shelves']
+          title: 'BEDROOM STORAGE',
+          items: ['Chest of Drawers', 'Wardrobes' ,'Bed Side Tables' , 'Dressing ' ,'Almira'  ]
+        },
+        {
+          title: 'BAR FURNITURE',
+          items: ['Bar Cabinets' ]
         }
       ]
     },
@@ -121,7 +130,7 @@ const Header = () => {
       sections: [
         {
           title: 'Tables',
-          items: [ 'Study Tables']
+          items: [ 'Study Tables', ]
         },
         {
           title: 'Storage',
@@ -233,7 +242,7 @@ const Header = () => {
               />
             </div>
 
-            {/* Search Bar */}
+            {/* Search Bar (desktop) */}
             <div className="hidden md:flex flex-1 max-w-xl mx-8">
               <div className="relative w-full">
                 <input
@@ -247,6 +256,17 @@ const Header = () => {
               </div>
             </div>
 
+            {/* Mobile search button (opens overlay) */}
+            <div className="md:hidden mr-2">
+              <button
+                onClick={() => setSearchOpen(true)}
+                aria-label="Open search"
+                className="p-2 rounded-md bg-white/0 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              >
+                <Search className="h-5 w-5 text-gray-700" />
+              </button>
+            </div>
+
             {/* Right Icons */}
             <div className="flex items-center space-x-6">
              <a href="#location" className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group">
@@ -256,20 +276,20 @@ const Header = () => {
 
               <button 
                 onClick={() => window.location.href = '/login'}
-                className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group"
+                className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group p-2"
               >
                 <User className="h-5 w-5 mb-1" />
                 <span className="text-xs font-medium">Profile</span>
               </button>
 
-              <button className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group">
+              <button className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group p-2">
                 <Heart className="h-5 w-5 mb-1" />
                 <span className="text-xs font-medium">Wishlist (0)</span>
               </button>
 
               <button 
                 onClick={() => window.location.href = '/cart'}
-                className="flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group relative"
+                className="flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group relative p-2"
               >
                 <ShoppingCart className="h-5 w-5 mb-1" />
                 <span className="text-xs font-medium">Cart (0)</span>
@@ -281,8 +301,9 @@ const Header = () => {
               </button>
 
               <button
-                className="lg:hidden p-2"
+                className="lg:hidden p-3"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Open menu"
               >
                 <Menu className="h-6 w-6 text-gray-700" />
               </button>
@@ -356,6 +377,23 @@ const Header = () => {
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
+      )}
+
+      {/* Mobile Search Overlay */}
+      {searchOpen && (
+        <div className="fixed inset-0 z-50 bg-white p-4 lg:hidden">
+          <div className="flex items-center gap-2">
+            <input
+              autoFocus
+              type="text"
+              placeholder="Search Products, Color & More..."
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+            />
+            <button onClick={() => setSearchOpen(false)} className="p-2">
+              <X className="h-6 w-6 text-gray-700" />
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Mobile Menu Drawer */}
