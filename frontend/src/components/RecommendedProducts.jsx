@@ -47,36 +47,53 @@ const RecommendedProducts = () => {
 
   // ✅ Improved image URL handler
   const getImageUrl = (product) => {
-    // Try different image field names
-    const imgField = product.img1 || product.image || product.img || product.images?.[0];
-    
-    if (!imgField) {
+    // Collect possible image values from multiple known fields (main + variants)
+    const candidates = [];
+
+    // common fields
+    candidates.push(product.img1, product.img2, product.img3, product.img4, product.img5);
+    candidates.push(product.image, product.img, product.images && product.images[0]);
+    // variant fields
+    candidates.push(product.stone_finish_image, product.stone_finish_img2, product.natural_finish_image, product.natural_finish_img2);
+    // sometimes uploaded fields may have capitalized keys or different naming
+    candidates.push(product.Image, product.ImageUrl, product.imageUrl);
+
+    // flatten and pick first non-empty string
+    const raw = candidates.flat().find(v => typeof v === 'string' && v.trim() !== '') || null;
+
+    if (!raw) {
       console.warn('⚠️ No image field found for product:', product._id);
       return null;
     }
 
+    let imgField = raw.trim();
+    // Normalize backslashes
+    imgField = imgField.replace(/\\/g, '/');
+
     // If already a complete URL (http:// or https://)
     if (imgField.startsWith('http://') || imgField.startsWith('https://')) {
-      console.log('🌐 Using absolute URL:', imgField);
+      // good to go
+      // console.debug('🌐 Using absolute URL:', imgField);
       return imgField;
     }
 
-    // If starts with /, construct full URL
+    // If starts with '/', construct full URL
     if (imgField.startsWith('/')) {
       const fullUrl = `${API_BASE_URL}${imgField}`;
-      console.log('🔗 Constructed URL from path:', fullUrl);
+      // console.debug('🔗 Constructed URL from path:', fullUrl);
       return fullUrl;
     }
 
-    // If it's just a filename, try common paths
+    // If it looks like a filename (no protocol, maybe just name.jpg), try common upload paths
     const possiblePaths = [
+      `${API_BASE_URL}/uploads/banners/${imgField}`,
       `${API_BASE_URL}/uploads/${imgField}`,
       `${API_BASE_URL}/images/${imgField}`,
       `${API_BASE_URL}/${imgField}`,
     ];
 
-    console.log('🔍 Trying possible paths for:', imgField, possiblePaths);
-    // Return first possible path (will handle error with onError)
+    // Return the first constructed path; onError will trigger fallback UI
+    // console.debug('🔍 Trying possible paths for:', imgField, possiblePaths);
     return possiblePaths[0];
   };
 
