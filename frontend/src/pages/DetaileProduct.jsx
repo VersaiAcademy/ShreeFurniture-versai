@@ -254,21 +254,12 @@ const DetailProduct = () => {
   };
 
   // --- Size Selection Handler ---
-  const handleSizeClick = (size) => {
-    setSelectedSize(size);
-    // Only use admin-provided URLs
-    let adminUrl = null;
-    if (product.size_urls) {
-      adminUrl = product.size_urls[size];
-      if (!adminUrl) adminUrl = product.size_urls[size.trim()];
-      if (!adminUrl) adminUrl = product.size_urls[size.toLowerCase()];
+  const handleSizeClick = (url) => {
+    if (url) {
+      window.location.href = url;
+    } else {
+      alert('No URL defined for this size. Please contact support.');
     }
-    if (adminUrl) {
-      window.location.href = adminUrl;
-      return;
-    }
-    // If no admin URL, optionally show error or disable button
-    alert('No URL defined for this size. Please contact support.');
   };
 
   // --- Get Size Options Based on Category ---
@@ -557,26 +548,27 @@ const DetailProduct = () => {
               )}
 
               {/* Size Selection (for Beds, Sofas, Dining) */}
-              {sizeOptions.length > 0 && (
+              {Array.isArray(product?.sizeUrls) && product.sizeUrls.length > 0 && (
                 <div className="mb-6">
                   <h3 className="font-semibold mb-3 text-gray-900">Select Size:</h3>
                   <div className="flex flex-wrap gap-3">
-                    {sizeOptions.map((size) => (
+                    {product.sizeUrls.map((row, idx) => (
                       <button
-                        key={size}
-                        onClick={() => handleSizeClick(size)}
+                        key={row.label + idx}
+                        onClick={() => handleSizeClick(row.url)}
                         className={`px-6 py-3 rounded-lg font-medium transition-all border-2 ${
-                          selectedSize === size
+                          selectedSize === row.label
                             ? 'bg-orange-500 text-white border-orange-500 shadow-md'
                             : 'bg-white text-gray-700 border-gray-300 hover:border-orange-400 hover:bg-orange-50'
                         }`}
+                        disabled={!row.url}
                       >
-                        {size}
+                        {row.label || 'No Label'}
                       </button>
                     ))}
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
-                    Click on a size to view similar {product.category} products
+                    Click on a size to go to the correct product page
                   </p>
                 </div>
               )}

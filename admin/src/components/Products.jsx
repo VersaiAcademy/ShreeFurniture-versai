@@ -30,7 +30,7 @@ const Products = () => {
     seater: '',
     mattress_size: '', // NEW FIELD: Mattress Size
     caring: '', // NEW FIELD: Caring Instructions
-    size_urls: {}, // NEW FIELD: Size-specific custom URLs (e.g., { "King Size": "/beds?bed_size=King Size" })
+  sizeUrls: [], // NEW FIELD: Size-specific custom URLs [{ label, url }]
     features: '',
     pack_content: '',
     delivery_condition: 'Knocked Down',
@@ -198,7 +198,7 @@ const Products = () => {
       seater: formData.seater.trim(),
       mattress_size: formData.mattress_size.trim(),
       caring: formData.caring.trim() || 'Professional Cleaning Only',
-      size_urls: formData.size_urls || {}, // Include size URLs in submission
+  sizeUrls: formData.sizeUrls || [], // Include size URLs in submission
       features: formData.features.trim(),
       pack_content: formData.pack_content.trim(),
       delivery_condition: formData.delivery_condition.trim(),
@@ -324,7 +324,7 @@ const Products = () => {
       size: '', seater: '', features: '', pack_content: '',
       mattress_size: '', // NEW
       caring: '', // NEW
-      size_urls: {}, // NEW: Size-specific URLs
+  sizeUrls: [], // NEW: Size-specific URLs
       delivery_condition: 'Knocked Down', dispatch_in: '10-12 Days',
       customization: 'Customized can be as per requirement.',
       note: 'If a board is required, we use MDF instead of plywood',
@@ -386,7 +386,7 @@ const Products = () => {
       seater: product.seater || '',
       mattress_size: product.mattress_size || '',
       caring: product.caring || '',
-      size_urls: product.size_urls || {}, // Load existing size URLs
+  sizeUrls: Array.isArray(product.sizeUrls) ? product.sizeUrls : [], // Load existing size URLs safely
       features: product.features || '',
       pack_content: product.pack_content || '',
       delivery_condition: product.delivery_condition || 'Knocked Down',
@@ -584,6 +584,7 @@ const Products = () => {
                   <input type="text" name="storage" value={formData.storage} onChange={handleInputChange} placeholder="Without Storage, Box Storage" />
                 </div>
               </div>
+              </div>
               
               {/* Dimensions */}
               <div className="grid-responsive">
@@ -615,63 +616,42 @@ const Products = () => {
                   Add custom URLs for each size. Example: King Size → /beds?bed_size=King Size
                 </p>
                 <div id="size-urls-container" style={{marginBottom: '12px'}}>
-                  {formData.size_urls && Object.entries(formData.size_urls).map(([size, url], idx) => (
+                  {formData.sizeUrls.map((row, idx) => (
                     <div key={`size-url-${idx}`} style={{display: 'grid', gridTemplateColumns: '1fr 1.5fr 50px', gap: '8px', marginBottom: '8px', alignItems: 'center'}}>
-                      <input 
-                        type="text" 
-                        placeholder="Size (e.g., King Size)" 
-                        value={size}
-                        onChange={(e) => {
-                          const newUrls = {...formData.size_urls};
-                          delete newUrls[size];
-                          newUrls[e.target.value] = url;
-                          setFormData({...formData, size_urls: newUrls});
+                      <input
+                        type="text"
+                        placeholder="Size (e.g., King Size)"
+                        value={row.label}
+                        onChange={e => {
+                          const newArr = [...formData.sizeUrls];
+                          newArr[idx].label = e.target.value;
+                          setFormData({ ...formData, sizeUrls: newArr });
                         }}
                         style={{padding: '8px', border: '1px solid #ddd', borderRadius: '4px'}}
                       />
-                      <input 
-                        type="text" 
-                        placeholder="URL (e.g., /beds?bed_size=King Size)" 
-                        value={url}
-                        onChange={(e) => {
-                          const newUrls = {...formData.size_urls};
-                          newUrls[size] = e.target.value;
-                          setFormData({...formData, size_urls: newUrls});
+                      <input
+                        type="text"
+                        placeholder="URL (e.g., /beds?bed_size=King Size)"
+                        value={row.url}
+                        onChange={e => {
+                          const newArr = [...formData.sizeUrls];
+                          newArr[idx].url = e.target.value;
+                          setFormData({ ...formData, sizeUrls: newArr });
                         }}
                         style={{padding: '8px', border: '1px solid #ddd', borderRadius: '4px'}}
                       />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newUrls = {...formData.size_urls};
-                          delete newUrls[size];
-                          setFormData({...formData, size_urls: newUrls});
-                        }}
-                        style={{padding: '8px', background: '#FF6B6B', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
-                      >
-                        ✕
-                      </button>
+                      <button type="button" className="btn btn-danger" onClick={() => {
+                        const newArr = [...formData.sizeUrls];
+                        newArr.splice(idx, 1);
+                        setFormData({ ...formData, sizeUrls: newArr });
+                      }}>✖</button>
                     </div>
                   ))}
+                  <button type="button" className="btn btn-success" onClick={() => {
+                    setFormData({ ...formData, sizeUrls: [...formData.sizeUrls, { label: '', url: '' }] });
+                  }}>+ Add Size URL</button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newSize = `Size ${Object.keys(formData.size_urls || {}).length + 1}`;
-                    setFormData({
-                      ...formData, 
-                      size_urls: {
-                        ...formData.size_urls,
-                        [newSize]: ''
-                      }
-                    });
-                  }}
-                  style={{padding: '8px 12px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px'}}
-                >
-                  + Add Size URL
-                </button>
               </div>
-            </div>
 
             {/* Logistics & Other Details (JSX unchanged from previous version) */}
             <div className="form-section">
@@ -871,6 +851,7 @@ const Products = () => {
               }}
             />
           </div>
+        
         </div>
         {filteredProducts.length === 0 ? (
           <div className="no-products-message">
