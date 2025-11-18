@@ -30,6 +30,10 @@ const DetailProduct = () => {
   // State for Size Selection (Beds/Sofas/Dining)
   const [selectedSize, setSelectedSize] = useState('');
 
+  // State for Wishlist
+  const [inWishlist, setInWishlist] = useState(false);
+  const [addingToWishlist, setAddingToWishlist] = useState(false);
+
   // State for Pincode Check
   const [pincode, setPincode] = useState('');
   const [deliveryInfo, setDeliveryInfo] = useState({ available: null, message: '' });
@@ -43,6 +47,49 @@ const DetailProduct = () => {
     faqs: false,
     disclaimer: false,
   });
+
+  // --- Wishlist Handlers ---
+
+  // --- Wishlist Handlers ---
+  const handleAddToWishlist = async () => {
+    if (!product?._id) return;
+    setAddingToWishlist(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.info('Please login to add to wishlist');
+        setAddingToWishlist(false);
+        return;
+      }
+      await API.post(`/api/wishlist/add`, { productId: product._id });
+      setInWishlist(true);
+      toast.success('Added to wishlist!');
+    } catch (err) {
+      toast.error('Could not add to wishlist');
+    } finally {
+      setAddingToWishlist(false);
+    }
+  };
+
+  const handleRemoveFromWishlist = async () => {
+    if (!product?._id) return;
+    setAddingToWishlist(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.info('Please login to remove from wishlist');
+        setAddingToWishlist(false);
+        return;
+      }
+      await API.post(`/api/wishlist/remove`, { productId: product._id });
+      setInWishlist(false);
+      toast.success('Removed from wishlist');
+    } catch (err) {
+      toast.error('Could not remove from wishlist');
+    } finally {
+      setAddingToWishlist(false);
+    }
+  };
 
   // --- Data Fetching Effect for Main Product and Related Products ---
   useEffect(() => {
@@ -68,6 +115,17 @@ const DetailProduct = () => {
         } else if (stoneImgs.length > 0) {
           setSelectedImage(stoneImgs[0]);
           setActiveImageSet('stone');
+        }
+
+        // Check if product is in wishlist (if user is logged in)
+        const token = localStorage.getItem('token');
+        if (token) {
+          try {
+            const wishlistRes = await API.get(`/api/wishlist/check/${data._id}`);
+            setInWishlist(wishlistRes.data.inWishlist);
+          } catch (err) {
+            console.warn('Could not check wishlist status:', err);
+          }
         }
 
         // Fetch related products based on category
@@ -200,23 +258,6 @@ const DetailProduct = () => {
     }
   };
 
-  const handleAddToWishlist = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast.warning('Please login to add to wishlist');
-        navigate('/login');
-        return;
-      }
-
-      // Check if wishlist API exists, otherwise show coming soon
-      // TODO: Implement wishlist API endpoint at /api/wishlist
-      toast.info('Wishlist feature coming soon!');
-    } catch (error) {
-      console.error('Failed to add to wishlist:', error);
-      toast.error('Failed to add to wishlist');
-    }
-  };
 
   const handleFinishSelect = (finishType, imageSet) => {
     if (imageSet.length === 0) return;
@@ -227,26 +268,19 @@ const DetailProduct = () => {
   // --- Size Selection Handler ---
   const handleSizeClick = (size) => {
     setSelectedSize(size);
-    
-    // ✅ Check if admin has set a custom URL for this size
-    if (product.size_urls && product.size_urls[size]) {
-      navigate(product.size_urls[size]);
+    // Only use admin-provided URLs
+    let adminUrl = null;
+    if (product.size_urls) {
+      adminUrl = product.size_urls[size];
+      if (!adminUrl) adminUrl = product.size_urls[size.trim()];
+      if (!adminUrl) adminUrl = product.size_urls[size.toLowerCase()];
+    }
+    if (adminUrl) {
+      window.location.href = adminUrl;
       return;
     }
-
-    // Fallback: Build a category-based slug (keep original words, hyphenate)
-    const rawCategory = (product.category || 'products').toString().toLowerCase();
-    const slug = rawCategory.replace(/\s+/g, '-');
-
-    // For Beds, Sofas and Dining we want custom query param names so the product list
-    // can distinguish the intent. Other categories will use `size` param.
-    let paramName = 'size';
-    if (rawCategory.includes('bed')) paramName = 'bed_size';
-    else if (rawCategory.includes('sofa')) paramName = 'sofa_size';
-    else if (rawCategory.includes('dining')) paramName = 'dining_size';
-
-    const url = `/${slug}?${paramName}=${encodeURIComponent(size)}`;
-    navigate(url);
+    // If no admin URL, optionally show error or disable button
+    alert('No URL defined for this size. Please contact support.');
   };
 
   // --- Get Size Options Based on Category ---
@@ -480,11 +514,14 @@ const DetailProduct = () => {
                 <RatingStars rating={product.rating || 5} />
                 <span className="text-gray-700">({product.rating_count || 55})</span>
                 <button 
-                  onClick={handleAddToWishlist}
-                  className="ml-auto flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors"
+                  onClick={inWishlist ? handleRemoveFromWishlist : handleAddToWishlist}
+                  className={`ml-auto flex items-center gap-2 transition-colors ${inWishlist ? 'text-orange-500' : 'text-gray-700 hover:text-orange-500'} ${addingToWishlist ? 'opacity-50 pointer-events-none' : ''}`}
+                  disabled={addingToWishlist}
                 >
-                  <Heart size={18} />
-                  <span className="text-sm">Add to wishlist</span>
+                  <Heart size={18} fill={inWishlist ? 'orange' : 'none'} />
+                  <span className="text-sm">
+                    {inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+                  </span>
                 </button>
               </div>
 

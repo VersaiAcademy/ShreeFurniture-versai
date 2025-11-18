@@ -61,7 +61,7 @@ const Login = () => {
         <div className="flex items-center gap-5 flex-col md:flex-row md:p-0">
           <div className="w-full md:w-1/3">
             <img
-              src="/images/login-bg.jpg"
+              src="/dining/Login Page Banner (1280x720Pxl.).png"
               alt=""
               className="object-cover w-full h-40 md:h-[35rem] md:w-full rounded-t-lg md:rounded-none"
             />

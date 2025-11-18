@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, ShoppingCart, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import API from '../utils/api';
 import Loader from './Loader';
 
@@ -9,11 +10,14 @@ const RecommendedProducts = () => {
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(5);
   const [imageErrors, setImageErrors] = useState({});
+  const [wishlistItems, setWishlistItems] = useState(new Set());
+  const [addingToWishlist, setAddingToWishlist] = useState({});
   const navigate = useNavigate();
 
   // Base URL from environment or default
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://shreefurniture-backend-production.up.railway.app';
 
+  // ✅ Fetch products and wishlist on mount
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -21,6 +25,18 @@ const RecommendedProducts = () => {
         const response = await API.get('/api/products?limit=20&page=1');
         console.log('✅ Products fetched:', response.data.products);
         setProducts(response.data.products || []);
+        
+        // Fetch wishlist if user is logged in
+        const token = localStorage.getItem('token');
+        if (token) {
+          try {
+            const wishlistRes = await API.get('/api/wishlist');
+            const wishlistIds = new Set(wishlistRes.data.wishlist.map(item => item.product._id));
+            setWishlistItems(wishlistIds);
+          } catch (err) {
+            console.warn('Could not fetch wishlist:', err);
+          }
+        }
       } catch (error) {
         console.error('❌ Error fetching recommended products:', error);
         setProducts([]);
@@ -37,12 +53,55 @@ const RecommendedProducts = () => {
   };
 
   const handleProductClick = (productId) => {
-    navigate(`/dtproduct/${productId}`);
+  navigate(`/detaileproduct/${productId}`);
   };
 
   const handleImageError = (productId, imageUrl) => {
     console.error(`❌ Image failed to load for product ${productId}:`, imageUrl);
     setImageErrors(prev => ({ ...prev, [productId]: true }));
+  };
+
+  // ✅ Handle add/remove from wishlist
+  const handleAddToWishlist = async (e, productId) => {
+    e.stopPropagation();
+    
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.warning('Please login to add items to wishlist');
+      navigate('/login');
+      return;
+    }
+
+    if (addingToWishlist[productId]) return;
+
+    try {
+      setAddingToWishlist(prev => ({ ...prev, [productId]: true }));
+
+      if (wishlistItems.has(productId)) {
+        // Remove from wishlist
+        await API.delete(`/api/wishlist/${productId}`);
+        setWishlistItems(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(productId);
+          return newSet;
+        });
+        toast.success('Removed from wishlist');
+      } else {
+        // Add to wishlist
+        await API.post('/api/wishlist', { product: productId });
+        setWishlistItems(prev => new Set(prev).add(productId));
+        toast.success('Added to wishlist');
+      }
+    } catch (error) {
+      console.error('❌ Wishlist error:', error);
+      if (error.response?.status === 400) {
+        toast.info(error.response.data.message || 'Already in wishlist');
+      } else {
+        toast.error('Failed to update wishlist');
+      }
+    } finally {
+      setAddingToWishlist(prev => ({ ...prev, [productId]: false }));
+    }
   };
 
   // ✅ Improved image URL handler
@@ -159,14 +218,19 @@ const RecommendedProducts = () => {
                 
                 {/* Wishlist Button */}
                 <button
-                  className="absolute top-2 left-2 bg-white p-2 rounded-full shadow hover:bg-orange-50 transition-colors z-10"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    alert('Added to wishlist!');
-                  }}
-                  aria-label="Add to wishlist"
+                  className={`absolute top-2 left-2 p-2 rounded-full shadow transition-all z-10 ${
+                    wishlistItems.has(product._id)
+                      ? 'bg-red-100 hover:bg-red-200'
+                      : 'bg-white hover:bg-orange-50'
+                  }`}
+                  onClick={(e) => handleAddToWishlist(e, product._id)}
+                  disabled={addingToWishlist[product._id]}
+                  aria-label={wishlistItems.has(product._id) ? 'Remove from wishlist' : 'Add to wishlist'}
                 >
-                  <Heart size={18} className="text-red-500" />
+                  <Heart 
+                    size={18} 
+                    className={wishlistItems.has(product._id) ? 'fill-red-500 text-red-500' : 'text-red-500'} 
+                  />
                 </button>
               </div>
 
