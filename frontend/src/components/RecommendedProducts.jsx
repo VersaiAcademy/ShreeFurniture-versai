@@ -53,8 +53,8 @@ const RecommendedProducts = () => {
     // common fields
     candidates.push(product.img1, product.img2, product.img3, product.img4, product.img5);
     candidates.push(product.image, product.img, product.images && product.images[0]);
-    // variant fields
-    candidates.push(product.stone_finish_image, product.stone_finish_img2, product.natural_finish_image, product.natural_finish_img2);
+  // variant fields - prefer natural finish first, then stone
+  candidates.push(product.natural_finish_image, product.natural_finish_img2, product.stone_finish_image, product.stone_finish_img2);
     // sometimes uploaded fields may have capitalized keys or different naming
     candidates.push(product.Image, product.ImageUrl, product.imageUrl);
 

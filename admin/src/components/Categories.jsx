@@ -35,6 +35,11 @@ const Categories = () => {
     e.preventDefault();
     
     const token = localStorage.getItem('adminToken');
+    if (!token) {
+      alert('You must be logged in as admin to perform this action.');
+      window.location.href = '/';
+      return;
+    }
     
     try {
       if (editingCategory) {
@@ -52,8 +57,10 @@ const Categories = () => {
       resetForm();
       loadCategories();
     } catch (error) {
+      // Log detailed error for debugging
       console.error('Failed to save category:', error);
-      alert('Failed to save category. Please try again.');
+      const serverMsg = error?.response?.data?.message || error?.response?.data || error.message;
+      alert(`Failed to save category: ${serverMsg}`);
     }
   };
 

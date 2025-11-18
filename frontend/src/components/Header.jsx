@@ -187,18 +187,18 @@ const Header = () => {
         }
       ]
     },
-    'Custom Furniture': {
-      sections: [
-        {
-          title: 'CUSTOM OPTIONS',
-          items: ['Custom Sofas', 'Custom Wardrobes', 'Bespoke Tables']
-        },
-        {
-          title: 'CONSULTATION',
-          items: ['Design Consultation', 'Measure & Quote']
-        }
-      ]
-    },
+    // 'Custom Furniture': {
+    //   sections: [
+    //     {
+    //       title: 'CUSTOM OPTIONS',
+    //       items: ['Custom Sofas', 'Custom Wardrobes', 'Bespoke Tables']
+    //     },
+    //     {
+    //       title: 'CONSULTATION',
+    //       items: ['Design Consultation', 'Measure & Quote']
+    //     }
+    //   ]
+    // },
     'Home Furnishing': {
       sections: [
         {

@@ -27,6 +27,9 @@ const DetailProduct = () => {
   const [activeImageSet, setActiveImageSet] = useState('natural'); // Default to 'natural'
   const [selectedImage, setSelectedImage] = useState('');
 
+  // State for Size Selection (Beds/Sofas/Dining)
+  const [selectedSize, setSelectedSize] = useState('');
+
   // State for Pincode Check
   const [pincode, setPincode] = useState('');
   const [deliveryInfo, setDeliveryInfo] = useState({ available: null, message: '' });
@@ -113,6 +116,7 @@ const DetailProduct = () => {
       setSimilarLoading(false);
     }
   };
+
   // Small stars renderer used in multiple places
   const RatingStars = ({ rating = 0 }) => {
     const count = Math.max(0, Number(rating) || 0);
@@ -124,6 +128,7 @@ const DetailProduct = () => {
       </div>
     );
   };
+
   const toggleSection = (section) => {
     setExpandedSections((prev) => ({
       ...prev,
@@ -218,6 +223,47 @@ const DetailProduct = () => {
     setSelectedImage(imageSet[0]);
     setActiveImageSet(finishType);
   };
+
+  // --- Size Selection Handler ---
+  const handleSizeClick = (size) => {
+    setSelectedSize(size);
+    
+    // ✅ Check if admin has set a custom URL for this size
+    if (product.size_urls && product.size_urls[size]) {
+      navigate(product.size_urls[size]);
+      return;
+    }
+
+    // Fallback: Build a category-based slug (keep original words, hyphenate)
+    const rawCategory = (product.category || 'products').toString().toLowerCase();
+    const slug = rawCategory.replace(/\s+/g, '-');
+
+    // For Beds, Sofas and Dining we want custom query param names so the product list
+    // can distinguish the intent. Other categories will use `size` param.
+    let paramName = 'size';
+    if (rawCategory.includes('bed')) paramName = 'bed_size';
+    else if (rawCategory.includes('sofa')) paramName = 'sofa_size';
+    else if (rawCategory.includes('dining')) paramName = 'dining_size';
+
+    const url = `/${slug}?${paramName}=${encodeURIComponent(size)}`;
+    navigate(url);
+  };
+
+  // --- Get Size Options Based on Category ---
+  const getSizeOptions = () => {
+    const category = product?.category?.toLowerCase() || '';
+    
+    if (category.includes('bed')) {
+      return ['King Size', 'Queen Size', 'Single'];
+    } else if (category.includes('sofa')) {
+      return ['1 Seater', '3 Seater', 'Sofa Set'];
+    } else if (category.includes('dining')) {
+      return ['4 Seater', '6 Seater'];
+    }
+    return [];
+  };
+
+  const sizeOptions = getSizeOptions();
 
   // --- Pincode Logic ---
   const handlePincodeCheck = async () => {
@@ -407,12 +453,12 @@ const DetailProduct = () => {
               </div>
 
               {/* BANNER SECTION */}
-                  <div className="mt-6">
+              <div className="mt-6">
                 <div className="bg-gray-200 h-24 rounded-lg flex items-center justify-center overflow-hidden">
                   <img 
                     src="/Sri/2624x308 Pixle.jpg" 
                     alt="Discount Banner" 
-                        className="w-full h-full object-cover" 
+                    className="w-full h-full object-cover" 
                   />
                 </div>
               </div>
@@ -482,6 +528,31 @@ const DetailProduct = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Size Selection (for Beds, Sofas, Dining) */}
+              {sizeOptions.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-semibold mb-3 text-gray-900">Select Size:</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {sizeOptions.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => handleSizeClick(size)}
+                        className={`px-6 py-3 rounded-lg font-medium transition-all border-2 ${
+                          selectedSize === size
+                            ? 'bg-orange-500 text-white border-orange-500 shadow-md'
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-orange-400 hover:bg-orange-50'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Click on a size to view similar {product.category} products
+                  </p>
                 </div>
               )}
 

@@ -70,7 +70,7 @@ const Detailedorder = () => {
         align: "left",
       });
 
-      const productsData = [["", item.product.pname, item.product.price]];
+    const productsData = [["", item.product.pname, item.product.price]];
 
       const productTable = doc.autoTable({
         startY: startY + 90,
@@ -83,10 +83,11 @@ const Detailedorder = () => {
           padding: { top: 2, bottom: 2 },
         },
         didDrawCell: (data) => {
-          if (data.column.index === 0 && data.cell.section === "body") {
+            if (data.column.index === 0 && data.cell.section === "body") {
             const imageSize = 40;
+            const displayImage = item.product.natural_finish_image || item.product.stone_finish_image || item.product.img1 || item.product.image || '';
             doc.addImage(
-              item.product.img1,
+              displayImage,
               "JPEG",
               data.cell.x + 2,
               data.cell.y + 2,
@@ -96,7 +97,7 @@ const Detailedorder = () => {
               "FAST",
               function (success) {
                 if (!success) {
-                  console.error("Failed to load image:", item.product.img1);
+                  console.error("Failed to load image:", displayImage);
                 }
               }
             );
@@ -239,11 +240,17 @@ const Detailedorder = () => {
               <div className="pt-3 pb-3 px-5 md:pb-10 flex flex-col justify-between items-center gap-5 w-auto ">
                 {/* cards */}
                 <div className="shadow-md border rounded-md p-2 flex items-center justify-between hover:border-orange-400 cursor-pointer gap-10 w-auto md:w-[85rem] h-auto md:h-60">
-                  <img
-                    src={item.product.img1}
-                    alt=""
-                    className="w-32 md:w-52"
-                  />
+                  {(() => {
+                    const displayImage = item.product.natural_finish_image || item.product.stone_finish_image || item.product.img1 || item.product.image || '';
+                    return (
+                      <img
+                        src={displayImage}
+                        alt=""
+                        className="w-32 md:w-52"
+                        onError={(e) => e.target.src = 'https://via.placeholder.com/200x150?text=No+Image'}
+                      />
+                    );
+                  })()}
                   <div>
                     <h1 className="capitalize text-sm font-semibold">
                       {item.product.pname}

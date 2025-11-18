@@ -3,6 +3,8 @@ import axios from 'axios';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -28,6 +30,7 @@ const Products = () => {
     seater: '',
     mattress_size: '', // NEW FIELD: Mattress Size
     caring: '', // NEW FIELD: Caring Instructions
+    size_urls: {}, // NEW FIELD: Size-specific custom URLs (e.g., { "King Size": "/beds?bed_size=King Size" })
     features: '',
     pack_content: '',
     delivery_condition: 'Knocked Down',
@@ -187,6 +190,7 @@ const Products = () => {
       seater: formData.seater.trim(),
       mattress_size: formData.mattress_size.trim(),
       caring: formData.caring.trim() || 'Professional Cleaning Only',
+      size_urls: formData.size_urls || {}, // Include size URLs in submission
       features: formData.features.trim(),
       pack_content: formData.pack_content.trim(),
       delivery_condition: formData.delivery_condition.trim(),
@@ -312,6 +316,7 @@ const Products = () => {
       size: '', seater: '', features: '', pack_content: '',
       mattress_size: '', // NEW
       caring: '', // NEW
+      size_urls: {}, // NEW: Size-specific URLs
       delivery_condition: 'Knocked Down', dispatch_in: '10-12 Days',
       customization: 'Customized can be as per requirement.',
       note: 'If a board is required, we use MDF instead of plywood',
@@ -373,6 +378,7 @@ const Products = () => {
       seater: product.seater || '',
       mattress_size: product.mattress_size || '',
       caring: product.caring || '',
+      size_urls: product.size_urls || {}, // Load existing size URLs
       features: product.features || '',
       pack_content: product.pack_content || '',
       delivery_condition: product.delivery_condition || 'Knocked Down',
@@ -433,10 +439,13 @@ const Products = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('adminToken');
-      const res = await axios.get(`/api/admin/products`, {
+      // Fetch ALL products without pagination limit for admin edit view
+      const res = await axios.get(`/api/admin/products?limit=10000`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setProducts(res.data.products || res.data || []);
+      const allProducts = res.data.products || res.data || [];
+      setProducts(allProducts);
+      setFilteredProducts(allProducts);
     } catch (err) {
       console.error('Failed to load products:', err);
       alert('Failed to load products');
@@ -444,6 +453,22 @@ const Products = () => {
       setLoading(false);
     }
   };
+
+  // Filter products by search query
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setFilteredProducts(products);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = products.filter(p => 
+        p.pname?.toLowerCase().includes(query) ||
+        p.brand?.toLowerCase().includes(query) ||
+        p.category?.toLowerCase().includes(query) ||
+        p.sku?.toLowerCase().includes(query)
+      );
+      setFilteredProducts(filtered);
+    }
+  }, [searchQuery, products]);
 
   useEffect(() => {
     // initial load
@@ -573,6 +598,70 @@ const Products = () => {
                   <label>Fabric Color (Optional, e.g., for sofas)</label>
                   <input type="text" name="fabric_color" value={formData.fabric_color} onChange={handleInputChange} placeholder="Ivory, Grey, Blue" />
                 </div>
+              </div>
+
+              {/* Size-specific URLs Section */}
+              <div className="form-section">
+                <h4>📌 Size-Specific URLs (Optional - for Beds, Sofas, Dining)</h4>
+                <p style={{fontSize: '12px', color: '#666', marginBottom: '12px'}}>
+                  Add custom URLs for each size. Example: King Size → /beds?bed_size=King Size
+                </p>
+                <div id="size-urls-container" style={{marginBottom: '12px'}}>
+                  {formData.size_urls && Object.entries(formData.size_urls).map(([size, url], idx) => (
+                    <div key={`size-url-${idx}`} style={{display: 'grid', gridTemplateColumns: '1fr 1.5fr 50px', gap: '8px', marginBottom: '8px', alignItems: 'center'}}>
+                      <input 
+                        type="text" 
+                        placeholder="Size (e.g., King Size)" 
+                        value={size}
+                        onChange={(e) => {
+                          const newUrls = {...formData.size_urls};
+                          delete newUrls[size];
+                          newUrls[e.target.value] = url;
+                          setFormData({...formData, size_urls: newUrls});
+                        }}
+                        style={{padding: '8px', border: '1px solid #ddd', borderRadius: '4px'}}
+                      />
+                      <input 
+                        type="text" 
+                        placeholder="URL (e.g., /beds?bed_size=King Size)" 
+                        value={url}
+                        onChange={(e) => {
+                          const newUrls = {...formData.size_urls};
+                          newUrls[size] = e.target.value;
+                          setFormData({...formData, size_urls: newUrls});
+                        }}
+                        style={{padding: '8px', border: '1px solid #ddd', borderRadius: '4px'}}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newUrls = {...formData.size_urls};
+                          delete newUrls[size];
+                          setFormData({...formData, size_urls: newUrls});
+                        }}
+                        style={{padding: '8px', background: '#FF6B6B', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newSize = `Size ${Object.keys(formData.size_urls || {}).length + 1}`;
+                    setFormData({
+                      ...formData, 
+                      size_urls: {
+                        ...formData.size_urls,
+                        [newSize]: ''
+                      }
+                    });
+                  }}
+                  style={{padding: '8px 12px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px'}}
+                >
+                  + Add Size URL
+                </button>
               </div>
             </div>
 
@@ -755,12 +844,33 @@ const Products = () => {
 
       {/* Product List */}
       <div className="card">
-        <h3>📦 All Products ({products.length})</h3>
-        {products.length === 0 ? (
+        <div className="flex justify-between items-center mb-4">
+          <h3>📦 All Products ({filteredProducts.length})</h3>
+          <div style={{flex: 1, marginLeft: '20px'}}>
+            <input 
+              type="text" 
+              placeholder="🔍 Search by name, brand, category or SKU..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                maxWidth: '400px',
+                padding: '10px 12px',
+                border: '1px solid #D1D5DB',
+                borderRadius: '6px',
+                fontSize: '14px',
+                boxSizing: 'border-box'
+              }}
+            />
+          </div>
+        </div>
+        {filteredProducts.length === 0 ? (
           <div className="no-products-message">
             <p className="text-5xl">📦</p>
-            <h4>No products found</h4>
-            <p className="text-gray-600">Click '+ Add Product' to get started.</p>
+            <h4>{searchQuery.trim() !== '' ? 'No products found matching your search' : 'No products found'}</h4>
+            <p className="text-gray-600">
+              {searchQuery.trim() !== '' ? 'Try a different search query' : 'Click \'+ Add Product\' to get started.'}
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -777,7 +887,7 @@ const Products = () => {
                 </tr>
               </thead>
               <tbody>
-                {products.map(p => (
+                {filteredProducts.map(p => (
                   <tr key={p._id}>
                     <td>
                       {(() => {

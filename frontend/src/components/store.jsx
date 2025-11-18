@@ -77,14 +77,9 @@ export default function StoreLocator() {
      {
       name: "Satyun Art Export",
       image: "/Sri/satyyun art export.png",
-      location: "https://maps.google.com/?q=Pune+India"
+      location: "https://www.google.com/maps/place/Satyun+Handicrafts+-+Satyun/data=!4m2!3m1!1s0x0:0xe69db63cf2566155?sa=X&ved=1t:2428&ictx=111"
     },
-     {
-      name: "Satyun Art Export",
-      image: "/Sri/satyyun art export.png",
-      location: "https://maps.google.com/?q=Pune+India"
-    },
-
+    
   ];
 
   const displayedStores = showAll ? stores : stores.slice(0, 6);

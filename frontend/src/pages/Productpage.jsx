@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faHeart, 
@@ -27,6 +27,8 @@ const Productpage = () => {
   const [priceRange, setPriceRange] = useState([0, 200000]);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedSeaters, setSelectedSeaters] = useState([]);
+  // size filter coming from query (bed_size, sofa_size, dining_size, size)
+  const [selectedSizeFilter, setSelectedSizeFilter] = useState('');
   const [sortBy, setSortBy] = useState('recommended');
   const [viewMode, setViewMode] = useState('grid');
   
@@ -46,6 +48,25 @@ const Productpage = () => {
       fetchProductsBySlug(slug);
     }
   }, [slug]);
+
+  // Read query params (size filters) from URL and set initial filters
+  const location = useLocation();
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const bedSize = params.get('bed_size');
+    const sofaSize = params.get('sofa_size');
+    const diningSize = params.get('dining_size');
+    const genericSize = params.get('size');
+
+    const sizeFromQuery = bedSize || sofaSize || diningSize || genericSize || '';
+    if (sizeFromQuery) {
+      setSelectedSizeFilter(sizeFromQuery);
+      // If the size looks like a seater option, also mark it in seater filters so UI reflects it
+      if (seaterOptions.some(s => s.toLowerCase() === sizeFromQuery.toLowerCase())) {
+        setSelectedSeaters([sizeFromQuery]);
+      }
+    }
+  }, [location.search]);
 
   useEffect(() => {
     applyFilters();
@@ -100,6 +121,16 @@ const Productpage = () => {
       filtered = filtered.filter(p => 
         selectedSeaters.some(seater => p.pname.toLowerCase().includes(seater.toLowerCase()))
       );
+    }
+
+    // Size filter from query or selection - match product.size or pname
+    if (selectedSizeFilter) {
+      const q = selectedSizeFilter.toLowerCase();
+      filtered = filtered.filter(p => {
+        const sizeField = (p.size || '').toString().toLowerCase();
+        const pname = (p.pname || '').toString().toLowerCase();
+        return sizeField.includes(q) || pname.includes(q);
+      });
     }
 
     // Sorting
@@ -422,19 +453,9 @@ const Productpage = () => {
                     {/* Image Container */}
                     <div className="relative overflow-hidden aspect-[4/3]">
                       {(() => {
-                        // Get main image or first variant image
-                        let displayImage = product.img1;
-                        
-                        // If no main image, use first Stone finish image
-                        if (!displayImage && product.stone_finish_image) {
-                          displayImage = product.stone_finish_image;
-                        }
-                        
-                        // If no Stone image, use first Natural finish image
-                        if (!displayImage && product.natural_finish_image) {
-                          displayImage = product.natural_finish_image;
-                        }
-                        
+                        // Prefer natural finish image as primary, then stone finish, then img1, then a generic image
+                        const displayImage = product.natural_finish_image || product.stone_finish_image || product.img1 || product.image || (product.images && product.images[0]) || '';
+
                         return (
                           <img
                             src={displayImage}

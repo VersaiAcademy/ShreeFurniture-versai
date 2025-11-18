@@ -197,7 +197,12 @@ const Cart = () => {
                       <div key={item._id}>
                         <div className="pt-3 flex flex-col sm:flex-row justify-start items-center px-2 pb-2 gap-4">
                           <div className="w-32 h-28 flex-shrink-0">
-                            <img src={item.product.img1} alt="" className="w-full h-full object-cover" />
+                            {(() => {
+                              const displayImage = item.product.natural_finish_image || item.product.stone_finish_image || item.product.img1 || item.product.image || '';
+                              return (
+                                <img src={displayImage} alt="" className="w-full h-full object-cover" onError={(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'} />
+                              );
+                            })()}
                           </div>
                           <div className="flex-1">
                             <h2 className="text-sm font-semibold cursor-pointer hover:text-orange-300">
