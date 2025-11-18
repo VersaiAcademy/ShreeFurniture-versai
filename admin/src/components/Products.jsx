@@ -46,20 +46,28 @@ const Products = () => {
     img5: '',
     imageFiles: [],
     
-    // NEW VARIANT IMAGE FIELDS (4 per finish)
-    stoneFinishFiles: [],
-    naturalFinishFiles: [],
-    stone_finish_image: '',
-    stone_finish_img2: '',
-    stone_finish_img3: '',
-    stone_finish_img4: '',
-    natural_finish_image: '',
-    natural_finish_img2: '',
-    natural_finish_img3: '',
-    natural_finish_img4: '',
-    imagePreviews: [],
-    stoneFinishPreviews: [],
-    naturalFinishPreviews: [],
+  // NEW VARIANT IMAGE FIELDS (8 per finish)
+  stoneFinishFiles: [],
+  naturalFinishFiles: [],
+  stone_finish_image: '',
+  stone_finish_img2: '',
+  stone_finish_img3: '',
+  stone_finish_img4: '',
+  stone_finish_img5: '',
+  stone_finish_img6: '',
+  stone_finish_img7: '',
+  stone_finish_img8: '',
+  natural_finish_image: '',
+  natural_finish_img2: '',
+  natural_finish_img3: '',
+  natural_finish_img4: '',
+  natural_finish_img5: '',
+  natural_finish_img6: '',
+  natural_finish_img7: '',
+  natural_finish_img8: '',
+  imagePreviews: [],
+  stoneFinishPreviews: [],
+  naturalFinishPreviews: [],
   });
 
   // Local preview states (used for image preview UI)
@@ -103,8 +111,8 @@ const Products = () => {
   // Helper function to handle MULTIPLE variant image selection
   const handleVariantImageChange = (e, finishType) => {
     const files = Array.from(e.target.files);
-    if (files.length > 4) {
-      alert('Maximum 4 variant images allowed');
+    if (files.length > 8) {
+      alert('Maximum 8 variant images allowed');
       return;
     }
 
@@ -705,7 +713,7 @@ const Products = () => {
 
             {/* Images - COLOR VARIANTS with REORDERING */}
             <div className="form-section">
-              <h4>🎨 Stone Finish Images (Max 4) - Drag to Reorder *</h4>
+              <h4>🎨 Stone Finish Images (Max 8) - Drag to Reorder *</h4>
               <div className="form-group">
                 <input 
                   type="file" 
@@ -767,7 +775,7 @@ const Products = () => {
                 )}
               </div>
 
-              <h4>🎨 Natural Finish Images (Max 4) - Drag to Reorder *</h4>
+              <h4>🎨 Natural Finish Images (Max 8) - Drag to Reorder *</h4>
               <div className="form-group">
                 <input 
                   type="file" 

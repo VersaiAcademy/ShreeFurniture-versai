@@ -55,13 +55,7 @@ const DetailProduct = () => {
     if (!product?._id) return;
     setAddingToWishlist(true);
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast.info('Please login to add to wishlist');
-        setAddingToWishlist(false);
-        return;
-      }
-      await API.post(`/api/wishlist/add`, { productId: product._id });
+      await API.post('/api/wishlist', { product: product._id });
       setInWishlist(true);
       toast.success('Added to wishlist!');
     } catch (err) {
@@ -75,13 +69,7 @@ const DetailProduct = () => {
     if (!product?._id) return;
     setAddingToWishlist(true);
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast.info('Please login to remove from wishlist');
-        setAddingToWishlist(false);
-        return;
-      }
-      await API.post(`/api/wishlist/remove`, { productId: product._id });
+      await API.delete(`/api/wishlist/${product._id}`);
       setInWishlist(false);
       toast.success('Removed from wishlist');
     } catch (err) {

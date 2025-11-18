@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // ✅ Get API base URL from environment
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL  || 'https://shreefurniture-backend-production.up.railway.app';;
+const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 console.log('🌐 API Base URL:', API_BASE_URL);
 
