@@ -16,6 +16,7 @@ import API from '../utils/api';
 const Productpage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -39,18 +40,27 @@ const Productpage = () => {
 
   // Material options (from products)
   const [materials, setMaterials] = useState([]);
+  // Wishlist state: store product IDs in a Set for quick lookup
+  const [userWishlistIds, setUserWishlistIds] = useState(new Set());
+  const [wishlistLoadingMap, setWishlistLoadingMap] = useState({});
   
   // Seater options
   const seaterOptions = ['3 Seater', '3+1+1 Seater', '2 Seater', '5 Seater', '6 Seater'];
 
   useEffect(() => {
+    // If search query present in URL, perform search; else if slug present fetch by slug
+    const params = new URLSearchParams(location.search);
+    const searchParam = params.get('search') || params.get('q');
+    if (searchParam) {
+      fetchProductsBySearch(searchParam);
+      return;
+    }
     if (slug) {
       fetchProductsBySlug(slug);
     }
-  }, [slug]);
+  }, [slug, location.search]);
 
   // Read query params (size filters) from URL and set initial filters
-  const location = useLocation();
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const bedSize = params.get('bed_size');
@@ -72,6 +82,29 @@ const Productpage = () => {
     applyFilters();
   }, [products, fastDelivery, priceRange, selectedMaterials, selectedSeaters, sortBy]);
 
+  // Load user's wishlist IDs when component mounts (if logged in)
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const fetchWishlist = async () => {
+      try {
+        const res = await API.get('/api/wishlist');
+        const items = Array.isArray(res.data) ? res.data : (res.data.wishlist || []);
+        const ids = new Set(items.map(i => {
+          // wishlist item may embed product or just reference id
+          if (i.product && typeof i.product === 'object') return i.product._id || i.product.id;
+          return i.product || i._id || i.id;
+        }));
+        setUserWishlistIds(ids);
+      } catch (err) {
+        console.error('Failed to load wishlist:', err);
+      }
+    };
+
+    fetchWishlist();
+  }, []);
+
   const fetchProductsBySlug = async (categorySlug) => {
     setLoading(true);
     setError("");
@@ -90,6 +123,29 @@ const Productpage = () => {
     } catch (err) {
       console.error("❌ Failed to fetch products:", err);
       setError("Failed to load products. Please try again later.");
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchProductsBySearch = async (query) => {
+    setLoading(true);
+    setError("");
+    try {
+      console.log("🔍 Searching products for:", query);
+      const res = await API.get(`/api/products`, { params: { search: query } });
+      const productsData = Array.isArray(res.data) ? res.data : (res.data.products || []);
+      setProducts(productsData);
+
+      // Extract unique materials
+      const uniqueMaterials = [...new Set(productsData.map(p => p.material).filter(Boolean))];
+      setMaterials(uniqueMaterials.map((m) => ({ name: m, count: productsData.filter(p => p.material === m).length })));
+
+      console.log("✅ Search results loaded:", productsData.length);
+    } catch (err) {
+      console.error("❌ Failed to search products:", err);
+      setError("Failed to search products. Please try again later.");
       setProducts([]);
     } finally {
       setLoading(false);
@@ -206,7 +262,7 @@ const Productpage = () => {
     }
   };
 
-  const handleAddToWishlist = (e, product) => {
+  const handleAddToWishlist = async (e, product) => {
     e.stopPropagation();
     const token = localStorage.getItem('token');
     if (!token) {
@@ -214,7 +270,38 @@ const Productpage = () => {
       navigate('/login');
       return;
     }
-    toast.info('Wishlist feature coming soon!');
+
+    const prodId = product._id;
+    // Prevent duplicate requests
+    if (wishlistLoadingMap[prodId]) return;
+
+    const currentlyHas = userWishlistIds.has(prodId);
+    const prevSet = new Set(userWishlistIds);
+
+    // Optimistic UI update
+    const newSet = new Set(prevSet);
+    if (currentlyHas) newSet.delete(prodId); else newSet.add(prodId);
+    setUserWishlistIds(newSet);
+    setWishlistLoadingMap(prev => ({ ...prev, [prodId]: true }));
+
+    try {
+      if (!currentlyHas) {
+        const res = await API.post('/api/wishlist', { product: prodId });
+        toast.success(res.data.message || 'Added to wishlist');
+        try { window.dispatchEvent(new Event('wishlistUpdated')); } catch (e) { }
+      } else {
+        const res = await API.delete(`/api/wishlist/${prodId}`);
+        toast.success(res.data.message || 'Removed from wishlist');
+        try { window.dispatchEvent(new Event('wishlistUpdated')); } catch (e) { }
+      }
+    } catch (err) {
+      console.error('Failed to toggle wishlist:', err);
+      // Revert optimistic update
+      setUserWishlistIds(prevSet);
+      toast.error(err.response?.data?.message || 'Failed to update wishlist');
+    } finally {
+      setWishlistLoadingMap(prev => { const copy = { ...prev }; delete copy[prodId]; return copy; });
+    }
   };
 
   const renderStars = (rating) => {
@@ -470,9 +557,9 @@ const Productpage = () => {
                       {/* Wishlist Button */}
                       <button
                         onClick={(e) => handleAddToWishlist(e, product)}
-                        className="absolute top-3 right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-orange-500 hover:text-white transition z-10"
+                        className={`absolute top-3 right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg transition z-10 ${wishlistLoadingMap[product._id] ? 'opacity-60 cursor-wait' : 'hover:bg-orange-500 hover:text-white'}`}
                       >
-                        <FontAwesomeIcon icon={faHeart} />
+                        <FontAwesomeIcon icon={faHeart} className={userWishlistIds.has(product._id) ? 'text-red-500' : 'text-gray-500'} />
                       </button>
 
                       {/* Badges */}

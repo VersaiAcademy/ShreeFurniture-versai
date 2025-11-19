@@ -53,11 +53,19 @@ const DetailProduct = () => {
   // --- Wishlist Handlers ---
   const handleAddToWishlist = async () => {
     if (!product?._id) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.warning('Please login to add to wishlist');
+      navigate('/login');
+      return;
+    }
     setAddingToWishlist(true);
     try {
       await API.post('/api/wishlist', { product: product._id });
       setInWishlist(true);
       toast.success('Added to wishlist!');
+      // notify other parts of the app to refresh wishlist state
+      try { window.dispatchEvent(new Event('wishlistUpdated')); } catch (e) { }
     } catch (err) {
       toast.error('Could not add to wishlist');
     } finally {
@@ -67,11 +75,18 @@ const DetailProduct = () => {
 
   const handleRemoveFromWishlist = async () => {
     if (!product?._id) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.warning('Please login to manage wishlist');
+      navigate('/login');
+      return;
+    }
     setAddingToWishlist(true);
     try {
       await API.delete(`/api/wishlist/${product._id}`);
       setInWishlist(false);
       toast.success('Removed from wishlist');
+      try { window.dispatchEvent(new Event('wishlistUpdated')); } catch (e) { }
     } catch (err) {
       toast.error('Could not remove from wishlist');
     } finally {
@@ -135,6 +150,8 @@ const DetailProduct = () => {
     };
 
     if (id) {
+      // Ensure we start at top when loading a new product
+      try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0,0); }
       fetchProduct();
     }
   }, [id]);
@@ -999,11 +1016,11 @@ const DetailProduct = () => {
               const itemFinalPrice = itemDiscountedPrice.toLocaleString('en-IN');
 
               return (
-                <div 
-                  key={item._id || item.id} 
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
-                  onClick={() => window.location.href = `/dtproduct/${item._id || item.id}`}
-                >
+                  <div 
+                    key={item._id || item.id} 
+                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
+                    onClick={() => navigate(`/dtproduct/${item._id || item.id}`)}
+                  >
                   <div className="relative">
                     <img
                       src={item.img1 || item.natural_finish_image || item.stone_finish_image || 'https://via.placeholder.com/400x300?text=No+Image'}

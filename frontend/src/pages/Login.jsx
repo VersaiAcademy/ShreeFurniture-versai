@@ -119,7 +119,16 @@ const Login = () => {
             <hr />
             <p className="text-center pt-3 text-gray-500 items-center">
               OR Continue With{" "}
-              <span className="text-orange-300 hover:text-orange-700 text-xl cursor-pointer">
+              <span
+                role="button"
+                onClick={() => {
+                  // Initiate server-side Google OAuth
+                  const base = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '';
+                  const url = (base ? base.replace(/\/$/, '') : '') + '/api/auth/google';
+                  window.location.href = url;
+                }}
+                className="text-orange-300 hover:text-orange-700 text-xl cursor-pointer"
+              >
                 <FontAwesomeIcon icon={faGoogle} />
               </span>{" "}
               <FontAwesomeIcon

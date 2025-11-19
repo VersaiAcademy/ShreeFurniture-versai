@@ -25,24 +25,45 @@ const Cart = () => {
     if (!token || !id) {
       navigate("/login");
       toast.warning("Login To Continue");
-    } else {
-      const getCartItem = async () => {
-        try {
-          setLoading(true);
-          const response = await axios.get(`/api/cart/`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true,
-          });
-          setCartItems([response.data]);
-          setLoading(false);
-        } catch (error) {
-          console.error("Error fetching cart item:", error);
-        }
-      };
-      getCartItem();
+      return;
     }
+
+    const getCartItem = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`/api/cart/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+        try {
+          console.log('📦 /api/cart response:', JSON.stringify(response.data, null, 2));
+        } catch (e) {
+          console.log('📦 /api/cart response (raw):', response.data);
+        }
+
+        // Normalize response to an array of cart items
+        let items = [];
+        if (Array.isArray(response.data)) items = response.data;
+        else if (Array.isArray(response.data.cart)) items = response.data.cart;
+        else if (Array.isArray(response.data.items)) items = response.data.items;
+        else if (Array.isArray(response.data.data)) items = response.data.data;
+        else if (Array.isArray(response.data.cartItems)) items = response.data.cartItems;
+        else if (response.data && typeof response.data === 'object') {
+          items = response.data.items || response.data.cart || response.data.data || [];
+        }
+
+        setCartItems([items]);
+      } catch (error) {
+        console.error("Error fetching cart item:", error);
+        setCartItems([[]]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getCartItem();
   }, [token, id, navigate]);
   useEffect(() => {
     if (cartItems && cartItems.length > 0) {
@@ -198,9 +219,36 @@ const Cart = () => {
                         <div className="pt-3 flex flex-col sm:flex-row justify-start items-center px-2 pb-2 gap-4">
                           <div className="w-32 h-28 flex-shrink-0">
                             {(() => {
-                              const displayImage = item.product.natural_finish_image || item.product.stone_finish_image || item.product.img1 || item.product.image || '';
+                              // Helper to pick best image from product or item
+                              const prod = item.product || {};
+                              const candidates = [
+                                prod.natural_finish_image,
+                                prod.natural_finish_img,
+                                prod.natural_finish_img2,
+                                prod.stone_finish_image,
+                                prod.stone_finish_img,
+                                prod.stone_finish_img2,
+                                prod.img1,
+                                prod.img2,
+                                prod.img3,
+                                prod.img4,
+                                prod.img5,
+                                prod.image,
+                                prod.images && prod.images[0],
+                                item.image,
+                                item.product_image,
+                              ];
+
+                              let displayImage = candidates.find(Boolean) || '';
+
+                              // If image is relative (starts with /) or missing protocol, prefix API base URL
+                              if (displayImage && !/^https?:\/\//i.test(displayImage)) {
+                                const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+                                displayImage = `${API_BASE.replace(/\/$/, '')}/${displayImage.replace(/^\//, '')}`;
+                              }
+
                               return (
-                                <img src={displayImage} alt="" className="w-full h-full object-cover" onError={(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'} />
+                                <img src={displayImage || 'https://via.placeholder.com/400x300?text=No+Image'} alt={item.product_name || ''} className="w-full h-full object-cover" onError={(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'} />
                               );
                             })()}
                           </div>

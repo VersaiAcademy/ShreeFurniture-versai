@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import Whislist from "./pages/Whislist";
 import DetaileProduct from "./pages/DetaileProduct";
 import UserProfile from "./pages/UserProfile";
+import OAuthCallback from "./pages/OAuthCallback";
 import { ToastContainer, Flip } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cart from "./pages/Cart";
@@ -45,7 +46,8 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/whishlist" element={<Whislist />} />
+        <Route path="/oauth-callback" element={<OAuthCallback />} />
+        <Route path="/wishlist" element={<Whislist />} />
   <Route path="/dtproduct/:id" element={<DetaileProduct />} />
   <Route path="/detaileproduct/:id" element={<DetaileProduct />} />
         <Route path="/userprofile" element={<UserProfile />} />

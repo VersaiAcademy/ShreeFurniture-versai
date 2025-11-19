@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Search, User, ShoppingCart, Menu, X, Heart, MapPin, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import API from '../utils/api';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -29,6 +30,26 @@ const Header = () => {
     window.addEventListener('storage', checkAuthStatus);
     return () => window.removeEventListener('storage', checkAuthStatus);
   }, []);
+
+  // Fetch wishlist count and listen for updates
+  useEffect(() => {
+    const fetchWishlistCount = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) { setWishlistCount(0); return; }
+        const res = await API.get('/api/wishlist');
+        const data = Array.isArray(res.data) ? res.data : (res.data.wishlist || res.data.items || []);
+        setWishlistCount(data.length);
+      } catch (err) {
+        console.warn('Could not fetch wishlist count:', err);
+      }
+    };
+
+    fetchWishlistCount();
+    const onUpdate = () => fetchWishlistCount();
+    window.addEventListener('wishlistUpdated', onUpdate);
+    return () => window.removeEventListener('wishlistUpdated', onUpdate);
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -59,17 +80,21 @@ const Header = () => {
     { _id: '5', name: 'Storage', slug: 'storage' },
     { _id: '6', name: 'Study & Office', slug: 'study-office' },
     { _id: '7', name: 'Custom Furniture', slug: 'custom-furnitures' },
-    // { _id: '8', name: 'Home Furnishing', slug: 'home-furnishing' }, // Uncommented
-    // { _id: '9', name: 'Lighting & Decor', slug: 'lighting-decor' }, // Uncommented
-    // { _id: '10', name: 'Interiors', slug: 'interiors' } // Uncommented
+    // { _id: '8', name: 'Home Furnishing', slug: 'home-furnishing' },
+    // { _id: '9', name: 'Lighting & Decor', slug: 'lighting-decor' },
+    // { _id: '10', name: 'Interiors', slug: 'interiors' }
   ]);
   
   const [activeMenu, setActiveMenu] = useState(null);
+  const [activeSubMenu, setActiveSubMenu] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeMobileSubmenu, setActiveMobileSubmenu] = useState({});
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [cartCount] = useState(3);
+  const [wishlistCount, setWishlistCount] = useState(0);
   const timeoutRef = useRef(null);
+  const subMenuTimeoutRef = useRef(null);
 
   // Consolidated slug map for deep links
   const slugMap = {
@@ -77,10 +102,8 @@ const Header = () => {
     'Fabric Sofas': 'fabric-sofas',
     'Wooden Sofas': 'wooden-sofas',
     '3 Seater Sofas': '3-seater-sofas',
-    // ... (rest of your existing slug map)
     'All Beds': 'all-beds',
     'Solid Wood Beds': 'solid-wood-beds',
-    // ... (rest of your existing slug map)
     'TV Units': 'tv-units',
     'Book Shelves': 'book-shelves',
     'Display Units': 'display-units',
@@ -110,11 +133,13 @@ const Header = () => {
       sections: [
         {
           title: 'SOFA SETS',
-          items: [ 'Wooden Sofas', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas']
+          items: [ 'Wooden Sofas','Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas'],
+          hasDropdown: true
         },
         {
-          title: 'Seating',
-          items: ['Wooden Diwan', 'Benaches', 'Wooden Stools' ]
+          title: 'SEATING',
+          items: ['Wooden Diwan', 'Benches', 'Stools' ],
+          hasDropdown: true
         }
       ]
     },
@@ -122,23 +147,27 @@ const Header = () => {
       sections: [
         {
           title: 'BEDS',
-          items: ['King Size Beds', 'Queen Size Beds', 'Double Beds', 'Single Beds',  'Hydraulic Storage Beds', 'Poster Beds', ]
+          items: ['King Size Beds', 'Queen Size Beds', 'Double Beds', 'Single Beds',  'Hydraulic Storage Beds', 'Poster Beds', ],
+          hasDropdown: true
         },
         {
-          title: 'Wardrobes',
-          items: ['1 Door Wardrobe', 'Queen Size Beds', 'Double Beds', 'Single Beds']
+          title: 'WARDROBES',
+          items: ['1 Door Wardrobe', '2 Door Wardrobe', '3 Door Wardrobe', '4 Door Wardrobe'],
+          hasDropdown: true
         }
       ]
     },
     'Living': {
       sections: [
         {
-          title: 'Living-Storage',
-          items: ['TV Units', 'Book Shelves', 'Display Units', 'Shoe Racks', 'Sideboards', 'Chest of Drawers']
+          title: 'LIVING STORAGE',
+          items: ['TV Units', 'Book Shelves', 'Display Units', 'Shoe Racks', 'Sideboards', 'Chest of Drawers'],
+          hasDropdown: true
         },
         {
           title: 'SEATING & CHAIRS',
-          items: ['Chairs', 'Stools', 'Benches', 'Swings']
+          items: ['Chairs', 'Stools', 'Benches', 'Swings'],
+          hasDropdown: true
         }
       ]
     },
@@ -146,15 +175,18 @@ const Header = () => {
       sections: [
         {
           title: 'DINING FURNITURE',
-          items: ['Dining Tables', '2 Seater Dining Sets','4 Seater Dining Sets','6 Seater Dining Sets', 'Dining Tables', 'Dining Chairs', 'Benaches']
+          items: ['Dining Tables', '2 Seater Dining Sets','4 Seater Dining Sets','6 Seater Dining Sets', 'Dining Chairs', 'Benches'],
+          hasDropdown: true
         },
         {
           title: 'KITCHEN FURNITURE' ,
-          items: [ 'Kitchen Cabinets & SideBoards' , 'Crockery Units', ]
+          items: [ 'Kitchen Cabinets & SideBoards' , 'Crockery Units', ],
+          hasDropdown: true
         },
          {
           title: 'KITCHENWARE' ,
-          items: [ 'Wooden Tray' , 'Wooden Jars', 'Spice Box','Chopping Board' ,'Coasters' ,'Tissue Box' ]
+          items: [ 'Wooden Tray' , 'Wooden Jars', 'Spice Box','Chopping Board' ,'Coasters' ,'Tissue Box' ],
+          hasDropdown: true
         }
 
       ]
@@ -163,51 +195,46 @@ const Header = () => {
       sections: [
         {
           title: 'LIVING STORAGE',
-          items: ['TV Units', 'Book Shelves' ,'Display Units' , 'Shoe Racks' ,'Home Temples' ,'Magazine Racks' ,'Wooden Corner' ]
+          items: ['TV Units', 'Book Shelves' ,'Display Units' , 'Shoe Racks' ,'Home Temples' ,'Magazine Racks' ,'Wooden Corner' ],
+          hasDropdown: true
         },
         {
           title: 'BEDROOM STORAGE',
-          items: ['Chest of Drawers', 'Wardrobes' ,'Bed Side Tables' , 'Dressing ' ,'Almira'  ]
+          items: ['Chest of Drawers', 'Wardrobes' ,'Bed Side Tables' , 'Dressing ' ,'Almira'  ],
+          hasDropdown: true
         },
         {
           title: 'BAR FURNITURE',
-          items: ['Bar Cabinets' ]
+          items: ['Bar Cabinets' ],
+          hasDropdown: true
         }
       ]
     },
     'Study & Office': {
       sections: [
         {
-          title: 'Tables',
-          items: [ 'Study Tables', ]
+          title: 'TABLES',
+          items: [ 'Study Tables', ],
+          hasDropdown: true
         },
         {
-          title: 'Storage',
-          items: ['Wooden Corner']
+          title: 'STORAGE',
+          items: ['Wooden Corner'],
+          hasDropdown: true
         }
       ]
     },
-    // 'Custom Furniture': {
-    //   sections: [
-    //     {
-    //       title: 'CUSTOM OPTIONS',
-    //       items: ['Custom Sofas', 'Custom Wardrobes', 'Bespoke Tables']
-    //     },
-    //     {
-    //       title: 'CONSULTATION',
-    //       items: ['Design Consultation', 'Measure & Quote']
-    //     }
-    //   ]
-    // },
     'Home Furnishing': {
       sections: [
         {
           title: 'TEXTILES',
-          items: ['Rugs', 'Curtains', 'Pillows & Cushions', 'Bed Linen']
+          items: ['Rugs', 'Curtains', 'Pillows & Cushions', 'Bed Linen'],
+          hasDropdown: true
         },
         {
           title: 'FLOORING',
-          items: ['Carpets', 'Doormats']
+          items: ['Carpets', 'Doormats'],
+          hasDropdown: true
         }
       ]
     },
@@ -215,11 +242,13 @@ const Header = () => {
       sections: [
         {
           title: 'LIGHTING',
-          items: ['Floor Lamps', 'Table Lamps', 'Ceiling Lights']
+          items: ['Floor Lamps', 'Table Lamps', 'Ceiling Lights'],
+          hasDropdown: true
         },
         {
           title: 'DECOR',
-          items: ['Wall Art', 'Vases', 'Mirrors', 'Planters']
+          items: ['Wall Art', 'Vases', 'Mirrors', 'Planters'],
+          hasDropdown: true
         }
       ]
     },
@@ -227,11 +256,13 @@ const Header = () => {
       sections: [
         {
           title: 'SERVICES',
-          items: ['Full Home Interiors', 'Room Makeovers', 'Renovations']
+          items: ['Full Home Interiors', 'Room Makeovers', 'Renovations'],
+          hasDropdown: true
         },
         {
           title: 'PRODUCTS',
-          items: ['Modular Wardrobes', 'Custom TV Units']
+          items: ['Modular Wardrobes', 'Custom TV Units'],
+          hasDropdown: true
         }
       ]
     }
@@ -248,6 +279,7 @@ const Header = () => {
     window.location.href = `/${slug}`;
     setIsMobileMenuOpen(false);
     setActiveMenu(null);
+    setActiveSubMenu(null);
     setActiveMobileSubmenu({});
   };
 
@@ -257,7 +289,19 @@ const Header = () => {
   };
 
   const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => setActiveMenu(null), 300);
+    timeoutRef.current = setTimeout(() => {
+      setActiveMenu(null);
+      setActiveSubMenu(null);
+    }, 300);
+  };
+
+  const handleSubMenuEnter = (sectionTitle) => {
+    if (subMenuTimeoutRef.current) clearTimeout(subMenuTimeoutRef.current);
+    setActiveSubMenu(sectionTitle);
+  };
+
+  const handleSubMenuLeave = () => {
+    subMenuTimeoutRef.current = setTimeout(() => setActiveSubMenu(null), 200);
   };
 
   const toggleMobileSubmenu = (menu, section) => {
@@ -272,6 +316,7 @@ const Header = () => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : 'unset';
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (subMenuTimeoutRef.current) clearTimeout(subMenuTimeoutRef.current);
       document.body.style.overflow = 'unset';
     };
   }, [isMobileMenuOpen]);
@@ -296,10 +341,24 @@ const Header = () => {
               <div className="relative w-full">
                 <input
                   type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const q = (searchQuery || '').trim();
+                      if (q) window.location.href = `/search?search=${encodeURIComponent(q)}`;
+                    }
+                  }}
                   placeholder="Search Products, Color & More..."
                   className="w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 text-sm"
                 />
-                <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <button
+                  onClick={() => {
+                    const q = (searchQuery || '').trim();
+                    if (q) window.location.href = `/search?search=${encodeURIComponent(q)}`;
+                  }}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                >
                   <Search className="h-5 w-5 text-gray-400" />
                 </button>
               </div>
@@ -343,9 +402,9 @@ const Header = () => {
                 </button>
               )}
 
-              <button className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group p-2">
+              <button onClick={() => navigate('/wishlist')} className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group p-2">
                 <Heart className="h-5 w-5 mb-1" />
-                <span className="text-xs font-medium">Wishlist (0)</span>
+                <span className="text-xs font-medium">Wishlist ({wishlistCount})</span>
               </button>
 
               <button 
@@ -372,7 +431,7 @@ const Header = () => {
           </div>
 
           {/* Navigation Bar */}
-          <nav className="hidden lg:flex items-center justify-center space-x-1 py-3">
+          <nav className="hidden md:flex items-center justify-center space-x-1 py-3">
             {categories.map((cat) => (
               <div
                 key={cat._id}
@@ -381,7 +440,6 @@ const Header = () => {
                 onMouseLeave={handleMouseLeave}
               >
                 <button 
-                  // When the main category link is clicked, navigate to its slug
                   onClick={() => navigateToSlug(cat.name)} 
                   className={`px-4 py-2 text-sm font-medium transition-colors ${
                     activeMenu === cat.name 
@@ -396,33 +454,53 @@ const Header = () => {
                 {/* Dropdown Menu (for desktop) */}
                 {activeMenu === cat.name && menuData[cat.name] && (
                   <div
-                    className="absolute left-0 top-full mt-0 bg-white shadow-2xl rounded-lg border border-gray-100 min-w-[600px] z-50"
+                    className="absolute left-0 top-full mt-2 bg-white shadow-2xl rounded-lg border border-gray-100 z-50"
+                    style={{ minWidth: '220px' }}
                     onMouseEnter={() => handleMouseEnter(cat.name)}
                     onMouseLeave={handleMouseLeave}
                   >
-                    <div className="p-6">
-                      <div className="grid grid-cols-2 gap-8">
-                        {menuData[cat.name].sections.map((section, idx) => (
-                          <div key={idx}>
-                            <h3 className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-3 pb-2 border-b border-orange-100">
-                              {section.title}
-                            </h3>
-                            <ul className="space-y-2">
-                              {section.items.map((item, itemIdx) => (
-                                <li key={itemIdx}>
-                                  <button 
+                    <div className="py-2">
+                      {menuData[cat.name].sections.map((section, idx) => (
+                        <div 
+                          key={idx} 
+                          className="relative"
+                          onMouseEnter={() => section.hasDropdown && handleSubMenuEnter(section.title)}
+                          onMouseLeave={handleSubMenuLeave}
+                        >
+                          <button
+                            onClick={() => !section.hasDropdown && navigateToSlug(section.title)}
+                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors flex items-center justify-between group"
+                          >
+                            {section.title}
+                            {section.hasDropdown && (
+                              <ChevronDown className="h-4 w-4 -rotate-90 group-hover:translate-x-1 transition-transform" />
+                            )}
+                          </button>
+
+                          {/* Nested Dropdown for subcategories */}
+                          {section.hasDropdown && activeSubMenu === section.title && (
+                            <div
+                              className="absolute left-full top-0 ml-1 bg-white shadow-2xl rounded-lg border border-gray-100 z-50"
+                              style={{ minWidth: '200px' }}
+                              onMouseEnter={() => handleSubMenuEnter(section.title)}
+                              onMouseLeave={handleSubMenuLeave}
+                            >
+                              <div className="py-2">
+                                {section.items.map((item, itemIdx) => (
+                                  <button
+                                    key={itemIdx}
                                     onClick={() => navigateToSlug(item)}
-                                    className="text-sm text-gray-600 hover:text-orange-600 hover:translate-x-1 transition-all duration-200 flex items-center group"
+                                    className="w-full px-4 py-2 text-left text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-colors flex items-center group"
                                   >
                                     <span className="w-1 h-1 bg-orange-400 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                     {item}
                                   </button>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -447,6 +525,17 @@ const Header = () => {
             <input
               autoFocus
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const q = (searchQuery || '').trim();
+                  if (q) {
+                    setSearchOpen(false);
+                    window.location.href = `/search?search=${encodeURIComponent(q)}`;
+                  }
+                }
+              }}
               placeholder="Search Products, Color & More..."
               className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
             />
@@ -474,6 +563,17 @@ const Header = () => {
           <div className="mb-4">
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const q = (searchQuery || '').trim();
+                  if (q) {
+                    setIsMobileMenuOpen(false);
+                    window.location.href = `/search?search=${encodeURIComponent(q)}`;
+                  }
+                }
+              }}
               placeholder="Search Products..."
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 text-sm"
             />
@@ -487,7 +587,6 @@ const Header = () => {
                   if (menuData[cat.name]) {
                     setActiveMenu(activeMenu === cat.name ? null : cat.name);
                   } else {
-                    // Navigate directly if no submenu data exists
                     navigateToSlug(cat.name); 
                   }
                 }}
