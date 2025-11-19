@@ -178,6 +178,11 @@ const Products = () => {
       return;
     }
 
+    // Clean up sizeUrls: remove empty rows and trim
+    const cleanedSizeUrls = (formData.sizeUrls || [])
+      .filter((r) => r && r.label && r.url)
+      .map((r) => ({ label: r.label.trim(), url: r.url.trim() }));
+
     let submitData = {
       pname: formData.pname.trim(),
       pdesc: formData.pdesc.trim(),
@@ -198,7 +203,7 @@ const Products = () => {
       seater: formData.seater.trim(),
       mattress_size: formData.mattress_size.trim(),
       caring: formData.caring.trim() || 'Professional Cleaning Only',
-  sizeUrls: formData.sizeUrls || [], // Include size URLs in submission
+  sizeUrls: cleanedSizeUrls, // Include cleaned size URLs in submission
       features: formData.features.trim(),
       pack_content: formData.pack_content.trim(),
       delivery_condition: formData.delivery_condition.trim(),
@@ -386,7 +391,11 @@ const Products = () => {
       seater: product.seater || '',
       mattress_size: product.mattress_size || '',
       caring: product.caring || '',
-  sizeUrls: Array.isArray(product.sizeUrls) ? product.sizeUrls : [], // Load existing size URLs safely
+  sizeUrls: Array.isArray(product.sizeUrls)
+    ? product.sizeUrls
+    : (product.size_urls && typeof product.size_urls === 'object'
+        ? Object.entries(product.size_urls).map(([label, url]) => ({ label, url }))
+        : []), // Load existing size URLs safely
       features: product.features || '',
       pack_content: product.pack_content || '',
       delivery_condition: product.delivery_condition || 'Knocked Down',

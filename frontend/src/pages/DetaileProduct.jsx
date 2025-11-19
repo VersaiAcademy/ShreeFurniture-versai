@@ -278,6 +278,15 @@ const DetailProduct = () => {
 
   const sizeOptions = getSizeOptions();
 
+  // Normalize size URLs: support new `sizeUrls` array and legacy `size_urls` map
+  const normalizedSizeUrls = (() => {
+    if (Array.isArray(product?.sizeUrls) && product.sizeUrls.length > 0) return product.sizeUrls;
+    if (product?.size_urls && typeof product.size_urls === 'object') {
+      return Object.entries(product.size_urls).map(([label, url]) => ({ label, url }));
+    }
+    return [];
+  })();
+
   // --- Pincode Logic ---
   const handlePincodeCheck = async () => {
     if (pincode.length !== 6 || isNaN(pincode)) {
@@ -548,11 +557,11 @@ const DetailProduct = () => {
               )}
 
               {/* Size Selection (for Beds, Sofas, Dining) */}
-              {Array.isArray(product?.sizeUrls) && product.sizeUrls.length > 0 && (
+              {normalizedSizeUrls.length > 0 && (
                 <div className="mb-6">
                   <h3 className="font-semibold mb-3 text-gray-900">Select Size:</h3>
                   <div className="flex flex-wrap gap-3">
-                    {product.sizeUrls.map((row, idx) => (
+                    {normalizedSizeUrls.map((row, idx) => (
                       <button
                         key={row.label + idx}
                         onClick={() => handleSizeClick(row.url)}
