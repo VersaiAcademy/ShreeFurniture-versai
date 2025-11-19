@@ -105,8 +105,26 @@ const DetailProduct = () => {
 
         // Collect all main images (img1-5) in order - respects admin upload order
         const mainImgs = [data.img1, data.img2, data.img3, data.img4, data.img5].filter(Boolean);
-        const naturalImgs = [data.natural_finish_image, data.natural_finish_img2, data.natural_finish_img3, data.natural_finish_img4].filter(Boolean);
-        const stoneImgs = [data.stone_finish_image, data.stone_finish_img2, data.stone_finish_img3, data.stone_finish_img4].filter(Boolean);
+        const naturalImgs = [
+          data.natural_finish_image,
+          data.natural_finish_img2,
+          data.natural_finish_img3,
+          data.natural_finish_img4,
+          data.natural_finish_img5,
+          data.natural_finish_img6,
+          data.natural_finish_img7,
+          data.natural_finish_img8,
+        ].filter(Boolean);
+        const stoneImgs = [
+          data.stone_finish_image,
+          data.stone_finish_img2,
+          data.stone_finish_img3,
+          data.stone_finish_img4,
+          data.stone_finish_img5,
+          data.stone_finish_img6,
+          data.stone_finish_img7,
+          data.stone_finish_img8,
+        ].filter(Boolean);
 
         // Prefer main images first (admin-selected order), then fall back to variants
         if (mainImgs.length > 0) {
@@ -413,13 +431,25 @@ const DetailProduct = () => {
   ].filter(Boolean);
 
   const stoneFinishImages = [
-    product.stone_finish_image, product.stone_finish_img2,
-    product.stone_finish_img3, product.stone_finish_img4,
+    product.stone_finish_image,
+    product.stone_finish_img2,
+    product.stone_finish_img3,
+    product.stone_finish_img4,
+    product.stone_finish_img5,
+    product.stone_finish_img6,
+    product.stone_finish_img7,
+    product.stone_finish_img8,
   ].filter(Boolean);
 
   const naturalFinishImages = [
-    product.natural_finish_image, product.natural_finish_img2,
-    product.natural_finish_img3, product.natural_finish_img4,
+    product.natural_finish_image,
+    product.natural_finish_img2,
+    product.natural_finish_img3,
+    product.natural_finish_img4,
+    product.natural_finish_img5,
+    product.natural_finish_img6,
+    product.natural_finish_img7,
+    product.natural_finish_img8,
   ].filter(Boolean);
 
   // Show appropriate thumbnails based on active image set

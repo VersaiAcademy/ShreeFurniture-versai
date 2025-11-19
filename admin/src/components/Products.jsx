@@ -108,14 +108,13 @@ const Products = () => {
     setImagePreviews(previews);
   };
 
-  // Helper function to handle MULTIPLE variant image selection
+  // Helper function to handle MULTIPLE variant image selection (up to 8 images)
   const handleVariantImageChange = (e, finishType) => {
     const files = Array.from(e.target.files);
     if (files.length > 8) {
       alert('Maximum 8 variant images allowed');
       return;
     }
-
     if (finishType === 'stoneFinish') {
       setFormData(prev => ({ ...prev, stoneFinishFiles: files }));
       setStoneFinishPreviews(files.map(file => URL.createObjectURL(file)));
@@ -247,6 +246,10 @@ const Products = () => {
         submitData.stone_finish_img2 = stoneUrls[1] || submitData.stone_finish_img2;
         submitData.stone_finish_img3 = stoneUrls[2] || submitData.stone_finish_img3;
         submitData.stone_finish_img4 = stoneUrls[3] || submitData.stone_finish_img4;
+        submitData.stone_finish_img5 = stoneUrls[4] || submitData.stone_finish_img5;
+        submitData.stone_finish_img6 = stoneUrls[5] || submitData.stone_finish_img6;
+        submitData.stone_finish_img7 = stoneUrls[6] || submitData.stone_finish_img7;
+        submitData.stone_finish_img8 = stoneUrls[7] || submitData.stone_finish_img8;
       }
       if (formData.naturalFinishFiles && formData.naturalFinishFiles.length > 0) {
         const natUrls = await uploadImagesToCloudinary(formData.naturalFinishFiles);
@@ -254,6 +257,10 @@ const Products = () => {
         submitData.natural_finish_img2 = natUrls[1] || submitData.natural_finish_img2;
         submitData.natural_finish_img3 = natUrls[2] || submitData.natural_finish_img3;
         submitData.natural_finish_img4 = natUrls[3] || submitData.natural_finish_img4;
+        submitData.natural_finish_img5 = natUrls[4] || submitData.natural_finish_img5;
+        submitData.natural_finish_img6 = natUrls[5] || submitData.natural_finish_img6;
+        submitData.natural_finish_img7 = natUrls[6] || submitData.natural_finish_img7;
+        submitData.natural_finish_img8 = natUrls[7] || submitData.natural_finish_img8;
       }
 
       // Ensure backend validation (at least one variant image) is satisfied.
@@ -362,6 +369,10 @@ const Products = () => {
       product.stone_finish_img2,
       product.stone_finish_img3,
       product.stone_finish_img4,
+      product.stone_finish_img5,
+      product.stone_finish_img6,
+      product.stone_finish_img7,
+      product.stone_finish_img8,
     ].filter(Boolean);
 
     const naturalImages = [
@@ -369,6 +380,10 @@ const Products = () => {
       product.natural_finish_img2,
       product.natural_finish_img3,
       product.natural_finish_img4,
+      product.natural_finish_img5,
+      product.natural_finish_img6,
+      product.natural_finish_img7,
+      product.natural_finish_img8,
     ].filter(Boolean);
 
     setFormData({

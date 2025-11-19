@@ -29,7 +29,6 @@ const adminAuth = async (req, res, next) => {
     }
 
     return res.status(403).json({
-      message: 'Access denied. Admin privileges required.',
       status: 403
     });
   } catch (error) {
@@ -55,10 +54,18 @@ router.get('/products', authenticateToken, adminAuth, async (req, res) => {
         { brand: { $regex: search, $options: 'i' } }
       ];
     }
+      stone_finish_img5: stone_finish_img5 || '',
+      stone_finish_img6: stone_finish_img6 || '',
+      stone_finish_img7: stone_finish_img7 || '',
+      stone_finish_img8: stone_finish_img8 || '',
     
     if (category) {
       query.category = { $regex: category, $options: 'i' };
     }
+      natural_finish_img5: natural_finish_img5 || '',
+      natural_finish_img6: natural_finish_img6 || '',
+      natural_finish_img7: natural_finish_img7 || '',
+      natural_finish_img8: natural_finish_img8 || '',
     
     const skip = (parseInt(page) - 1) * parseInt(limit);
     
@@ -141,7 +148,9 @@ router.post('/products', authenticateToken, adminAuth, [
       features, pack_content, delivery_condition, dispatch_in, customization, note,
       fabric_color, design, img1, img2, img3, img4, img5,
       stone_finish_image, stone_finish_img2, stone_finish_img3, stone_finish_img4,
+      stone_finish_img5, stone_finish_img6, stone_finish_img7, stone_finish_img8,
       natural_finish_image, natural_finish_img2, natural_finish_img3, natural_finish_img4,
+      natural_finish_img5, natural_finish_img6, natural_finish_img7, natural_finish_img8,
       mattress_size, caring, size_urls, foam, armrest, shape, product_quantity, quantity, leg_material
     } = req.body;    // ⚠️ Use the spread operator and trim/parse data where necessary
     const product = new Product({
@@ -157,18 +166,26 @@ router.post('/products', authenticateToken, adminAuth, [
       rating: rating ? parseInt(rating) : 5,
       category: category.trim(),
       
-      // Main Images
-      img1: img1, img2: img2 || '', img3: img3 || '', img4: img4 || '', img5: img5 || '',
+  // Main Images
+  img1: img1, img2: img2 || '', img3: img3 || '', img4: img4 || '', img5: img5 || '',
 
-      // Variant Images (new fields)
-      stone_finish_image: stone_finish_image || '',
-      stone_finish_img2: stone_finish_img2 || '',
-      stone_finish_img3: stone_finish_img3 || '',
-      stone_finish_img4: stone_finish_img4 || '',
-      natural_finish_image: natural_finish_image || '',
-      natural_finish_img2: natural_finish_img2 || '',
-      natural_finish_img3: natural_finish_img3 || '',
-      natural_finish_img4: natural_finish_img4 || '',
+  // Variant Images (new fields, up to 8)
+  stone_finish_image: stone_finish_image || '',
+  stone_finish_img2: stone_finish_img2 || '',
+  stone_finish_img3: stone_finish_img3 || '',
+  stone_finish_img4: stone_finish_img4 || '',
+  stone_finish_img5: stone_finish_img5 || '',
+  stone_finish_img6: stone_finish_img6 || '',
+  stone_finish_img7: stone_finish_img7 || '',
+  stone_finish_img8: stone_finish_img8 || '',
+  natural_finish_image: natural_finish_image || '',
+  natural_finish_img2: natural_finish_img2 || '',
+  natural_finish_img3: natural_finish_img3 || '',
+  natural_finish_img4: natural_finish_img4 || '',
+  natural_finish_img5: natural_finish_img5 || '',
+  natural_finish_img6: natural_finish_img6 || '',
+  natural_finish_img7: natural_finish_img7 || '',
+  natural_finish_img8: natural_finish_img8 || '',
 
       // Other Details (new and existing)
       color: color ? color.trim() : '',

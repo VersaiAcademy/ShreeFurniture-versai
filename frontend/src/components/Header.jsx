@@ -147,7 +147,7 @@ const Header = () => {
       sections: [
         {
           title: 'BEDS',
-          items: ['King Size Beds', 'Queen Size Beds', 'Double Beds', 'Single Beds',  'Hydraulic Storage Beds', 'Poster Beds', ],
+          items: ['King Size Beds', 'Queen Size Beds', 'Single Beds',  'Hydraulic Storage Beds', 'Poster Beds', ],
           hasDropdown: true
         },
         {
