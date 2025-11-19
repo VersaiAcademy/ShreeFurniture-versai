@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -43,7 +44,6 @@ const Login = () => {
         localStorage.setItem("email", response.data.email || "");
         toast.success(response.data.message);
         dispatch(addCustomer(response.data.username));
-        // Redirect to profile page after successful login
         navigate("/profile");
       } else {
         toast.warning(response.data.message);
@@ -57,18 +57,16 @@ const Login = () => {
 
   return (
     <div className="flex justify-center items-center mt-10 px-4">
-      <div className="border shadow-lg hover:shadow-2xl bg-white rounded-lg w-full max-w-4xl">
+      <div 
+        className="border shadow-lg hover:shadow-2xl rounded-lg w-full max-w-4xl bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url('/dining/Login Page Banner (1280x720Pxl.).png')"
+        }}
+      >
         <div className="flex items-center gap-5 flex-col md:flex-row md:p-0">
-          <div className="w-full md:w-1/3">
-            <img
-              src="/dining/Login Page Banner (1280x720Pxl.).png"
-              alt=""
-              className="object-cover w-full h-40 md:h-[35rem] md:w-full rounded-t-lg md:rounded-none"
-            />
-          </div>
-          <div className="font-mono w-full md:w-2/3 p-6">
-            <h2 className="text-xl md:text-2xl">Login</h2>
-            <small>Track your order, create wishlist & more</small>
+          <div className=" w-full p-6 bg-white text-white bg-opacity-20 rounded-lg ">
+            <h2 className="text-2xl text-center font-bold md:text-2xl text-white">Login</h2>
+            <p className="text-center">Track your order, create wishlist & more</p>
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
@@ -117,12 +115,11 @@ const Login = () => {
               </Link>{" "}
             </p>
             <hr />
-            <p className="text-center pt-3 text-gray-500 items-center">
+            <p className="text-center pt-3 text-bold text-orange-400 items-center">
               OR Continue With{" "}
               <span
                 role="button"
                 onClick={() => {
-                  // Initiate server-side Google OAuth
                   const base = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '';
                   const url = (base ? base.replace(/\/$/, '') : '') + '/api/auth/google';
                   window.location.href = url;

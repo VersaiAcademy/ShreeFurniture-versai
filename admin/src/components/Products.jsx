@@ -85,22 +85,56 @@ const Products = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Drag and drop reorder for main images
+  // Drag and drop reorder for main images (up to 5)
   const handleMainImageReorder = (fromIndex, toIndex) => {
     if (fromIndex === toIndex) return;
     const newFiles = Array.from(formData.imageFiles || []);
     const [removed] = newFiles.splice(fromIndex, 1);
     newFiles.splice(toIndex, 0, removed);
     setFormData({ ...formData, imageFiles: newFiles });
-    const previews = newFiles.map(file => URL.createObjectURL(file));
+    const previews = newFiles.map(file => {
+      if (typeof file === 'string') return file;
+      if (file instanceof File) return URL.createObjectURL(file);
+      return '';
+    });
     setImagePreviews(previews);
+  };
+
+  // Drag and drop reorder for stone finish images (up to 8)
+  const handleStoneImageReorder = (fromIndex, toIndex) => {
+    if (fromIndex === toIndex) return;
+    const newFiles = Array.from(formData.stoneFinishFiles || []);
+    const [removed] = newFiles.splice(fromIndex, 1);
+    newFiles.splice(toIndex, 0, removed);
+    setFormData({ ...formData, stoneFinishFiles: newFiles });
+    const previews = newFiles.map(file => {
+      if (typeof file === 'string') return file;
+      if (file instanceof File) return URL.createObjectURL(file);
+      return '';
+    });
+    setStoneFinishPreviews(previews);
+  };
+
+  // Drag and drop reorder for natural finish images (up to 8)
+  const handleNaturalImageReorder = (fromIndex, toIndex) => {
+    if (fromIndex === toIndex) return;
+    const newFiles = Array.from(formData.naturalFinishFiles || []);
+    const [removed] = newFiles.splice(fromIndex, 1);
+    newFiles.splice(toIndex, 0, removed);
+    setFormData({ ...formData, naturalFinishFiles: newFiles });
+    const previews = newFiles.map(file => {
+      if (typeof file === 'string') return file;
+      if (file instanceof File) return URL.createObjectURL(file);
+      return '';
+    });
+    setNaturalFinishPreviews(previews);
   };
 
   // Handle main images change
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files || []);
-    if (files.length > 5) {
-      alert('Maximum 5 main images allowed');
+    if (files.length > 8) {
+      alert('Maximum 8 main images allowed');
       return;
     }
     setFormData({ ...formData, imageFiles: files });
@@ -127,9 +161,21 @@ const Products = () => {
   const uploadImagesToCloudinary = async (files) => {
     if (!files || files.length === 0) return [];
     const token = localStorage.getItem('adminToken');
+
+    // Support mixed arrays: some items may already be URLs (strings) from existing product images,
+    // while others are File objects selected by the admin. We should upload only File objects
+    // and preserve existing URLs in the returned array in the original order.
+    const items = files.map((f, idx) => ({ index: idx, value: f, isFile: (f instanceof File) }));
+    const filesToUpload = items.filter(it => it.isFile).map(it => it.value);
+
+    // If there are no new files to upload, simply return the existing URLs
+    if (filesToUpload.length === 0) {
+      return items.map(it => (typeof it.value === 'string' ? it.value : '') );
+    }
+
     const fd = new FormData();
-    files.forEach((file) => fd.append('images', file));
-    
+    filesToUpload.forEach((file) => fd.append('images', file));
+
     try {
       const response = await axios.post(`/api/upload/multiple`, fd, {
         headers: {
@@ -137,10 +183,54 @@ const Products = () => {
           'Content-Type': 'multipart/form-data'
         }
       });
-      return response.data.imageUrls || [];
+
+      const uploadedUrls = response.data.imageUrls || [];
+
+      // Merge uploaded URLs back into original order
+      const result = [];
+      let uploadPos = 0;
+      for (const it of items) {
+        if (it.isFile) {
+          result[it.index] = uploadedUrls[uploadPos++] || '';
+        } else {
+          result[it.index] = typeof it.value === 'string' ? it.value : '';
+        }
+      }
+      return result;
     } catch (error) {
-      console.error('Image upload failed:', error);
-      return [];
+      console.error('Image upload failed (direct):', error && (error.response?.data || error.message || error));
+
+      // Fallback: try uploading in smaller batches (4 at a time)
+      try {
+        const batchSize = 4;
+        const uploadedUrls = [];
+        let uploadPos = 0;
+        for (let i = 0; i < filesToUpload.length; i += batchSize) {
+          const batch = filesToUpload.slice(i, i + batchSize);
+          const fdBatch = new FormData();
+          batch.forEach(f => fdBatch.append('images', f));
+          const resp = await axios.post(`/api/upload/multiple`, fdBatch, {
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+          });
+          const urls = resp.data.imageUrls || [];
+          uploadedUrls.push(...urls);
+        }
+
+        // Merge uploadedUrls back into original order
+        const result = [];
+        let uploadIdx = 0;
+        for (const it of items) {
+          if (it.isFile) {
+            result[it.index] = uploadedUrls[uploadIdx++] || '';
+          } else {
+            result[it.index] = typeof it.value === 'string' ? it.value : '';
+          }
+        }
+        return result;
+      } catch (err2) {
+        console.error('Image upload fallback failed:', err2 && (err2.response?.data || err2.message || err2));
+        return [];
+      }
     }
   };
 
@@ -221,10 +311,18 @@ const Products = () => {
       stone_finish_img2: editingProduct?.stone_finish_img2 || '',
       stone_finish_img3: editingProduct?.stone_finish_img3 || '',
       stone_finish_img4: editingProduct?.stone_finish_img4 || '',
+      stone_finish_img5: editingProduct?.stone_finish_img5 || '',
+      stone_finish_img6: editingProduct?.stone_finish_img6 || '',
+      stone_finish_img7: editingProduct?.stone_finish_img7 || '',
+      stone_finish_img8: editingProduct?.stone_finish_img8 || '',
       natural_finish_image: editingProduct?.natural_finish_image || '',
       natural_finish_img2: editingProduct?.natural_finish_img2 || '',
       natural_finish_img3: editingProduct?.natural_finish_img3 || '',
       natural_finish_img4: editingProduct?.natural_finish_img4 || '',
+      natural_finish_img5: editingProduct?.natural_finish_img5 || '',
+      natural_finish_img6: editingProduct?.natural_finish_img6 || '',
+      natural_finish_img7: editingProduct?.natural_finish_img7 || '',
+      natural_finish_img8: editingProduct?.natural_finish_img8 || '',
     };
 
     try {
@@ -237,6 +335,8 @@ const Products = () => {
         submitData.img3 = urls[2] || submitData.img3;
         submitData.img4 = urls[3] || submitData.img4;
         submitData.img5 = urls[4] || submitData.img5;
+        // Note: main images only support img1..img5 in schema — do not assign img6..img8 here
+       
       }
 
       // --- 2. Upload variant images (stone / natural) if any ---
@@ -341,7 +441,7 @@ const Products = () => {
       customization: 'Customized can be as per requirement.',
       note: 'If a board is required, we use MDF instead of plywood',
       fabric_color: '', design: 'Modern',
-      img1: '', img2: '', img3: '', img4: '', img5: '', 
+      img1: '', img2: '', img3: '', img4: '', img5: '',  img6: '', img7: '', img8: '',
       imageFiles: [],
       stoneFinishFiles: [], // Reset file inputs
       naturalFinishFiles: [], // Reset file inputs
@@ -349,10 +449,18 @@ const Products = () => {
       stone_finish_img2: '',
       stone_finish_img3: '',
       stone_finish_img4: '',
+      stone_finish_img5: '',
+      stone_finish_img6: '',
+      stone_finish_img7: '',
+      stone_finish_img8: '',  
       natural_finish_image: '',
       natural_finish_img2: '',
       natural_finish_img3: '',
       natural_finish_img4: '',
+      natural_finish_img5: '',
+      natural_finish_img6: '',
+      natural_finish_img7: '',
+      natural_finish_img8: '',
     });
     setImagePreviews([]);
     setStoneFinishPreviews([]);
@@ -406,11 +514,11 @@ const Products = () => {
       seater: product.seater || '',
       mattress_size: product.mattress_size || '',
       caring: product.caring || '',
-  sizeUrls: Array.isArray(product.sizeUrls)
-    ? product.sizeUrls
-    : (product.size_urls && typeof product.size_urls === 'object'
-        ? Object.entries(product.size_urls).map(([label, url]) => ({ label, url }))
-        : []), // Load existing size URLs safely
+      sizeUrls: Array.isArray(product.sizeUrls)
+        ? product.sizeUrls
+        : (product.size_urls && typeof product.size_urls === 'object'
+            ? Object.entries(product.size_urls).map(([label, url]) => ({ label, url }))
+            : []), // Load existing size URLs safely
       features: product.features || '',
       pack_content: product.pack_content || '',
       delivery_condition: product.delivery_condition || 'Knocked Down',
@@ -430,19 +538,75 @@ const Products = () => {
       stone_finish_img2: product.stone_finish_img2 || '',
       stone_finish_img3: product.stone_finish_img3 || '',
       stone_finish_img4: product.stone_finish_img4 || '',
+      stone_finish_img5: product.stone_finish_img5 || '',
+      stone_finish_img6: product.stone_finish_img6 || '',
+      stone_finish_img7: product.stone_finish_img7 || '',
+      stone_finish_img8: product.stone_finish_img8 || '',
       natural_finish_image: product.natural_finish_image || '',
       natural_finish_img2: product.natural_finish_img2 || '',
       natural_finish_img3: product.natural_finish_img3 || '',
       natural_finish_img4: product.natural_finish_img4 || '',
-      // Reset file inputs on edit load
-      imageFiles: [], 
-      stoneFinishFiles: [],
-      naturalFinishFiles: [],
+      natural_finish_img5: product.natural_finish_img5 || '',
+      natural_finish_img6: product.natural_finish_img6 || '',
+      natural_finish_img7: product.natural_finish_img7 || '',
+      natural_finish_img8: product.natural_finish_img8 || '',
+      // For edit: load existing images into preview arrays for drag/reorder
+      imageFiles: [
+        product.img1,
+        product.img2,
+        product.img3,
+        product.img4,
+        product.img5,
+      ].filter(Boolean),
+      stoneFinishFiles: [
+        product.stone_finish_image,
+        product.stone_finish_img2,
+        product.stone_finish_img3,
+        product.stone_finish_img4,
+        product.stone_finish_img5,
+        product.stone_finish_img6,
+        product.stone_finish_img7,
+        product.stone_finish_img8,
+      ].filter(Boolean),
+      naturalFinishFiles: [
+        product.natural_finish_image,
+        product.natural_finish_img2,
+        product.natural_finish_img3,
+        product.natural_finish_img4,
+        product.natural_finish_img5,
+        product.natural_finish_img6,
+        product.natural_finish_img7,
+        product.natural_finish_img8,
+      ].filter(Boolean),
     });
-    
-    setImagePreviews([product.img1, product.img2, product.img3, product.img4, product.img5].filter(Boolean));
-    setStoneFinishPreviews(stoneImages);
-    setNaturalFinishPreviews(naturalImages);
+
+    setImagePreviews([
+      product.img1,
+      product.img2,
+      product.img3,
+      product.img4,
+      product.img5,
+    ].filter(Boolean));
+    setStoneFinishPreviews([
+      product.stone_finish_image,
+      product.stone_finish_img2,
+      product.stone_finish_img3,
+      product.stone_finish_img4,
+      product.stone_finish_img5,
+      product.stone_finish_img6,
+      product.stone_finish_img7,
+      product.stone_finish_img8,
+    ].filter(Boolean));
+    setNaturalFinishPreviews([
+      product.natural_finish_image,
+      product.natural_finish_img2,
+      product.natural_finish_img3,
+      product.natural_finish_img4,
+      product.natural_finish_img5,
+      product.natural_finish_img6,
+      product.natural_finish_img7,
+      product.natural_finish_img8,
+    ].filter(Boolean));
     setShowForm(true);
 
     // Auto-enable toggle fields if product has data
@@ -740,16 +904,7 @@ const Products = () => {
                         <div style={{display: 'flex', gap: '4px', marginTop: '4px', justifyContent: 'center', fontSize: '11px'}}>
                           <button 
                             type="button"
-                            onClick={() => {
-                              if (i > 0) {
-                                const newFiles = Array.from(formData.stoneFinishFiles || []);
-                                const [removed] = newFiles.splice(i, 1);
-                                newFiles.splice(i - 1, 0, removed);
-                                setFormData({ ...formData, stoneFinishFiles: newFiles });
-                                const previews = newFiles.map(file => URL.createObjectURL(file));
-                                setStoneFinishPreviews(previews);
-                              }
-                            }}
+                            onClick={() => handleStoneImageReorder(i, i - 1)}
                             disabled={i === 0}
                             style={{padding: '4px 6px', fontSize: '10px', background: i === 0 ? '#ccc' : '#10B981', color: 'white', border: 'none', borderRadius: '3px', cursor: i === 0 ? 'not-allowed' : 'pointer'}}
                           >
@@ -757,16 +912,7 @@ const Products = () => {
                           </button>
                           <button 
                             type="button"
-                            onClick={() => {
-                              if (i < stoneFinishPreviews.length - 1) {
-                                const newFiles = Array.from(formData.stoneFinishFiles || []);
-                                const [removed] = newFiles.splice(i, 1);
-                                newFiles.splice(i + 1, 0, removed);
-                                setFormData({ ...formData, stoneFinishFiles: newFiles });
-                                const previews = newFiles.map(file => URL.createObjectURL(file));
-                                setStoneFinishPreviews(previews);
-                              }
-                            }}
+                            onClick={() => handleStoneImageReorder(i, i + 1)}
                             disabled={i === stoneFinishPreviews.length - 1}
                             style={{padding: '4px 6px', fontSize: '10px', background: i === stoneFinishPreviews.length - 1 ? '#ccc' : '#3B82F6', color: 'white', border: 'none', borderRadius: '3px', cursor: i === stoneFinishPreviews.length - 1 ? 'not-allowed' : 'pointer'}}
                           >
@@ -802,16 +948,7 @@ const Products = () => {
                         <div style={{display: 'flex', gap: '4px', marginTop: '4px', justifyContent: 'center', fontSize: '11px'}}>
                           <button 
                             type="button"
-                            onClick={() => {
-                              if (i > 0) {
-                                const newFiles = Array.from(formData.naturalFinishFiles || []);
-                                const [removed] = newFiles.splice(i, 1);
-                                newFiles.splice(i - 1, 0, removed);
-                                setFormData({ ...formData, naturalFinishFiles: newFiles });
-                                const previews = newFiles.map(file => URL.createObjectURL(file));
-                                setNaturalFinishPreviews(previews);
-                              }
-                            }}
+                            onClick={() => handleNaturalImageReorder(i, i - 1)}
                             disabled={i === 0}
                             style={{padding: '4px 6px', fontSize: '10px', background: i === 0 ? '#ccc' : '#10B981', color: 'white', border: 'none', borderRadius: '3px', cursor: i === 0 ? 'not-allowed' : 'pointer'}}
                           >
@@ -819,16 +956,7 @@ const Products = () => {
                           </button>
                           <button 
                             type="button"
-                            onClick={() => {
-                              if (i < naturalFinishPreviews.length - 1) {
-                                const newFiles = Array.from(formData.naturalFinishFiles || []);
-                                const [removed] = newFiles.splice(i, 1);
-                                newFiles.splice(i + 1, 0, removed);
-                                setFormData({ ...formData, naturalFinishFiles: newFiles });
-                                const previews = newFiles.map(file => URL.createObjectURL(file));
-                                setNaturalFinishPreviews(previews);
-                              }
-                            }}
+                            onClick={() => handleNaturalImageReorder(i, i + 1)}
                             disabled={i === naturalFinishPreviews.length - 1}
                             style={{padding: '4px 6px', fontSize: '10px', background: i === naturalFinishPreviews.length - 1 ? '#ccc' : '#3B82F6', color: 'white', border: 'none', borderRadius: '3px', cursor: i === naturalFinishPreviews.length - 1 ? 'not-allowed' : 'pointer'}}
                           >
