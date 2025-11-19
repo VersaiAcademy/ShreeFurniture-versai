@@ -168,7 +168,17 @@ const Header = () => {
           title: 'SEATING & CHAIRS',
           items: ['Chairs', 'Stools', 'Benches', 'Swings'],
           hasDropdown: true
-        }
+        },
+        {
+          title: 'TABLES',
+          items: ['Coffee Tables', 'Side Tables', 'Console Tables'],
+          hasDropdown: true
+        },
+         {
+          title: 'DECOR',
+          items: ['Temples', 'Wall Shelves & Hanger', 'Wall Mirrors'],
+          hasDropdown: true
+        },
       ]
     },
     'Dining & Kitchen': {
