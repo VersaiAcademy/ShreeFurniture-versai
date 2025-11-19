@@ -152,7 +152,7 @@ const Homepage = () => {
 
   
 
-      <div className="pt-3 pb-3 px-10 bg-pink-50">
+      {/* <div className="pt-3 pb-3 px-10 bg-pink-50">
         <div className="flex justify-between items-center">
           <div>
             {" "}
@@ -244,7 +244,7 @@ const Homepage = () => {
           </div>
         </div>
         <hr />
-      </div>
+      </div> */}
       {/* <div className="p-5 flex gap-3 flex-col md:flex-row justify-center">
         <img
           src="/images/new-mattress-banner.jpg"

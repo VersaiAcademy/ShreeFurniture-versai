@@ -7,7 +7,7 @@ const Homepage = () => {
   const mainBanners = [
     {
       id: 1,
-      imageUrl: "/Sri/IMG_5692.jpeg",
+      imageUrl: "/home/Home Page Banner 1440x879 (1).png",
       title: "Relax in Premium quality",
       subtitle: "Lounge Chair",
       offer: "UPTO 50% OFF",
@@ -17,7 +17,7 @@ const Homepage = () => {
     },
     {
       id: 2,
-      imageUrl: "/Sri/IMG_5693.jpeg",
+      imageUrl: "/home/Home Page Banner 1440x879 (2).png",
       title: "Modern Bedroom Collection",
       subtitle: "Luxury Beds",
       offer: "₹5000 OFF",
@@ -27,7 +27,7 @@ const Homepage = () => {
     },
     {
       id: 3,
-      imageUrl: "/Sri/IMG_5693.jpeg",
+      imageUrl: "/home/Home Page Banner 1440x879.png",
       title: "Comfort Redefined",
       subtitle: "Sofa Collection",
       offer: "UPTO 40% OFF",
@@ -50,7 +50,7 @@ const Homepage = () => {
   // Top small banner
   const topSmallBanner = {
     id: 5,
-    imageUrl: "/Sri/Web Baneer (2).jpg",
+    imageUrl: "/home/Header Web Baneer.png",
     tag: "SPECIAL DEAL",
     subtitle: "INSTANT DISCOUNT",
     tagColor: "bg-orange-500"
@@ -59,7 +59,7 @@ const Homepage = () => {
   // Bottom small banner
   const bottomSmallBanner = {
     id: 6,
-    imageUrl: "/Sri/Web Baneer (3).jpg",
+    imageUrl: "/home/Header Web Baneer (1).png",
     tag: "Ships In 2 Days",
     tagColor: "bg-blue-500"
   };

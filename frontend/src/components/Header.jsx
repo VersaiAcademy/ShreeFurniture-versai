@@ -161,7 +161,7 @@ const Header = () => {
       sections: [
         {
           title: 'LIVING STORAGE',
-          items: ['TV Units', 'Book Shelves', 'Display Units', 'Shoe Racks', 'Sideboards', 'Chest of Drawers'],
+          items: ['TV Units', 'Temples','Book Shelves', 'Display Units', 'Shoe Racks', 'Sideboards', 'Chest of Drawers'],
           hasDropdown: true
         },
         {
@@ -176,7 +176,7 @@ const Header = () => {
         },
          {
           title: 'DECOR',
-          items: ['Temples', 'Wall Shelves & Hanger', 'Wall Mirrors'],
+          items: [ 'Wall Shelves & Hanger', 'Wall Mirrors'],
           hasDropdown: true
         },
       ]

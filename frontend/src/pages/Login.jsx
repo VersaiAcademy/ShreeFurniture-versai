@@ -60,7 +60,7 @@ const Login = () => {
       <div 
         className="border shadow-lg hover:shadow-2xl rounded-lg w-full max-w-4xl bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/dining/Login Page Banner (1280x720Pxl.).png')"
+          backgroundImage: "url('/dining/Login Page Banner (1280x720Pxl.) (2).png')"
         }}
       >
         <div className="flex items-center gap-5 flex-col md:flex-row md:p-0">
@@ -115,7 +115,7 @@ const Login = () => {
               </Link>{" "}
             </p>
             <hr />
-            <p className="text-center pt-3 text-bold text-orange-400 items-center">
+            <p className="text-center pt-3 text-bold text-orange-200 items-center">
               OR Continue With{" "}
               <span
                 role="button"
@@ -124,14 +124,11 @@ const Login = () => {
                   const url = (base ? base.replace(/\/$/, '') : '') + '/api/auth/google';
                   window.location.href = url;
                 }}
-                className="text-orange-300 hover:text-orange-700 text-xl cursor-pointer"
+                className="text-blue-300 hover:text-orange-200 text-xl cursor-pointer"
               >
                 <FontAwesomeIcon icon={faGoogle} />
               </span>{" "}
-              <FontAwesomeIcon
-                icon={faFacebook}
-                className="text-blue-400 cursor-pointer text-xl hover:text-blue-600"
-              />
+              
             </p>
           </div>
         </div>

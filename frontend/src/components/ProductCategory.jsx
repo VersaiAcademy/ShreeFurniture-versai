@@ -8,15 +8,15 @@ const ProductCategoryGrid = () => {
       { name: 'Sofas', image: '/product/2.png', route: '/sofas' }, 
       { name: 'Dining', image: '/product/3.png', route: '/dining-tables' },
       { name: 'Study Table', image: '/product/4.png', route: '/study-tables' },
-      { name: 'Temple', image: '/product/5.png', route: '/coffee-tables' },
+      { name: 'Temple', image: '/product/5.png', route: '/temple' },
     ],
     // Bottom Row (5 items)
     [
-      { name: 'Coffee Tables', image: '/product/6.png', route: '/tv-units' },
+      { name: 'Coffee Tables', image: '/product/6.png', route: '/coffee-tables' },
       { name: 'Side Board', image: '/product/7.png', route: '/sideboards' },
-      { name: 'TV Unit', image: '/product/8.png', route: '/shoe-racks' },
+      { name: 'TV Unit', image: '/product/8.png', route: '/tv-unit' },
       { name: 'Book Shelf', image: '/product/9.png', route: '/book-shelves' },
-      { name: 'Shoes Rack', image: '/product/10.png', route: '/temples' }
+      { name: 'Shoes Rack', image: '/product/10.png', route: '/shoe-rack' }
     ]
   ];
 
