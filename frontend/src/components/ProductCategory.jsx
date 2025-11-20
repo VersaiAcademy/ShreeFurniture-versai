@@ -8,7 +8,7 @@ const ProductCategoryGrid = () => {
       { name: 'Sofas', image: '/product/2.png', route: '/sofas' }, 
       { name: 'Dining', image: '/product/3.png', route: '/dining-tables' },
       { name: 'Study Table', image: '/product/4.png', route: '/study-tables' },
-      { name: 'Temple', image: '/product/5.png', route: '/temple' },
+      { name: 'Temple', image: '/product/5.png', route: '/temples' },
     ],
     // Bottom Row (5 items)
     [

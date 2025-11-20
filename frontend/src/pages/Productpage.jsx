@@ -47,6 +47,29 @@ const Productpage = () => {
   // Seater options
   const seaterOptions = ['3 Seater', '3+1+1 Seater', '2 Seater', '5 Seater', '6 Seater'];
 
+  // Main category -> subcategory names mapping (used to show chips and to request combined products)
+  const MAIN_CATEGORY_MAP = {
+    'sofas': ['Wooden Sofas','Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas', 'Wooden Diwan', 'Benches', 'Stools'],
+    'living': ['TV Units','Temples','Book Shelves','Display Units','Shoe Racks','Sideboards','Chest of Drawers','Chairs','Stools','Benches','Swings','Coffee Tables','Side Tables','Console Tables','Wall Shelves & Hanger','Wall Mirrors'],
+    'bedroom': ['King Size Beds','Queen Size Beds','Single Beds','Hydraulic Storage Beds','Poster Beds','1-4 Door Wardrobes'],
+    'dining-kitchen': ['Dining Tables','2 Seater Dining Sets','4 Seater Dining Sets','6 Seater Dining Sets','Dining Chairs','Benches','Kitchen Cabinets','Crockery Units','Wooden Tray','Wooden Jars','Spice Box','Chopping Board','Coasters','Tissue Box'],
+    'storage': ['TV Units','Book Shelves','Display Units','Shoe Racks','Home Temples','Magazine Racks','Wooden Corner','Chest of Drawers','Wardrobes','Bed Side Tables','Dressing','Almira','Bar Cabinets'],
+    'study-office': ['Study Tables','Wooden Corner'],
+    'custom-furnitures': ['Custom Sofas','Custom Wardrobes','Custom Beds','Custom Tables']
+  };
+
+  // Helper: slugify a name in the same way header does
+  const slugify = (s) => s.toLowerCase().replace(/\s+/g, '-').replace(/\+/g, '').replace(/&/g, '');
+
+  // Build reverse map: slug -> original display name (for subcategories and main names)
+  const SLUG_TO_NAME = {};
+  Object.keys(MAIN_CATEGORY_MAP).forEach((main) => {
+    SLUG_TO_NAME[main] = main.split('-').map(w => w[0]?.toUpperCase()+w.slice(1)).join(' ');
+    MAIN_CATEGORY_MAP[main].forEach((sub) => {
+      SLUG_TO_NAME[slugify(sub)] = sub;
+    });
+  });
+
   useEffect(() => {
     // If search query present in URL, perform search; else if slug present fetch by slug
     const params = new URLSearchParams(location.search);
@@ -110,7 +133,34 @@ const Productpage = () => {
     setError("");
     try {
       console.log("🔍 Fetching products for slug:", categorySlug);
-      const res = await API.get(`/api/products?category=${encodeURIComponent(categorySlug)}`);
+      // If this slug maps to a main category with known subcategories, request all of them
+      const CATEGORY_MAP = {
+        'sofas': ['Wooden Sofas','Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas', 'Wooden Diwan', 'Benches', 'Stools'],
+        'living': ['TV Units','Temples','Book Shelves','Display Units','Shoe Racks','Sideboards','Chest of Drawers','Chairs','Stools','Benches','Swings','Coffee Tables','Side Tables','Console Tables','Wall Shelves & Hanger','Wall Mirrors'],
+        'bedroom': ['King Size Beds','Queen Size Beds','Single Beds','Hydraulic Storage Beds','Poster Beds','1-4 Door Wardrobes'],
+        'dining-kitchen': ['Dining Tables','2 Seater Dining Sets','4 Seater Dining Sets','6 Seater Dining Sets','Dining Chairs','Benches','Kitchen Cabinets','Crockery Units','Wooden Tray','Wooden Jars','Spice Box','Chopping Board','Coasters','Tissue Box'],
+        'storage': ['TV Units','Book Shelves','Display Units','Shoe Racks','Home Temples','Magazine Racks','Wooden Corner','Chest of Drawers','Wardrobes','Bed Side Tables','Dressing','Almira','Bar Cabinets'],
+        'study-office': ['Study Tables','Wooden Corner'],
+        'custom-furnitures': ['Custom Sofas','Custom Wardrobes','Custom Beds','Custom Tables']
+      };
+
+      // Build category param using slug forms (these match DB values)
+      let categoryParam = categorySlug;
+      const mapEntry = MAIN_CATEGORY_MAP[categorySlug];
+      if (mapEntry && Array.isArray(mapEntry) && mapEntry.length > 0) {
+        // main category: include main slug + all subcategory slugs
+        const subsSlugs = mapEntry.map(s => slugify(s));
+        const parts = [categorySlug, ...subsSlugs];
+        categoryParam = parts.join(',');
+      } else if (SLUG_TO_NAME[categorySlug]) {
+        // it's a subcategory slug — use the slug itself (DB stores slugs)
+        categoryParam = categorySlug;
+      } else {
+        // fallback: try slug and capitalized variant
+        categoryParam = [categorySlug, categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)].join(',');
+      }
+
+      const res = await API.get('/api/products', { params: { category: categoryParam } });
       
       const productsData = Array.isArray(res.data) ? res.data : (res.data.products || []);
       setProducts(productsData);
@@ -486,7 +536,30 @@ const Productpage = () => {
           {/* Right Side - Products */}
           <div className="flex-1">
             {/* Top Bar */}
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-6 flex items-center justify-between">
+              {/* Category Header */}
+              <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+                <div className="flex items-center justify-between">
+                  <h1 className="text-2xl font-bold text-gray-800">{(MAIN_CATEGORY_MAP[slug] ? slug.split('-').map(w => w[0]?.toUpperCase()+w.slice(1)).join(' ') : formatCategoryName(slug))}</h1>
+                </div>
+                {MAIN_CATEGORY_MAP[slug] && MAIN_CATEGORY_MAP[slug].length > 0 && (
+                  <>
+                    <div className="text-sm text-gray-600 mt-1">{MAIN_CATEGORY_MAP[slug].join(' • ')}</div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {MAIN_CATEGORY_MAP[slug].map((sub) => {
+                        const subSlug = sub.toLowerCase().replace(/\s+/g, '-').replace(/\+/g, '').replace(/&/g, '');
+                        return (
+                          <button key={sub} onClick={() => navigate(`/${subSlug}`)} className="px-3 py-1 rounded bg-white border text-sm text-gray-700 hover:bg-orange-50">
+                            {sub}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Top Bar */}
+              <div className="bg-white rounded-lg shadow-sm p-4 mb-6 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <span className="text-sm text-gray-600">Sort By :</span>
                 <select

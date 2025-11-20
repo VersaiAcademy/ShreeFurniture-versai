@@ -72,7 +72,7 @@ const Contactus = () => {
           <h1 className="text-lg md:text-2xl text text-orange-500 cursor-pointer">
             New Complaint Or Feedback ?
           </h1>
-          <h1 className="text-gray-300 ">Ladies and Gentleman welcome</h1>
+          
         </div>
 
         <div className="flex p-10 items-center gap-2">

@@ -152,157 +152,47 @@ const Homepage = () => {
 
   
 
-      {/* <div className="pt-3 pb-3 px-10 bg-pink-50">
-        <div className="flex justify-between items-center">
-          <div>
-            {" "}
-            <h3 className="text-3xl  font-bold">
-              Home Furnishing Items
-            </h3>
-            <p className="pb-3  text-gray-400 ">
-              Give Your Home A Touch Of WOW
-            </p>
-          </div>
-          <div>
-            <button className="bg-gray-300 p-2 border-black border focus:border-orange-300 rounded-sm">
-              VIEW ALL <span className="text-xl">{">"}</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="pt-3 flex flex-col gap-3  overflow-hidden pb-4">
-          <div className="flex justify-center gap-4 h-24 md:h-96">
-            <div className=" w-48 md:w-[25rem] h-52 md:h-96 overflow-hidden bg-white p-2 rounded-md flex flex-col ">
-              <img
-                className="object-cover rounded-md transition-transform transform-gpu hover:scale-105 w-auto h-72 "
-                src="/images/curtain.jpg"
-                alt="Image"
-              />
-              <p className="pt-2 pb-2 text-center">
-                <h2 className="text-xl">Curtains</h2>
-                <h6 className=""> 560+Options | From Rs 380</h6>
-              </p>
-            </div>
-            <div className=" w-48 md:w-[25rem] h-52 md:h-96 overflow-hidden bg-white p-2 rounded-md flex flex-col ">
-              <img
-                className="object-cover rounded-md transition-transform transform-gpu hover:scale-105 w-auto h-72 "
-                src="/images/bed.webp"
-                alt="Image"
-              />
-              <p className="pt-2 pb-2 text-center">
-                <h2 className="text-xl">Curtains</h2>
-                <h6 className=""> 560+Options | From Rs 380</h6>
-              </p>
-            </div>
-            <div className=" w-48 md:w-[25rem] h-52 md:h-96 overflow-hidden bg-white p-2 rounded-md flex flex-col ">
-              <img
-                className="object-cover rounded-md transition-transform transform-gpu hover:scale-105 w-auto h-72 "
-                src="/images/sofacover.jpg"
-                alt="Image"
-              />
-              <p className="pt-2 pb-2 text-center">
-                <h2 className="text-xl">Curtains</h2>
-                <h6 className=""> 560+Options | From Rs 380</h6>
-              </p>
-            </div>
-          </div>
-
-          <div className="flex justify-center gap-4 h-24 md:h-96">
-            <div className=" w-48 md:w-[25rem] h-52 md:h-96 overflow-hidden bg-white p-2 rounded-md flex flex-col ">
-              <img
-                className="object-cover rounded-md transition-transform transform-gpu hover:scale-105 w-auto h-72 "
-                src="/images/mat.jpg"
-                alt="Image"
-              />
-              <p className="pt-2 pb-2 text-center">
-                <h2 className="text-xl">Curtains</h2>
-                <h6 className=""> 560+Options | From Rs 380</h6>
-              </p>
-            </div>
-            <div className=" w-48 md:w-[25rem] h-52 md:h-96 overflow-hidden bg-white p-2 rounded-md flex flex-col ">
-              <img
-                className="object-cover rounded-md transition-transform transform-gpu hover:scale-105 w-auto h-72 "
-                src="/images/bed2.webp"
-                alt="Image"
-              />
-              <p className="pt-2 pb-2 text-center">
-                <h2 className="text-xl">Curtains</h2>
-                <h6 className=""> 560+Options | From Rs 380</h6>
-              </p>
-            </div>
-            <div className=" w-48 md:w-[25rem] h-52 md:h-96 overflow-hidden bg-white p-2 rounded-md flex flex-col ">
-              <img
-                className="object-cover rounded-md transition-transform transform-gpu hover:scale-105 w-auto h-72 "
-                src="/images/table.jpg"
-                alt="Image"
-              />
-              <p className="pt-2 pb-2 text-center">
-                <h2 className="text-xl">Curtains</h2>
-                <h6 className=""> 560+Options | From Rs 380</h6>
-              </p>
-            </div>
-          </div>
-        </div>
-        <hr />
-      </div> */}
-      {/* <div className="p-5 flex gap-3 flex-col md:flex-row justify-center">
-        <img
-          src="/images/new-mattress-banner.jpg"
-          alt=""
-          className="w-auto md:w-[45rem]"
-        />
-        <img
-          src="/images/new-temple-banner.jpg"
-          alt=""
-          className="w-auto md:w-[45rem]"
-        />
-      </div> */}
-
-     <div className="pt-5 px-5">
-  <div className="flex flex-col md:flex-row mb-10 gap-5">
-    {/* Main Big Image */}
-    <a href="/dining" className="pt-0 md:pt-10 cursor-pointer group">
-      <img 
-        src="/dining/Web Dining table Sets.jpg" 
-        alt="Dining Table Sets" 
-        className="w-full md:w-[50rem]  transition-transform transform-gpu group-hover:scale-[1.02] shadow-md hover:shadow-xl" 
+ <div className="pt-5 px-5">
+  <div className="flex flex-col md:flex-row mb-10">
+    <div className="pt-0 md:pt-10 cursor-pointer" onClick={() => window.location.href = '/dining'}>
+      <img
+        src="/dining/Web Dining table Sets.jpg"
+        alt="Dining Table Sets"
+        className="w-full md:w-[50rem] transition-transform transform-gpu hover:scale-[1.02]"
       />
-    </a>
-
-    {/* Right Section (Smaller Images) */}
-    <div className="flex flex-col gap-5">
-      <div className="flex pl-0 md:pl-10 gap-5 pt-5 md:pt-10">
-        <a href="/dining" className="flex-1 group cursor-pointer">
+    </div>
+    <div className="flex flex-col gap-3">
+      <div className="flex pl-0 md:pl-10 gap-3 pt-5 md:pt-10">
+        <div className="cursor-pointer" onClick={() => window.location.href = '/dining'}>
           <img
             src="/dining/1.jpg"
             alt="Dining Furniture"
-            className="object-cover  transition-transform transform-gpu group-hover:scale-105 w-full h-72 shadow-md hover:shadow-xl"
+            className="w-full md:w-96 transition-transform transform-gpu hover:scale-105"
           />
-        </a>
-        <a href="/dining" className="flex-1 group cursor-pointer">
+        </div>
+        <div className="cursor-pointer" onClick={() => window.location.href = '/dining'}>
           <img
             src="/dining/2.jpg"
             alt="Dining Furniture"
-            className="object-cover  transition-transform transform-gpu group-hover:scale-105 w-full h-72 shadow-md hover:shadow-xl"
+            className="w-full md:w-96 transition-transform transform-gpu hover:scale-105"
           />
-        </a>
+        </div>
       </div>
-
-      <div className="flex pl-0 md:pl-10 gap-5">
-        <a href="/dining" className="flex-1 group cursor-pointer">
+      <div className="flex justify-between gap-3 pl-0 md:pl-10">
+        <div className="cursor-pointer" onClick={() => window.location.href = '/dining'}>
           <img
             src="/dining/3.jpg"
             alt="Dining Furniture"
-            className="object-cover  transition-transform transform-gpu group-hover:scale-105 w-full h-72 shadow-md hover:shadow-xl"
+            className="w-full md:w-96 transition-transform transform-gpu hover:scale-105"
           />
-        </a>
-        <a href="/dining" className="flex-1 group cursor-pointer">
+        </div>
+        <div className="cursor-pointer" onClick={() => window.location.href = '/dining'}>
           <img
             src="/dining/4.jpg"
             alt="Dining Furniture"
-            className="object-cover transition-transform transform-gpu group-hover:scale-105 w-full h-72 shadow-md hover:shadow-xl"
+            className="w-full md:w-96 transition-transform transform-gpu hover:scale-105"
           />
-        </a>
+        </div>
       </div>
     </div>
   </div>
@@ -315,43 +205,42 @@ const Homepage = () => {
       <StoreLocator/>
      
 
-      <div className="pt-10 pb-10 px-5 md:px-10 bg-gradient-to-b from-blue-50 to-white">
-        <div className="max-w-7xl mx-auto">
-          {/* Section Heading */}
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-800 mb-3">
-              Customer Reviews & Experience
-            </h2>
-            <p className="text-sm md:text-lg text-gray-600">
-              See what our customers say about their furniture journey
-            </p>
-          </div>
+      <div className="pt-10 pb-5 px-5 md:px-10 bg-gradient-to-b from-orange-100 to-white">
+  <div className="max-w-7xl mx-auto">
+    {/* Section Heading */}
+    <div className="text-center mb-4">
+      <h2 className="text-2xl md:text-4xl font-bold text-black mb-3">
+        Behind The Scenes: Our Manufacturing Excellence
+      </h2>
+      <p className="text-sm md:text-lg text-black">
+        Take a tour of our state-of-the-art facility where quality meets craftsmanship
+      </p>
+    </div>
 
-          {/* Video Section - Center */}
-          <div className="mb-10">
-            <div className="relative w-full max-w-5xl mx-auto rounded-lg overflow-hidden shadow-2xl group">
-              <video
-                className="w-full h-auto"
-                controls
-                poster="/india/SFV Thumbnail (1).jpg"
-              >
-                <source src="/india/video.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-              {/* Play Button Overlay (optional) */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/20 transition-all duration-300 pointer-events-none">
-                <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center">
-                  <svg className="w-10 h-10 text-orange-500 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-
-         
+    {/* Video Section - Center */}
+    <div className="mb-10">
+      <div className="relative w-full max-w-5xl mx-auto rounded-lg overflow-hidden shadow-2xl">
+        <div className="relative pb-[56.25%] h-0">
+          <iframe
+            className="absolute top-0 left-0 w-full h-full"
+            src="https://www.youtube.com/embed/WPSjhKGGLog?si=5twZUtGOn30wPlJy"
+            title="Manufacturing Unit Tour"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          ></iframe>
         </div>
       </div>
+      
+      {/* Optional: Additional Info Below Video */}
+      <div className="text-center mt-6">
+        <p className="text-black text-sm md:text-base">
+          🏭 Witness our dedication to quality | ✨ Premium materials & expert craftsmanship | 🔧 Modern manufacturing process
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
     </div>
   );
 

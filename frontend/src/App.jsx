@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 import Homepage from "./pages/Homepage";
 import Productpage from "./pages/Productpage";
+import CategoryPage from "./pages/CategoryPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Whislist from "./pages/Whislist";
@@ -60,7 +61,8 @@ function App() {
         <Route path="/terms" element={<TermsConditions />} />
         <Route path="/return-refunds" element={< CancellationRefundPolicy/>} />
         <Route path="/delivery-policy" element={<DeliveryShippingPage />} />
-        {/* ✅ NEW: Dynamic slug-based routing - handles all category/subcategory pages */}
+        {/* Category pages: handled by root `/:slug` route to preserve original paths */}
+        {/* ✅ Backwards-compatible slug routing (keeps existing behavior) */}
         <Route path="/:slug" element={<Productpage />} />
       </Routes>
       <Footer />

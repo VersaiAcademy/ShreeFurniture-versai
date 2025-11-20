@@ -6,6 +6,7 @@ import Products from "./components/Products";
 import Categories from "./components/Categories";
 import Orders from "./components/Orders";
 import Banners from "./components/Banners";
+import Users from "./components/Users";
 import { safeJSONParse } from "./utils/safeJSONParse";
 
 const App = () => {
@@ -33,6 +34,8 @@ const App = () => {
 
     // Validate token silently
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://shreefurniture-backend-production.up.railway.app';
+    console.log('Admin API Base URL:', API_BASE_URL);
+    console.log('Admin token present:', Boolean(token));
     fetch(`${API_BASE_URL}/api/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -80,6 +83,8 @@ const App = () => {
         return <Categories />;
       case "orders":
         return <Orders />;
+        case "users":
+          return <Users />;
       default:
         return <Dashboard />;
     }
@@ -94,7 +99,16 @@ const App = () => {
   }
 
   if (!isLoggedIn) {
-    return <Login onLogin={handleLogin} />;
+    return (
+      <div>
+        <Login onLogin={handleLogin} />
+        <div style={{ position: 'fixed', bottom: 10, left: 10, background: '#fff3cd', padding: 10, borderRadius: 6, border: '1px solid #ffeeba' }}>
+          <strong>Debug:</strong>
+          <div>API Base: {import.meta.env.VITE_API_BASE_URL || 'https://shreefurniture-backend-production.up.railway.app'}</div>
+          <div>Admin token present: {Boolean(localStorage.getItem('adminToken')) ? 'yes' : 'no'}</div>
+        </div>
+      </div>
+    );
   }
 
   return (

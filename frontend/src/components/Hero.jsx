@@ -86,10 +86,10 @@ const Homepage = () => {
 
   return (
     <div className="px-2 md:px-4 lg:px-8 pt-4">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-stretch">
         {/* Left: Main Carousel Banner */}
-        <div className="lg:col-span-2">
-          <div className="relative h-[300px] sm:h-[380px] md:h-[450px] lg:h-[500px] rounded-lg overflow-hidden bg-gray-100 shadow-lg group">
+        <div className="lg:col-span-2 h-[300px] sm:h-[380px] md:h-[450px] lg:h-[520px]">
+          <div className="relative w-full h-full rounded-lg overflow-hidden bg-gray-100 shadow-lg group">
             {/* Carousel Images */}
             <div className="relative w-full h-full">
               {mainBanners.map((banner, index) => (
@@ -141,10 +141,10 @@ const Homepage = () => {
           </div>
         </div>
 
-  {/* Right: Top and Bottom Small Banners (desktop) */}
-  <div className="hidden lg:flex lg:col-span-1 flex-col gap-2">
+        {/* Right: Top and Bottom Small Banners (desktop) */}
+        <div className="hidden lg:flex lg:col-span-1 flex-col gap-3 h-[520px]">
           {/* Top Small Banner */}
-          <div className="relative flex-1 rounded-lg overflow-hidden shadow-lg group">
+          <div className="relative flex-1 rounded-lg overflow-hidden shadow-lg group h-1/2">
             <img
               src={topSmallBanner.imageUrl}
               alt="Top Banner"
@@ -156,7 +156,7 @@ const Homepage = () => {
           </div>
 
           {/* Bottom Small Banner */}
-          <div className="relative flex-1 rounded-lg overflow-hidden shadow-lg group">
+          <div className="relative flex-1 rounded-lg overflow-hidden shadow-lg group h-1/2">
             <img
               src={bottomSmallBanner.imageUrl}
               alt="Bottom Banner"
@@ -169,7 +169,7 @@ const Homepage = () => {
         </div>
 
         {/* On small screens show the two small banners under the main carousel */}
-        <div className="lg:hidden mt-3 w-full flex flex-col gap-2">
+        <div className="lg:hidden mt-3 w-full flex flex-col gap-3">
           <div className="relative w-full rounded-lg overflow-hidden shadow-lg">
             <img src={topSmallBanner.imageUrl} alt="Top Banner" className="w-full h-40 md:h-48 object-cover" />
           </div>

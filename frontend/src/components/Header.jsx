@@ -1,3 +1,4 @@
+// Header.jsx - UPDATED VERSION with proper category navigation
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Search, User, ShoppingCart, Menu, X, Heart, MapPin, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -72,6 +73,7 @@ const Header = () => {
     }
   };
 
+  // Main categories with their slugs
   const [categories] = useState([
     { _id: '1', name: 'Sofas', slug: 'sofas' },
     { _id: '2', name: 'Living', slug: 'living' },
@@ -80,9 +82,6 @@ const Header = () => {
     { _id: '5', name: 'Storage', slug: 'storage' },
     { _id: '6', name: 'Study & Office', slug: 'study-office' },
     { _id: '7', name: 'Custom Furniture', slug: 'custom-furnitures' },
-    // { _id: '8', name: 'Home Furnishing', slug: 'home-furnishing' },
-    // { _id: '9', name: 'Lighting & Decor', slug: 'lighting-decor' },
-    // { _id: '10', name: 'Interiors', slug: 'interiors' }
   ]);
   
   const [activeMenu, setActiveMenu] = useState(null);
@@ -95,37 +94,6 @@ const Header = () => {
   const [wishlistCount, setWishlistCount] = useState(0);
   const timeoutRef = useRef(null);
   const subMenuTimeoutRef = useRef(null);
-
-  // Consolidated slug map for deep links
-  const slugMap = {
-    'All Sofas': 'all-sofas',
-    'Fabric Sofas': 'fabric-sofas',
-    'Wooden Sofas': 'wooden-sofas',
-    '3 Seater Sofas': '3-seater-sofas',
-    'All Beds': 'all-beds',
-    'Solid Wood Beds': 'solid-wood-beds',
-    'TV Units': 'tv-units',
-    'Book Shelves': 'book-shelves',
-    'Display Units': 'display-units',
-    'Shoe Racks': 'shoe-racks',
-    'Sideboards': 'sideboards',
-    'Chest of Drawers': 'chest-of-drawers',
-    'Dining Tables': 'dining-tables',
-    'Dining Chairs': 'dining-chairs',
-    'Modular Kitchens': 'modular-kitchens',
-    'Office Desks': 'office-desks',
-    'Office Chairs': 'office-chairs',
-    'Custom Sofas': 'custom-sofas',
-    'Custom Wardrobes': 'custom-wardrobes',
-    'Rugs': 'rugs',
-    'Curtains': 'curtains',
-    'Pillows & Cushions': 'pillows-cushions',
-    'Floor Lamps': 'floor-lamps',
-    'Wall Art': 'wall-art',
-    'Vases': 'vases',
-    'Modular Wardrobes': 'modular-wardrobes',
-    'Full Home Interiors': 'full-home-interiors'
-  };
 
   // Comprehensive menu data for all categories
   const menuData = {
@@ -147,7 +115,7 @@ const Header = () => {
       sections: [
         {
           title: 'BEDS',
-          items: ['King Size Beds', 'Queen Size Beds', 'Single Beds',  'Hydraulic Storage Beds', 'Poster Beds', ],
+          items: ['King Size Beds', 'Queen Size Beds', 'Single Beds',  'Hydraulic Storage Beds', 'Poster Beds','Sofa Cum Beds' ],
           hasDropdown: true
         },
         {
@@ -185,7 +153,7 @@ const Header = () => {
       sections: [
         {
           title: 'DINING FURNITURE',
-          items: ['Dining Tables', '2 Seater Dining Sets','4 Seater Dining Sets','6 Seater Dining Sets', 'Dining Chairs', 'Benches'],
+          items: ['Dining Table Sets', '2 Seater Dining Sets','4 Seater Dining Sets','6 Seater Dining Sets', 'Dining Tables','Dining Chairs', 'Benches'],
           hasDropdown: true
         },
         {
@@ -198,14 +166,13 @@ const Header = () => {
           items: [ 'Wooden Tray' , 'Wooden Jars', 'Spice Box','Chopping Board' ,'Coasters' ,'Tissue Box' ],
           hasDropdown: true
         }
-
       ]
     },
     'Storage': {
       sections: [
         {
           title: 'LIVING STORAGE',
-          items: ['TV Units', 'Book Shelves' ,'Display Units' , 'Shoe Racks' ,'Home Temples' ,'Magazine Racks' ,'Wooden Corner' ],
+          items: ['TV Units', 'Book Shelves' ,'Display Units' , 'Shoe Racks' ,'Temples' ,'Magazine Racks' ,'Wooden Corner' ],
           hasDropdown: true
         },
         {
@@ -224,7 +191,7 @@ const Header = () => {
       sections: [
         {
           title: 'TABLES',
-          items: [ 'Study Tables', ],
+          items: [ 'Study Tables', 'Computer Tables','Wall Mounted Study Table'],
           hasDropdown: true
         },
         {
@@ -234,63 +201,39 @@ const Header = () => {
         }
       ]
     },
-    'Home Furnishing': {
-      sections: [
-        {
-          title: 'TEXTILES',
-          items: ['Rugs', 'Curtains', 'Pillows & Cushions', 'Bed Linen'],
-          hasDropdown: true
-        },
-        {
-          title: 'FLOORING',
-          items: ['Carpets', 'Doormats'],
-          hasDropdown: true
-        }
-      ]
-    },
-    'Lighting & Decor': {
-      sections: [
-        {
-          title: 'LIGHTING',
-          items: ['Floor Lamps', 'Table Lamps', 'Ceiling Lights'],
-          hasDropdown: true
-        },
-        {
-          title: 'DECOR',
-          items: ['Wall Art', 'Vases', 'Mirrors', 'Planters'],
-          hasDropdown: true
-        }
-      ]
-    },
-    'Interiors': {
-      sections: [
-        {
-          title: 'SERVICES',
-          items: ['Full Home Interiors', 'Room Makeovers', 'Renovations'],
-          hasDropdown: true
-        },
-        {
-          title: 'PRODUCTS',
-          items: ['Modular Wardrobes', 'Custom TV Units'],
-          hasDropdown: true
-        }
-      ]
+    'Custom Furniture': {
+    sections: [],
+    hasDropdown: false,
+    link: '/contact-us'
+  }
     }
   };
 
-  const navigateToSlug = (itemName) => {
-    // 1. Check slugMap first
-    const slug = slugMap[itemName] 
-      // 2. Fallback to category slug (e.g., if itemName is a main category like 'Sofas')
-      || categories.find(cat => cat.name === itemName)?.slug 
-      // 3. Last fallback: basic formatting
-      || itemName.toLowerCase().replace(/\s+/g, '-').replace(/\+/g, ''); 
-      
-    window.location.href = `/${slug}`;
+  // NEW: Navigate function that handles both category and subcategory clicks
+  const navigateToSlug = (itemName, isMainCategory = false) => {
+    // Close all menus
     setIsMobileMenuOpen(false);
     setActiveMenu(null);
     setActiveSubMenu(null);
     setActiveMobileSubmenu({});
+
+    // If it's a main category click, use the category slug
+    if (isMainCategory) {
+      const category = categories.find(cat => cat.name === itemName);
+      if (category) {
+        navigate(`/${category.slug}`);
+        return;
+      }
+    }
+
+    // For subcategory items, create slug from the item name
+    const slug = itemName
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/\+/g, '')
+      .replace(/&/g, '');
+    
+    navigate(`/${slug}`);
   };
 
   const handleMouseEnter = (menu) => {
@@ -338,7 +281,7 @@ const Header = () => {
           {/* Top Bar */}
           <div className="flex items-center justify-between py-4 border-b border-gray-100">
             {/* Logo */}
-            <div className="flex items-center cursor-pointer" onClick={() => window.location.href = '/'}>
+            <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
               <img 
                 src="/SFV Log 637x154 Pxl.png" 
                 alt="Sri Furniture Village Logo" 
@@ -356,7 +299,7 @@ const Header = () => {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       const q = (searchQuery || '').trim();
-                      if (q) window.location.href = `/search?search=${encodeURIComponent(q)}`;
+                      if (q) navigate(`/search?search=${encodeURIComponent(q)}`);
                     }
                   }}
                   placeholder="Search Products, Color & More..."
@@ -365,7 +308,7 @@ const Header = () => {
                 <button
                   onClick={() => {
                     const q = (searchQuery || '').trim();
-                    if (q) window.location.href = `/search?search=${encodeURIComponent(q)}`;
+                    if (q) navigate(`/search?search=${encodeURIComponent(q)}`);
                   }}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2"
                 >
@@ -387,10 +330,10 @@ const Header = () => {
 
             {/* Right Icons */}
             <div className="flex items-center space-x-6">
-             <a href="#location" className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group">
-              <MapPin className="h-5 w-5 mb-1" />
-              <span className="text-xs font-medium">Stores</span>
-            </a>
+              <a href="#location" className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group">
+                <MapPin className="h-5 w-5 mb-1" />
+                <span className="text-xs font-medium">Stores</span>
+              </a>
 
               <button 
                 onClick={handleProfileClick}
@@ -418,7 +361,7 @@ const Header = () => {
               </button>
 
               <button 
-                onClick={() => window.location.href = '/cart'}
+                onClick={() => navigate('/cart')}
                 className="flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group relative p-2"
               >
                 <ShoppingCart className="h-5 w-5 mb-1" />
@@ -440,7 +383,7 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Navigation Bar */}
+          {/* Navigation Bar - UPDATED */}
           <nav className="hidden md:flex items-center justify-center space-x-1 py-3">
             {categories.map((cat) => (
               <div
@@ -449,8 +392,9 @@ const Header = () => {
                 onMouseEnter={() => handleMouseEnter(cat.name)}
                 onMouseLeave={handleMouseLeave}
               >
+                {/* UPDATED: Main category button now passes isMainCategory=true */}
                 <button 
-                  onClick={() => navigateToSlug(cat.name)} 
+                  onClick={() => navigateToSlug(cat.name, true)} 
                   className={`px-4 py-2 text-sm font-medium transition-colors ${
                     activeMenu === cat.name 
                       ? 'text-orange-600 border-b-2 border-orange-600' 
@@ -499,7 +443,7 @@ const Header = () => {
                                 {section.items.map((item, itemIdx) => (
                                   <button
                                     key={itemIdx}
-                                    onClick={() => navigateToSlug(item)}
+                                    onClick={() => navigateToSlug(item, false)}
                                     className="w-full px-4 py-2 text-left text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-colors flex items-center group"
                                   >
                                     <span className="w-1 h-1 bg-orange-400 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
@@ -542,7 +486,7 @@ const Header = () => {
                   const q = (searchQuery || '').trim();
                   if (q) {
                     setSearchOpen(false);
-                    window.location.href = `/search?search=${encodeURIComponent(q)}`;
+                    navigate(`/search?search=${encodeURIComponent(q)}`);
                   }
                 }
               }}
@@ -556,7 +500,7 @@ const Header = () => {
         </div>
       )}
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Menu Drawer - UPDATED */}
       <div
         className={`lg:hidden fixed top-0 right-0 bottom-0 w-80 bg-white z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto shadow-2xl ${
           isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
@@ -580,7 +524,7 @@ const Header = () => {
                   const q = (searchQuery || '').trim();
                   if (q) {
                     setIsMobileMenuOpen(false);
-                    window.location.href = `/search?search=${encodeURIComponent(q)}`;
+                    navigate(`/search?search=${encodeURIComponent(q)}`);
                   }
                 }
               }}
@@ -591,13 +535,13 @@ const Header = () => {
 
           {categories.map((cat) => (
             <div key={cat._id} className="border-b border-gray-200">
-              {/* Main Category Toggle for Mobile */}
+              {/* Main Category Toggle for Mobile - UPDATED */}
               <button
                 onClick={() => {
                   if (menuData[cat.name]) {
                     setActiveMenu(activeMenu === cat.name ? null : cat.name);
                   } else {
-                    navigateToSlug(cat.name); 
+                    navigateToSlug(cat.name, true); 
                   }
                 }}
                 className="flex items-center justify-between w-full py-4 text-left font-medium text-gray-800 hover:text-orange-600 transition-colors"
@@ -615,6 +559,16 @@ const Header = () => {
               {/* Mobile Submenu Container */}
               {activeMenu === cat.name && menuData[cat.name] && (
                 <div className="pb-4 space-y-4">
+                  {/* "View All" button for mobile */}
+                  <div className="pl-4 mb-2">
+                    <button
+                      onClick={() => navigateToSlug(cat.name, true)}
+                      className="text-sm font-semibold text-orange-600 hover:text-orange-700 underline"
+                    >
+                      View All {cat.name}
+                    </button>
+                  </div>
+
                   {menuData[cat.name].sections.map((section, idx) => (
                     <div key={idx} className="pl-4">
                       {/* Submenu Section Toggle */}
@@ -636,7 +590,7 @@ const Header = () => {
                           {section.items.map((item, itemIdx) => (
                             <li key={itemIdx}>
                               <button 
-                                onClick={() => navigateToSlug(item)}
+                                onClick={() => navigateToSlug(item, false)}
                                 className="block w-full text-left py-1.5 text-sm text-gray-600 hover:text-orange-600 hover:translate-x-1 transition-all"
                               >
                                 {item}
@@ -682,7 +636,7 @@ const Header = () => {
           ) : (
             <button 
               onClick={() => {
-                window.location.href = '/login';
+                navigate('/login');
                 setIsMobileMenuOpen(false);
               }}
               className="w-full py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors mb-2"

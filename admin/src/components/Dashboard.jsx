@@ -24,6 +24,14 @@ const Dashboard = ({ onNavigate }) => {
       setStats(response.data.stats);
     } catch (error) {
       console.error('Failed to load stats:', error);
+      // Show a friendly message in UI dev area if auth or network issues
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        setStats((s) => ({ ...s, _error: 'Unauthorized - please login as admin' }));
+      } else if (error.request) {
+        setStats((s) => ({ ...s, _error: 'No response from server - check backend' }));
+      } else {
+        setStats((s) => ({ ...s, _error: error.message }));
+      }
     } finally {
       setLoading(false);
     }
@@ -35,6 +43,11 @@ const Dashboard = ({ onNavigate }) => {
 
   return (
     <div>
+      {stats._error && (
+        <div style={{ marginBottom: 12, color: '#842029', background: '#f8d7da', padding: 8, borderRadius: 4 }}>
+          {stats._error}
+        </div>
+      )}
       <div className="stats-grid">
         <div className="stat-card">
           <h3>{stats.totalProducts}</h3>
