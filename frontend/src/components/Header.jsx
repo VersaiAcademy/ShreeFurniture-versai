@@ -202,10 +202,9 @@ const Header = () => {
       ]
     },
     'Custom Furniture': {
-    sections: [],
-    hasDropdown: false,
-    link: '/contact-us'
-  }
+      sections: [],
+      hasDropdown: false,
+      link: '/contact-us'
     }
   };
 
