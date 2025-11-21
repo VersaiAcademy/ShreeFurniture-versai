@@ -71,6 +71,18 @@ const Productpage = () => {
   });
 
   useEffect(() => {
+    // Redirect invalid slugs that match known routes - CRITICAL: prevent API call with slug="profile"
+    const invalidSlugs = ['profile', 'userprofile', 'login', 'register', 'cart', 'wishlist', 'address', 'checkout', 'cashfree-callback'];
+    if (slug && invalidSlugs.includes(slug.toLowerCase())) {
+      console.warn('⚠️ Invalid slug for product page:', slug, '- redirecting to correct route');
+      if (slug.toLowerCase() === 'profile' || slug.toLowerCase() === 'userprofile') {
+        navigate('/userprofile', { replace: true });
+      } else {
+        navigate(`/${slug.toLowerCase()}`, { replace: true });
+      }
+      return; // IMPORTANT: Return early to prevent API call
+    }
+
     // If search query present in URL, perform search; else if slug present fetch by slug
     const params = new URLSearchParams(location.search);
     const searchParam = params.get('search') || params.get('q');
@@ -78,10 +90,16 @@ const Productpage = () => {
       fetchProductsBySearch(searchParam);
       return;
     }
-    if (slug) {
+    
+    // Only fetch products if slug is valid (not an invalid route)
+    if (slug && !invalidSlugs.includes(slug.toLowerCase())) {
       fetchProductsBySlug(slug);
+    } else if (!slug) {
+      // No slug - don't fetch anything (empty state)
+      setProducts([]);
+      setLoading(false);
     }
-  }, [slug, location.search]);
+  }, [slug, location.search, navigate]);
 
   // Read query params (size filters) from URL and set initial filters
   useEffect(() => {
@@ -129,6 +147,16 @@ const Productpage = () => {
   }, []);
 
   const fetchProductsBySlug = async (categorySlug) => {
+    // CRITICAL: Prevent fetching for invalid slugs - double-check before API call
+    const invalidSlugs = ['profile', 'userprofile', 'login', 'register', 'cart', 'wishlist', 'address', 'checkout', 'cashfree-callback'];
+    if (!categorySlug || invalidSlugs.includes(categorySlug.toLowerCase())) {
+      console.warn("⚠️ BLOCKED: Invalid slug for product fetch:", categorySlug, "- This should not reach API");
+      setError("Invalid category");
+      setProducts([]);
+      setLoading(false);
+      return; // Early return - DO NOT call API with invalid slug
+    }
+
     setLoading(true);
     setError("");
     try {

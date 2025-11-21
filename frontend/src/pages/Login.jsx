@@ -44,7 +44,51 @@ const Login = () => {
         localStorage.setItem("email", response.data.email || "");
         toast.success(response.data.message);
         dispatch(addCustomer(response.data.username));
-        navigate("/profile");
+        // Check for redirect target from URL params (next) or localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const nextParam = urlParams.get('next');
+        let after = nextParam || localStorage.getItem('afterLoginRedirect');
+        const shouldAutoPay = localStorage.getItem('shouldAutoPayAfterLogin');
+        
+        // Fix: Never redirect to broken address paths or profile - always use /checkout for checkout flow
+        if (after) {
+          // Block broken paths
+          if (after.includes('/address/') && !after.match(/^\/checkout/)) {
+            console.warn('⚠️ Blocked redirect to broken address path, using /checkout instead:', after);
+            after = '/checkout';
+          }
+          
+          // Block profile redirect if coming from checkout flow
+          if (shouldAutoPay === 'true' && after === '/userprofile' || after === '/profile') {
+            console.warn('⚠️ Blocked profile redirect during checkout flow, using /checkout instead');
+            after = '/checkout';
+          }
+          
+          // Ensure checkout path for payment flow
+          if (shouldAutoPay === 'true' && !after.includes('/checkout')) {
+            console.log('✅ Forcing /checkout for auto-pay flow');
+            after = '/checkout';
+          }
+        }
+        
+        // Clear redirect flags but preserve auto-pay flag for checkout page
+        if (after) {
+          localStorage.removeItem('afterLoginRedirect');
+          // If should auto-pay, keep the flag for Checkout page to handle
+          if (shouldAutoPay === 'true') {
+            // Keep shouldAutoPayAfterLogin for Checkout page
+            console.log('✅ User logged in, will auto-trigger payment on checkout page');
+          } else {
+            localStorage.removeItem('shouldAutoPayAfterLogin');
+          }
+          console.log('🔄 Redirecting to:', after);
+          navigate(after, { replace: true }); // Use replace to prevent back button issues
+        } else {
+          // Default: go to home, NOT profile (only go to profile if explicitly clicked)
+          console.log('✅ Login successful, redirecting to home');
+          localStorage.removeItem('shouldAutoPayAfterLogin'); // Clear flag if no redirect
+          navigate("/", { replace: true });
+        }
       } else {
         toast.warning(response.data.message);
       }

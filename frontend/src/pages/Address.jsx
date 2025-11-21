@@ -1,6 +1,7 @@
 import { faBuyNLarge } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
+import API from '../utils/api';
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -25,7 +26,81 @@ const Address = () => {
     city: "",
     state: "",
   });
+  // Check if should auto-trigger payment after login
   useEffect(() => {
+    const shouldAutoPay = localStorage.getItem('shouldAutoPayAfterLogin');
+    if (shouldAutoPay === 'true') {
+      const token = localStorage.getItem("token");
+      if (token) {
+        console.log('🔄 Auto-pay flag detected after login, setting up payment flow...');
+        
+        // Set online payment method immediately
+        setPaymentmethod('online');
+        
+        // Use a more reliable approach: check multiple times with increasing delays
+        let attempts = 0;
+        const maxAttempts = 5;
+        
+        const checkAndPay = () => {
+          attempts++;
+          console.log(`🔍 Auto-pay check attempt ${attempts}/${maxAttempts}`);
+          
+          // Check if address is complete and has ID
+          const addressComplete = data.mob1 && data.postalcode && data.society && 
+              data.state && data.city && data.area && data.landmark && data.id;
+          
+          if (addressComplete) {
+            console.log('✅ Address complete! Auto-triggering payment now...');
+            localStorage.removeItem('shouldAutoPayAfterLogin');
+            
+            // Ensure payment method is set before proceeding
+            setPaymentmethod('online');
+            
+            // Small delay to ensure state is updated, then trigger payment
+            setTimeout(() => {
+              console.log('🚀 Triggering handleOrder for auto-payment...');
+              handleOrder();
+            }, 1000);
+          } else if (attempts < maxAttempts) {
+            // If address not complete yet, log status and wait
+            console.log(`⚠️ Address not complete yet (attempt ${attempts}):`, {
+              mob1: !!data.mob1,
+              postalcode: !!data.postalcode,
+              society: !!data.society,
+              state: !!data.state,
+              city: !!data.city,
+              area: !!data.area,
+              landmark: !!data.landmark,
+              id: !!data.id
+            });
+            
+            // Wait a bit longer before next check
+            if (attempts < maxAttempts) {
+              setTimeout(checkAndPay, 2000);
+            }
+          } else {
+            // Max attempts reached, clear flag and show message
+            console.log('⚠️ Max attempts reached. Address may be incomplete. User should click Buy Now manually.');
+            localStorage.removeItem('shouldAutoPayAfterLogin');
+            toast.info('Please fill your address completely and click Buy Now to continue payment');
+          }
+        };
+        
+        // Start checking after a short delay to allow component to mount
+        setTimeout(checkAndPay, 1000);
+      } else {
+        // If no token but flag exists, clear flag
+        console.log('⚠️ No token found, clearing auto-pay flag');
+        localStorage.removeItem('shouldAutoPayAfterLogin');
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.id, data.mob1, data.postalcode, data.society, data.state, data.city, data.area, data.landmark]);
+
+  useEffect(() => {
+    // REMOVED broken session restore logic - it was causing redirect loops
+    // State is preserved via URL params only (totaloffer, totalprice, todaydeal)
+    
     const token = localStorage.getItem("token");
     const id = localStorage.getItem("id");
     const getMethod = async () => {
@@ -56,7 +131,10 @@ const Address = () => {
         setMethod("post");
       }
     };
-    getMethod();
+    
+    if (token && id) {
+      getMethod();
+    }
   }, []);
   const handleOnChange = (e) => {
     let name = e.target.name;
@@ -213,63 +291,255 @@ const Address = () => {
           );
           setLoading(false);
           toast.success(response.data.message);
-          navigate("/userprofile");
-          <Notification message={response.data.message} />;
+          // After COD order, stay on address page or go to orders, NOT profile
+          // Don't redirect to profile - let user continue shopping
+          console.log('✅ COD order placed successfully');
+          // Optionally navigate to orders page or stay on current page
+          // navigate("/userprofile"); // REMOVED - don't force profile redirect
+          // Stay on page and show success, user can navigate manually
         } else {
-          setLoading(true);
-          const response = await axios.post("/api/razorpay/create", {
-            amount: Number(totalprice) - Number(todaydeal),
-            currency: "INR",
-          });
-          const order_id = response.data.data.id;
+          // Cashfree flow: ensure user is logged in, then create order on server and redirect to payment link
+          try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+              // For online payment, redirect to login with checkout path (NOT address path)
+              // This prevents the redirect loop
+              const checkoutPath = '/checkout';
+              localStorage.setItem('afterLoginRedirect', checkoutPath);
+              localStorage.setItem('shouldAutoPayAfterLogin', 'true');
+              
+              // Save payment preference for after login
+              sessionStorage.setItem('paymentMode', 'online');
+              
+              toast.info('Please login to continue to payment');
+              navigate(`/login?next=${encodeURIComponent(checkoutPath)}`);
+              return;
+            }
+            
+            // User is authenticated - proceed directly with payment
+            // Verify token is valid (not just exists)
+            console.log('✅ User authenticated, proceeding with Cashfree payment...');
+            console.log('📋 Payment details:', {
+              amount: Number(totalprice) - Number(todaydeal),
+              addressId: data.id,
+              paymentMethod: paymentmethod
+            });
+            
+            // Ensure address is saved and has ID
+            if (!data.id) {
+              toast.error('Please save your address first by clicking Submit button');
+              setLoading(false);
+              return;
+            }
+            
+            setLoading(true);
+            const rawAmount = Number(totalprice) - Number(todaydeal);
+            // Basic client-side validation
+            if (!Number.isFinite(rawAmount) || rawAmount <= 0) {
+              toast.error('Invalid total amount, cannot initiate payment');
+              setLoading(false);
+              return;
+            }
+            
+            console.log('🚀 Starting payment flow...', {
+              amount: rawAmount,
+              addressId: data.id,
+              paymentMethod: 'online'
+            });
 
-          // razorpay code
+            // Cashfree express-validator expects numeric string in many examples; send as string
+            const amount = String(Math.round(rawAmount));
+            const returnUrl = `${window.location.origin}/cashfree-callback`;
 
-          const options = {
-            key: import.meta.env.VITE_RAZORPPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
-            name: "SRI Furniture Village",
-            description: "Premium Wooden Furniture",
-            image: "/SFV Log 637x154 Pxl.png",
-            order_id: order_id, //This is a sample Order ID. Pass the `id` obtained in the response of createOrder().
-            handler: function (response) {
-              toast.success(
-                handlePayment(
-                  response.razorpay_payment_id,
-                  response.razorpay_order_id,
-                  response.razorpay_signature
-                )
-              );
-              // alert(response.razorpay_payment_id);
-              // alert(response.razorpay_order_id);
-              // alert(response.razorpay_signature);
-            },
-            prefill: {
-              name: "Piyush Garg",
-              email: "youremail@example.com",
-              contact: "9999999999",
-            },
-            notes: {
-              address: "Razorpay Corporate Office",
-            },
-            theme: {
-              color: "#f3ca2b",
-            },
-          };
-          const rzp1 = new Razorpay(options);
-          rzp1.on("payment.failed", function (response) {
-            toast.error("payment failed try again");
-            // alert(response.error.code);
-            // alert(response.error.description);
-            // alert(response.error.source);
-            // alert(response.error.step);
-            // alert(response.error.reason);
-            // alert(response.error.metadata.order_id);
-            // alert(response.error.metadata.payment_id);
-          });
-          rzp1.open();
-          // end razorpay code
+            // Build payload and omit empty email to avoid express-validator isEmail() failure
+            const payload = {
+              amount,
+              currency: 'INR',
+              customer_name: localStorage.getItem('first_name') || localStorage.getItem('username') || 'Guest',
+              customer_phone: data.mob1 || '',
+              returnUrl
+            };
+            const email = localStorage.getItem('email');
+            if (email) payload.customer_email = email;
 
-          setLoading(false);
+            console.log('🔄 Creating Cashfree payment order...', payload);
+            const res = await API.post('/api/cashfree/create', payload);
+
+            // Determine payment URL/orderId from response
+            // Backend returns: { message, data: <cashfree_response>, orderId, txId, payment_link, payment_session_id }
+            const respPayload = res.data || {};
+            const cfData = respPayload.data || {}; // Cashfree's actual response
+            const backendOrderId = respPayload.orderId; // Server-generated order ID
+            
+            console.log('📦 Cashfree API response received:', {
+              orderId: backendOrderId,
+              payment_link: respPayload.payment_link,
+              payment_session_id: respPayload.payment_session_id,
+              cfDataKeys: Object.keys(cfData),
+              fullResponse: respPayload
+            });
+            
+            // Backend extracts payment_link for us (or constructs from payment_session_id)
+            // Check backend-extracted payment_link first, then fallback to Cashfree response
+            const paymentLink = respPayload.payment_link || // Backend-extracted/constructed
+                               cfData.payment_link || cfData.paymentLink || cfData.paymentUrl || 
+                               cfData.redirect_url || cfData.checkout_url;
+            
+            console.log('🔍 Payment link extracted:', {
+              hasPaymentLink: !!paymentLink,
+              paymentLink: paymentLink,
+              paymentLinkType: typeof paymentLink,
+              paymentLinkStartsWithHttp: paymentLink?.startsWith('http')
+            });
+            
+            // Use backend orderId (server-generated) - this is the one we saved
+            const orderId = backendOrderId || cfData.order_id || cfData.orderId || 
+                           cfData.order?.id || cfData.id;
+
+            if (!orderId) {
+              console.error('❌ No orderId in Cashfree response:', respPayload);
+              toast.error('Payment initialization failed: missing order ID');
+              setLoading(false);
+              return;
+            }
+
+            // Save orderId temporarily so callback can verify
+            localStorage.setItem('cf_orderId', orderId);
+            // Also save address and total so callback can finalize orders
+            localStorage.setItem('cf_addressId', data.id);
+            localStorage.setItem('cf_total', amount);
+
+            if (paymentLink) {
+              // Redirect user to Cashfree hosted payment page IMMEDIATELY
+              console.log('✅ Payment link received! Redirecting to Cashfree payment gateway NOW...');
+              console.log('🔗 Payment URL:', paymentLink);
+              
+              // Save order info BEFORE redirect
+              if (orderId) {
+                localStorage.setItem('cf_orderId', orderId);
+                localStorage.setItem('cf_addressId', data.id);
+                localStorage.setItem('cf_total', amount);
+                console.log('💾 Saved payment info before redirect:', { orderId, addressId: data.id, total: amount });
+              }
+              
+              toast.success('Redirecting to payment gateway...');
+              setLoading(false);
+              
+              // IMMEDIATE redirect - use replace to prevent back button issues
+              // Force immediate redirect - no delays
+              window.location.replace(paymentLink);
+              // Fallback if replace doesn't work (shouldn't happen)
+              setTimeout(() => {
+                if (window.location.href !== paymentLink) {
+                  window.location.href = paymentLink;
+                }
+              }, 100);
+              return; // Exit immediately
+            }
+
+            // If no payment link, check if we have payment_session_id
+            // Check both backend response and Cashfree data
+            const paymentSessionId = respPayload.payment_session_id || 
+                                    cfData.payment_session_id || 
+                                    cfData.paymentSessionId ||
+                                    cfData.paymentSessionID;
+            
+            if (paymentSessionId) {
+              // For Cashfree, if we have payment_session_id, construct the payment URL
+              // Format: https://payments.cashfree.com/forms/{payment_session_id}
+              const cashfreePayUrl = `https://payments.cashfree.com/forms/${paymentSessionId}`;
+              console.log('✅ Payment session ID found! Constructing payment URL...');
+              console.log('🔗 Payment URL:', cashfreePayUrl);
+              
+              // Save order info BEFORE redirect
+              if (orderId) {
+                localStorage.setItem('cf_orderId', orderId);
+                localStorage.setItem('cf_addressId', data.id);
+                localStorage.setItem('cf_total', amount);
+                console.log('💾 Saved payment info before redirect:', { orderId, addressId: data.id, total: amount });
+              }
+              
+              toast.success('Redirecting to payment gateway...');
+              setLoading(false);
+              
+              // IMMEDIATE redirect - use replace() to prevent back button/redirect loops
+              console.log('🚀 Redirecting NOW to payment gateway...');
+              window.location.replace(cashfreePayUrl);
+              // Force redirect if replace doesn't work (shouldn't happen)
+              setTimeout(() => {
+                if (window.location.href !== cashfreePayUrl && !window.location.href.includes('cashfree')) {
+                  console.warn('⚠️ Redirect may have failed, trying again...');
+                  window.location.href = cashfreePayUrl;
+                }
+              }, 200);
+              return; // Exit immediately - prevent any further execution
+            }
+            
+            // If no payment link or session ID, show error and log for debugging
+            console.error('❌ No payment link or session ID returned from Cashfree:', {
+              response: respPayload,
+              cfData: cfData,
+              availableKeys: Object.keys(cfData),
+              fullResponse: JSON.stringify(respPayload, null, 2)
+            });
+            toast.error('Payment initialization failed: no payment link received. Please check console for details.');
+            setLoading(false);
+          } catch (err) {
+              // Show detailed server response when available
+              console.error('❌ Cashfree create error:', {
+                status: err.response?.status,
+                data: err.response?.data,
+                message: err.message,
+                fullError: err
+              });
+
+              // If validation errors provided, format them for the user
+              const resp = err.response?.data;
+              if (resp) {
+                // Handle validation errors
+                if (Array.isArray(resp.errors) && resp.errors.length > 0) {
+                  const messages = resp.errors.map(e => e.msg ? `${e.param}: ${e.msg}` : JSON.stringify(e)).join(' | ');
+                  toast.error(`Validation error: ${messages}`);
+                } 
+                // Handle Cashfree API errors
+                else if (resp.message) {
+                  let errorMsg = resp.message;
+                  
+                  // If the server forwarded Cashfree API error, try to extract meaningful error
+                  if (resp.data) {
+                    if (typeof resp.data === 'object') {
+                      const cfError = resp.data.message || resp.data.error || JSON.stringify(resp.data);
+                      errorMsg = `${errorMsg}: ${cfError}`;
+                    } else {
+                      errorMsg = `${errorMsg}: ${resp.data}`;
+                    }
+                  } else if (resp.raw) {
+                    // Try to parse raw error if it's JSON
+                    try {
+                      const rawData = JSON.parse(resp.raw);
+                      errorMsg = `${errorMsg}: ${rawData.message || rawData.error || resp.raw.substring(0, 100)}`;
+                    } catch {
+                      errorMsg = `${errorMsg}: ${resp.raw.substring(0, 100)}`;
+                    }
+                  }
+                  
+                  toast.error(errorMsg);
+                } 
+                // Generic error response
+                else {
+                  toast.error('Payment initialization failed. Please try again.');
+                }
+              } 
+              // Network or other errors
+              else if (err.request) {
+                toast.error('Cannot connect to payment server. Please check your internet connection.');
+              } 
+              else {
+                toast.error(err.message || 'Failed to initiate payment. Please try again later.');
+              }
+            } finally {
+            setLoading(false);
+          }
         }
       }
     } catch (error) {
@@ -463,7 +733,7 @@ const Address = () => {
                   <option value="Jammu and Kashmir">Jammu and Kashmir</option>
                   <option value="Jharkhand">Jharkhand</option>
                   <option value="Karnataka">Karnataka</option>
-                  <option value="Kerala" selected>
+                  <option value="Kerala">
                     Kerala
                   </option>
                   <option value="Ladakh">Ladakh</option>
@@ -535,9 +805,7 @@ const Address = () => {
                         type="radio"
                         value="COD"
                         name="payment"
-                        onClick={() => {
-                          setPaymentmethod("cod");
-                        }}
+                        onChange={() => setPaymentmethod('cod')}
                         checked={paymentmethod === 'cod'}
                         className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                       />
@@ -556,9 +824,8 @@ const Address = () => {
                         type="radio"
                         value="online"
                         name="payment"
-                        onClick={() => {
-                          setPaymentmethod("online");
-                        }}
+                        onChange={() => setPaymentmethod('online')}
+                        checked={paymentmethod === 'online'}
                         className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                       />
                       <label

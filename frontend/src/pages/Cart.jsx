@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios, { Axios } from "axios";
+import axios from "axios";
 import Loader from "../components/Loader";
 const Cart = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const Cart = () => {
   const url = ""; // images are full URLs
   const id = localStorage.getItem("id");
   const [cartItems, setCartItems] = useState([]);
-  const [cartleng, setCartleng] = useState(null);
+  const [cartleng, setCartleng] = useState(0);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (!token || !id) {
@@ -54,10 +54,30 @@ const Cart = () => {
           items = response.data.items || response.data.cart || response.data.data || [];
         }
 
-        setCartItems([items]);
+        items = (items || []).filter(Boolean);
+
+        if (items.length > 1) {
+          const [firstItem, ...rest] = items;
+          console.warn('⚠️ Multiple cart items detected. Keeping only the first item.');
+          toast.info('Only one product can be purchased at a time. Keeping your first item.');
+
+          // Attempt to remove remaining items on the backend so state stays in sync
+          await Promise.allSettled(
+            rest.map((extra) =>
+              axios.delete(`/api/cart/${extra._id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
+              })
+            )
+          );
+
+          setCartItems([firstItem]);
+        } else {
+          setCartItems(items);
+        }
       } catch (error) {
         console.error("Error fetching cart item:", error);
-        setCartItems([[]]);
+        setCartItems([]);
       } finally {
         setLoading(false);
       }
@@ -66,23 +86,24 @@ const Cart = () => {
     getCartItem();
   }, [token, id, navigate]);
   useEffect(() => {
-    if (cartItems && cartItems.length > 0) {
-      setCartleng(cartItems[0].length);
-      localStorage.setItem("cart", cartleng);
-    }
+    const cartCount = Array.isArray(cartItems) ? cartItems.length : 0;
+    setCartleng(cartCount);
+    localStorage.setItem("cart", cartCount);
   }, [cartItems]);
-  const totalOffers = Math.floor(
-    cartItems[0]?.reduce(
-      (totalOffer, item) => totalOffer + item.product.offer,
-      0
-    )
-  );
 
-  const averageOfferPercent = Math.floor(totalOffers / cartItems[0]?.length);
-  const totalPrice = cartItems[0]?.reduce(
-    (tprice, item) => (tprice + (item.price * item.qty)),
+  const totalOffers = cartItems.reduce(
+    (totalOffer, item) => totalOffer + (item?.product?.offer || 0),
     0
   );
+
+  const averageOfferPercent =
+    cartItems.length > 0 ? Math.floor(totalOffers / cartItems.length) : 0;
+
+  const totalPrice = cartItems.reduce((tprice, item) => {
+    const price = Number(item?.price ?? item?.product?.price ?? 0);
+    const qty = Number(item?.qty ?? 1);
+    return tprice + price * qty;
+  }, 0);
   const todaysDeal = 2000;
 
   const states = {
@@ -100,8 +121,8 @@ const Cart = () => {
       });
       if (response.data.status === 200) {
         toast.success(response.data.message);
-        const updatedCartItems = cartItems[0].filter((item) => item._id !== id);
-        setCartItems([updatedCartItems]);
+        const updatedCartItems = cartItems.filter((item) => item._id !== id);
+        setCartItems(updatedCartItems);
         navigate("/cart");
       } else {
         toast.warning(response.data.message);
@@ -113,12 +134,12 @@ const Cart = () => {
   };
   const handleQuantity = async (itemId, action) => {
     try {
-      const itemIndex = cartItems[0].findIndex((item) => item._id === itemId);
+      const itemIndex = cartItems.findIndex((item) => item._id === itemId);
       if (itemIndex === -1) {
         console.log("Item not found in cart");
         return;
       }
-      const updatedCartItems = [...cartItems[0]];
+      const updatedCartItems = [...cartItems];
       const itemToUpdate = updatedCartItems[itemIndex];
       if (action === "desc" && itemToUpdate.qty > 1) {
         itemToUpdate.qty -= 1;
@@ -133,7 +154,7 @@ const Cart = () => {
         return;
       }
       updatedCartItems[itemIndex] = itemToUpdate;
-      setCartItems([updatedCartItems]);
+      setCartItems(updatedCartItems);
       const response = await axios.put(
         `/api/cart/${itemId}`,
         {
@@ -214,7 +235,7 @@ const Cart = () => {
                     <hr className="mt-3" />
                     {/* single item */}
 
-                    {cartItems[0]?.map((item) => (
+                    {cartItems.map((item) => (
                       <div key={item._id}>
                         <div className="pt-3 flex flex-col sm:flex-row justify-start items-center px-2 pb-2 gap-4">
                           <div className="w-32 h-28 flex-shrink-0">
@@ -257,7 +278,7 @@ const Cart = () => {
                               {item.product_name}
                             </h2>
                             <small className="text-gray-400 truncate overflow-hidden">
-                              {item.product.pdesc}
+                              {item?.product?.pdesc || ''}
                             </small>
                             <div className="pt-3 flex items-center">
                               <div className="flex items-center">
@@ -287,7 +308,7 @@ const Cart = () => {
                                 {item.price}
                               </h2>
                               <p className="text-green-400 pl-3">
-                                {item.product.offer}% Off
+                                {item?.product?.offer || 0}% Off
                               </p>
                             </div>
                           </div>
@@ -340,10 +361,10 @@ const Cart = () => {
 
                     <Link
                       className="flex justify-center items-center mt-5"
-                      to={`/address/${averageOfferPercent}/${totalPrice}/${todaysDeal}`}
+                      to="/checkout"
                     >
                       <button className="p-2 rounded-lg text-white bg-gradient-to-r from-orange-300 to-orange-500 w-full md:w-60 h-12 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-300 ">
-                        <FontAwesomeIcon icon={faBuyNLarge} className="pr-3" /> Continue
+                        <FontAwesomeIcon icon={faBuyNLarge} className="pr-3" /> Continue to Checkout
                       </button>
                     </Link>
                   </div>

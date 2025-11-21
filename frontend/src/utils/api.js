@@ -54,10 +54,16 @@ API.interceptors.response.use(
     return response;
   },
   (error) => {
+    const message =
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      error.message ||
+      'Payment failed';
+
     // Log error response
     console.error(`❌ ${error.config?.method?.toUpperCase()} ${error.config?.url}`, {
       status: error.response?.status,
-      message: error.response?.data?.message || error.message,
+      message,
       data: error.response?.data
     });
     
@@ -68,13 +74,37 @@ API.interceptors.response.use(
       // 401 Unauthorized - Token expired or invalid
       if (status === 401) {
         console.log('🔒 Unauthorized - Clearing tokens');
+        const currentPath = window.location.pathname + window.location.search;
+        
+        // Save current path for redirect after login (unless already on login)
+        if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
+          // Fix: Never save broken address paths - always use /checkout for checkout flow
+          let redirectPath = currentPath;
+          
+          // If on address page or broken checkout path, redirect to /checkout instead
+          if (currentPath.includes('/address/') || currentPath.match(/\/address\/\d+\/\d+\/\d+/)) {
+            console.warn('⚠️ Blocked redirect to broken address path:', currentPath);
+            redirectPath = '/checkout'; // Always use /checkout for payment flow
+          }
+          
+          // Preserve checkout intent
+          if (redirectPath.includes('/checkout') || redirectPath === '/checkout') {
+            localStorage.setItem('afterLoginRedirect', '/checkout');
+            sessionStorage.setItem('paymentMode', 'online'); // Default to online payment
+          } else {
+            localStorage.setItem('afterLoginRedirect', redirectPath);
+          }
+          
+          // Redirect to login with next parameter (always /checkout for checkout flow)
+          const nextPath = redirectPath.includes('/checkout') || redirectPath.includes('/address') 
+            ? '/checkout' 
+            : redirectPath;
+          
+          window.location.href = `/login?next=${encodeURIComponent(nextPath)}`;
+        }
+        
         localStorage.removeItem('token');
         localStorage.removeItem('adminToken');
-        
-        // Redirect to login if not already there
-        if (!window.location.pathname.includes('/login')) {
-          window.location.href = '/login';
-        }
       }
       
       // 403 Forbidden - Insufficient permissions
@@ -90,19 +120,19 @@ API.interceptors.response.use(
       
       // 500 Internal Server Error
       if (status === 500) {
-        console.log('💥 Server Error:', data.message);
-        alert('Server error. Please try again later.');
+        console.log('💥 Server Error:', message);
+        alert(message);
       }
     } else if (error.request) {
       // Request was made but no response received
       console.error('📡 No response from server');
-      alert('Cannot connect to server. Please check your internet connection.');
+      alert(message);
     } else {
       // Something else happened
-      console.error('⚠️ Error:', error.message);
+      console.error('⚠️ Error:', message);
     }
     
-    return Promise.reject(error);
+    return Promise.reject(new Error(message));
   }
 );
 

@@ -15,6 +15,7 @@ import { ToastContainer, Flip } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cart from "./pages/Cart";
 import Address from "./pages/Address";
+import Checkout from "./pages/Checkout";
 import Detailedorder from "./pages/Detailedorder";
 import Contactus from "./pages/Contactus";
 import AboutUs from "./pages/aboutus";
@@ -23,6 +24,8 @@ import CancellationRefundPolicy from "./pages/CancellationRefundPolicy";
 import HelpPage from "./pages/HelpPage";
 import SecurityPrivacyPage from "./pages/SecurityPrivacyPage";
 import DeliveryShippingPage from "./pages/DeliveryShippingPage";
+import CashfreeCallback from './pages/CashfreeCallback';
+import CheckoutSuccess from './pages/CheckoutSuccess';
 
 
 function App() {
@@ -45,6 +48,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/oauth-callback" element={<OAuthCallback />} />
@@ -52,6 +56,10 @@ function App() {
   <Route path="/dtproduct/:id" element={<DetaileProduct />} />
   <Route path="/detaileproduct/:id" element={<DetaileProduct />} />
         <Route path="/userprofile" element={<UserProfile />} />
+        {/* Alias /profile to /userprofile for backward compatibility */}
+        <Route path="/profile" element={<UserProfile />} />
+        <Route path="/cashfree-callback" element={<CashfreeCallback />} />
+        <Route path="/checkout/success" element={<CheckoutSuccess />} />
         <Route path="/address/:totaloffer/:totalprice/:todaydeal" element={<Address />} />
         <Route path="/detailorder/:id" element={<Detailedorder />} />
         <Route path="/contactus" element={<Contactus />} />

@@ -249,20 +249,71 @@ const DetailProduct = () => {
 
   const handleBuyNow = async () => {
     try {
+      // Check if token exists and is valid
       const token = localStorage.getItem('token');
-      if (!token) {
-        toast.warning('Please login to proceed');
-        navigate('/login');
-        return;
+      let isAuthenticated = false;
+      
+      // Validate token by making a test API call if token exists
+      if (token) {
+        try {
+          // Quick validation: check if token is valid by trying to fetch cart
+          const testResponse = await API.get('/api/cart');
+          if (testResponse.status === 200) {
+            isAuthenticated = true;
+          }
+        } catch (error) {
+          // Token invalid or expired - clear it
+          if (error.response?.status === 401) {
+            console.log('⚠️ Token invalid, clearing and redirecting to login');
+            localStorage.removeItem('token');
+            localStorage.removeItem('id');
+            localStorage.removeItem('username');
+            isAuthenticated = false;
+          } else {
+            // Other error - assume not authenticated
+            isAuthenticated = false;
+          }
+        }
       }
-
-      setAddingToCart(true);
       
       const discountedPrice = Math.floor(product.price - (product.price * product.offer) / 100);
       const totalPrice = discountedPrice * quantity;
       const totalOffer = product.offer;
       
-      // Add to cart first, then navigate to checkout
+      // If not authenticated, save checkout state and redirect to login
+      if (!isAuthenticated) {
+        // Save product info for checkout after login
+        try {
+          const checkoutData = {
+            productId: product._id,
+            productName: product.pname,
+            price: discountedPrice,
+            quantity: quantity,
+            totalPrice: totalPrice,
+            totalOffer: totalOffer,
+            mode: 'online', // Default to online payment
+            timestamp: Date.now()
+          };
+          sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+          sessionStorage.setItem('buyNowProduct', JSON.stringify(checkoutData)); // Backup
+          localStorage.setItem('afterLoginRedirect', '/checkout');
+          localStorage.setItem('shouldAutoPayAfterLogin', 'true');
+          sessionStorage.setItem('paymentMode', 'online');
+          console.log('💾 Saved checkout data for after login:', checkoutData);
+        } catch (e) {
+          console.warn('Failed to save checkout data:', e);
+        }
+        
+        // Redirect to login with checkout as next destination
+        toast.info('Please login to proceed to checkout');
+        navigate('/login?next=/checkout');
+        return;
+      }
+
+      // User is authenticated - add to cart and proceed directly to checkout
+      setAddingToCart(true);
+      
+      // Add to cart first
       await API.post('/api/cart', {
         product: product._id,
         product_name: product.pname,
@@ -270,11 +321,23 @@ const DetailProduct = () => {
         qty: quantity
       });
       
-      // Navigate to Address/Checkout page with order details
-      navigate(`/address/${totalOffer}/${totalPrice}/${product.offer}`);
+      // Navigate directly to checkout page (not address page)
       toast.success('Proceeding to checkout...');
+      navigate('/checkout');
     } catch (error) {
       console.error('Failed to process buy now:', error);
+      
+      // If 401 error, redirect to login
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('id');
+        localStorage.setItem('afterLoginRedirect', '/checkout');
+        sessionStorage.setItem('paymentMode', 'online');
+        toast.info('Please login to proceed to checkout');
+        navigate('/login?next=/checkout');
+        return;
+      }
+      
       toast.error(error.response?.data?.message || 'Failed to proceed to checkout');
     } finally {
       setAddingToCart(false);
