@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../utils/axiosInstance';
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -17,7 +17,7 @@ const Categories = () => {
 
   const loadCategories = async () => {
     try {
-      const response = await axios.get(`/api/categories`);
+      const response = await API.get('/api/categories');
       setCategories(response.data);
     } catch (error) {
       console.error('Failed to load categories:', error);
@@ -43,13 +43,9 @@ const Categories = () => {
     
     try {
       if (editingCategory) {
-        await axios.put(`/api/categories/${editingCategory._id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await API.put(`/api/categories/${editingCategory._id}`, formData);
       } else {
-        await axios.post(`/api/categories`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await API.post('/api/categories', formData);
       }
       
       setShowForm(false);
@@ -57,7 +53,6 @@ const Categories = () => {
       resetForm();
       loadCategories();
     } catch (error) {
-      // Log detailed error for debugging
       console.error('Failed to save category:', error);
       const serverMsg = error?.response?.data?.message || error?.response?.data || error.message;
       alert(`Failed to save category: ${serverMsg}`);
@@ -83,13 +78,12 @@ const Categories = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this category?')) {
       try {
-        const token = localStorage.getItem('adminToken');
-        await axios.delete(`/api/categories/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await API.delete(`/api/categories/${id}`);
         loadCategories();
       } catch (error) {
         console.error('Failed to delete category:', error);
+        const serverMsg = error?.response?.data?.message || error?.response?.data || error.message;
+        alert(`Failed to delete category: ${serverMsg}`);
       }
     }
   };

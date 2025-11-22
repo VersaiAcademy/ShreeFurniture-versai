@@ -214,13 +214,7 @@ const Checkout = () => {
         cfDataKeys: Object.keys(cfData)
       });
 
-      const paymentLink = respPayload.payment_link || 
-                         cfData.payment_link || 
-                         cfData.paymentLink || 
-                         cfData.paymentUrl ||
-                         cfData.redirect_url || 
-                         cfData.checkout_url;
-
+      // Extract payment_session_id from backend response (PG Orders API)
       const paymentSessionId = respPayload.payment_session_id || 
                               cfData.payment_session_id || 
                               cfData.paymentSessionId ||
@@ -235,50 +229,44 @@ const Checkout = () => {
         return;
       }
 
-      // Save order info BEFORE redirect (critical!)
+      if (!paymentSessionId || typeof paymentSessionId !== 'string') {
+        console.error('❌ No payment_session_id returned from Cashfree:', respPayload);
+        toast.error('Payment initialization failed: Cashfree did not return payment session ID. Please check console.');
+        setLoading(false);
+        return;
+      }
+
+      // Save order info BEFORE opening checkout
       localStorage.setItem('cf_orderId', orderId);
       localStorage.setItem('cf_addressId', address._id);
       localStorage.setItem('cf_total', String(amountNumber));
       console.log('💾 Saved payment info:', { orderId, addressId: address._id, total: amountNumber });
 
-      if (paymentLink && typeof paymentLink === 'string' && paymentLink.startsWith('http')) {
-        console.log('✅ Payment link received! Redirecting NOW to Cashfree payment gateway...');
-        console.log('🔗 Payment URL:', paymentLink);
-        toast.success('Redirecting to payment gateway...');
-        setLoading(false);
-        // IMMEDIATE redirect - use replace to prevent back button/loops
-        window.location.replace(paymentLink);
-        return; // Exit immediately
-      }
-
-      if (paymentSessionId && typeof paymentSessionId === 'string') {
-        try {
-          setCashfreeLoading(true);
-          const cashfree = await loadCashfreeSDK();
-          if (!cashfree || typeof cashfree.initialiseDropCheckout !== 'function') {
-            throw new Error('Cashfree SDK failed to load');
-          }
-          toast.info('Opening secure Cashfree checkout...');
-          await cashfree.initialiseDropCheckout({
-            paymentSessionId,
-            redirectTarget: '_self',
-          });
-          setCashfreeLoading(false);
-          setLoading(false);
-          return;
-        } catch (sdkError) {
-          console.error('Cashfree SDK initialise error:', sdkError);
-          toast.error(sdkError?.message || 'Failed to open Cashfree checkout.');
-          setCashfreeLoading(false);
-          setLoading(false);
-          return;
+      // Use Cashfree JS SDK to open checkout (PG Orders Checkout)
+      try {
+        setCashfreeLoading(true);
+        const cashfree = await loadCashfreeSDK();
+        
+        if (!cashfree || typeof cashfree.checkout !== 'function') {
+          throw new Error('Cashfree SDK checkout method not available');
         }
+        
+        toast.info('Opening secure Cashfree checkout...');
+        await cashfree.checkout({
+          paymentSessionId: paymentSessionId,
+          redirectTarget: '_self'
+        });
+        
+        setCashfreeLoading(false);
+        setLoading(false);
+        return;
+      } catch (sdkError) {
+        console.error('❌ Cashfree SDK checkout error:', sdkError);
+        toast.error(sdkError?.message || 'Failed to open Cashfree checkout. Please try again.');
+        setCashfreeLoading(false);
+        setLoading(false);
+        return;
       }
-
-      console.error('❌ CRITICAL: No payment link or session ID returned from Cashfree!');
-      console.error('📦 Full response:', JSON.stringify(respPayload, null, 2));
-      toast.error('Payment initialization failed: Cashfree did not return payment link. Please check console.');
-      setLoading(false);
     } catch (error) {
       console.error('❌ Payment error:', error);
       const message =

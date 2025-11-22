@@ -19,43 +19,9 @@ const router = express.Router();
 const CASHFREE_APP_ID = process.env.CASHFREE_APP_ID;
 const CASHFREE_SECRET_KEY = process.env.CASHFREE_SECRET_KEY;
 const REQUIRED_CASHFREE_BASE = 'https://api.cashfree.com/pg';
-const rawCashfreeBase = (process.env.CASHFREE_API_BASE || '').trim();
-const normalizedCashfreeBase = rawCashfreeBase.replace(/\/+$/, '');
-let CASHFREE_API_BASE = normalizedCashfreeBase || REQUIRED_CASHFREE_BASE;
-
-if (!rawCashfreeBase) {
-  console.warn(`⚠️ CASHFREE_API_BASE missing. Defaulting to LIVE base ${REQUIRED_CASHFREE_BASE}`);
-}
-
-if (CASHFREE_API_BASE !== REQUIRED_CASHFREE_BASE) {
-  console.error(`❌ CASHFREE_API_BASE must be exactly ${REQUIRED_CASHFREE_BASE}. Received: ${CASHFREE_API_BASE}. Forcing LIVE base.`);
-  CASHFREE_API_BASE = REQUIRED_CASHFREE_BASE;
-}
-
+const CASHFREE_API_BASE = REQUIRED_CASHFREE_BASE;
 const CASHFREE_WEBHOOK_SECRET = process.env.CASHFREE_WEBHOOK_SECRET || CASHFREE_SECRET_KEY;
 
-const logCashfreeConfig = () => {
-  console.log('💡 Cashfree config check:', {
-    baseUrl: CASHFREE_API_BASE,
-    hasAppId: !!CASHFREE_APP_ID,
-    hasSecret: !!CASHFREE_SECRET_KEY
-  });
-};
-logCashfreeConfig();
-
-// Debug endpoint - non-sensitive: reports whether Cashfree env vars are present (no values)
-router.get('/config', (req, res) => {
-  try {
-    return res.json({
-      configured: !!CASHFREE_APP_ID && !!CASHFREE_SECRET_KEY,
-      hasAppId: !!CASHFREE_APP_ID,
-      hasSecretKey: !!CASHFREE_SECRET_KEY,
-      apiBase: CASHFREE_API_BASE
-    });
-  } catch (err) {
-    return res.status(500).json({ error: 'config check failed' });
-  }
-});
 
 router.post('/create', async (req, res) => {
   try {
@@ -70,22 +36,26 @@ router.post('/create', async (req, res) => {
 
     const orderId = `cf_order_${Date.now()}`;
 
-    const pickFrontendBase = (value) => {
-      if (!value || typeof value !== 'string') return '';
-      const firstPipe = value.split('||')[0];
-      const firstComma = firstPipe.split(',')[0];
-      return firstComma.trim();
-    };
-
-    let frontendBase = pickFrontendBase(process.env.FRONTEND_BASE_URL);
+    // Get FRONTEND_BASE_URL from env (comma-separated, pick first)
+    let frontendBase = '';
+    if (process.env.FRONTEND_BASE_URL) {
+      const urls = process.env.FRONTEND_BASE_URL.split(',').map(u => u.trim()).filter(u => u);
+      frontendBase = urls[0] || '';
+    }
+    
+    // Fallback to default if not set
     if (!frontendBase) {
-      frontendBase = `${req.protocol}://${req.get('host')}`;
+      frontendBase = 'https://shree-furniture-versai.vercel.app';
     }
 
+    // Ensure https and remove trailing slashes
+    frontendBase = frontendBase.trim().replace(/\/+$/, '');
     if (!/^https?:\/\//i.test(frontendBase)) {
       frontendBase = `https://${frontendBase}`;
     }
-    frontendBase = frontendBase.replace(/\/+$/, '');
+    if (frontendBase.startsWith('http://')) {
+      frontendBase = frontendBase.replace(/^http:\/\//i, 'https://');
+    }
 
     const payload = {
       order_id: orderId,
@@ -97,7 +67,7 @@ router.post('/create', async (req, res) => {
         customer_phone: String(phone),
       },
       order_meta: {
-        return_url: `${frontendBase}/payment-success?order_id=${orderId}`,
+        return_url: `${frontendBase}/payment-success?order_id={order_id}`,
       },
     };
 
@@ -105,52 +75,30 @@ router.post('/create', async (req, res) => {
     const headers = {
       'x-client-id': process.env.CASHFREE_APP_ID,
       'x-client-secret': process.env.CASHFREE_SECRET_KEY,
-      'x-api-version': '2023-08-01',
+      'x-api-version': '2022-09-01',
       'Content-Type': 'application/json',
     };
-
-    console.log('🔗 Final URL:', endpoint);
-    console.log('🧾 Headers:', { hasId: !!headers['x-client-id'], hasSecret: !!headers['x-client-secret'], apiVersion: headers['x-api-version'] });
-    console.log('📤 Request Body:', payload);
 
     const cfRes = await axios.post(endpoint, payload, { headers });
     const cfData = cfRes.data || {};
 
-    const paymentLink = cfData.payment_link ||
-                        cfData.paymentUrl ||
-                        cfData.payment_url ||
-                        cfData.checkout_url ||
-                        cfData.checkoutUrl ||
-                        cfData.order_meta?.payment_link ||
-                        null;
-
+    // Extract payment_session_id from Cashfree PG Orders API response
     const paymentSessionId = cfData.payment_session_id ||
                              cfData.paymentSessionId ||
                              cfData.paymentSessionID ||
                              null;
 
-    let constructedPaymentLink = paymentLink;
-    if (!constructedPaymentLink && paymentSessionId) {
-      constructedPaymentLink = `https://payments.cashfree.com/forms/${paymentSessionId}`;
-    }
-
+    // For PG Orders API, we return payment_session_id only
+    // Frontend will use Cashfree JS SDK to open checkout
     return res.json({
       success: true,
       message: 'Cashfree order created',
       orderId,
       data: cfData,
-      payment_link: constructedPaymentLink,
       payment_session_id: paymentSessionId,
     });
 
   } catch (error) {
-    console.log('❌ Cashfree Create Order Failed');
-    if (error.response) {
-      console.log('🔍 Cashfree Response Error:', error.response.data);
-    } else {
-      console.log('🔍 Cashfree Error:', error.message);
-    }
-
     const cfData = error.response?.data || null;
     const msg =
       error.response?.data?.message ||
@@ -186,7 +134,6 @@ router.post('/webhook', express.raw({ type: '*/*' }), async (req, res) => {
 
     // Parse the webhook payload
     const payload = JSON.parse(bodyString);
-    console.log('Cashfree webhook payload:', payload);
 
     // Update transaction record based on payload (adjust field names per Cashfree payload)
     const { orderId, orderAmount, txStatus, referenceId, paymentMode } = payload;
@@ -224,13 +171,11 @@ router.post('/verify', authenticateToken, async (req, res) => {
     };
 
     const statusEndpoint = `${CASHFREE_API_BASE}/orders/${orderId}`;
-    console.log('🔍 Checking payment status for order:', orderId, 'at:', statusEndpoint);
     
     const cfStatus = await axios.get(statusEndpoint, { headers, timeout: 10000 });
 
     // Cashfree returns order/payment info; check for successful payment
     const orderInfo = cfStatus.data || {};
-    console.log('📦 Cashfree order status response:', JSON.stringify(orderInfo).substring(0, 500));
     
     // Cashfree v2 API response fields (check multiple possible field names)
     const status = orderInfo.order_status || 
@@ -247,14 +192,11 @@ router.post('/verify', authenticateToken, async (req, res) => {
                          null;
 
     const finalStatus = paymentStatus || status;
-    
-    console.log('✅ Payment status:', finalStatus, '| Original status:', status);
 
     // Check if payment is successful (Cashfree uses various status values)
     const isSuccess = finalStatus && /SUCCESS|PAID|COMPLETED|ACTIVE/i.test(finalStatus);
     
     if (!isSuccess) {
-      console.warn('⚠️ Payment not completed. Status:', finalStatus || 'unknown', 'Order:', orderId);
       return res.status(400).json({ 
         message: 'Payment not completed', 
         status: finalStatus || 'unknown', 
@@ -262,8 +204,6 @@ router.post('/verify', authenticateToken, async (req, res) => {
         orderId 
       });
     }
-    
-    console.log('✅ Payment verified successfully for order:', orderId);
 
     // Payment succeeded — create orders just like /api/orders does
     const userId = req.user._id;
@@ -302,7 +242,6 @@ router.post('/verify', authenticateToken, async (req, res) => {
 
     res.status(200).json({ message: 'Order created after payment', orders, orderId: orderIdLocal });
   } catch (err) {
-    console.error('Verify/Create order error:', err.response?.data || err.message || err);
     res.status(500).json({ message: 'Failed to verify/create order', error: err.message });
   }
 });

@@ -10,17 +10,6 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 
-/* ----------------------  CASHFREE CONFIG LOG  ------------------- */
-if (process.env.CASHFREE_API_BASE || process.env.CASHFREE_APP_ID || process.env.CASHFREE_SECRET_KEY) {
-  const cashfreeBase = (process.env.CASHFREE_API_BASE || '').trim() || 'undefined';
-  const normalizedCashfreeBase = cashfreeBase.replace(/\/+$/, '');
-  console.log('💡 Cashfree config check:', {
-    baseUrl: normalizedCashfreeBase,
-    hasAppId: !!process.env.CASHFREE_APP_ID,
-    hasSecret: !!process.env.CASHFREE_SECRET_KEY,
-  });
-}
-
 /* ---------------------------  CONFIG  --------------------------- */
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const PORT = Number(process.env.PORT || 5000);

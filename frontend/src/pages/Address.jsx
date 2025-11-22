@@ -379,20 +379,13 @@ const Address = () => {
               fullResponse: respPayload
             });
             
-            // Backend extracts payment_link for us (or constructs from payment_session_id)
-            // Check backend-extracted payment_link first, then fallback to Cashfree response
-            const paymentLink = respPayload.payment_link || // Backend-extracted/constructed
-                               cfData.payment_link || cfData.paymentLink || cfData.paymentUrl || 
-                               cfData.redirect_url || cfData.checkout_url;
+            // Extract payment_session_id from backend response (PG Orders API)
+            const paymentSessionId = respPayload.payment_session_id || 
+                                    cfData.payment_session_id || 
+                                    cfData.paymentSessionId ||
+                                    cfData.paymentSessionID;
             
-            console.log('🔍 Payment link extracted:', {
-              hasPaymentLink: !!paymentLink,
-              paymentLink: paymentLink,
-              paymentLinkType: typeof paymentLink,
-              paymentLinkStartsWithHttp: paymentLink?.startsWith('http')
-            });
-            
-            // Use backend orderId (server-generated) - this is the one we saved
+            // Use backend orderId (server-generated)
             const orderId = backendOrderId || cfData.order_id || cfData.orderId || 
                            cfData.order?.id || cfData.id;
 
@@ -403,87 +396,70 @@ const Address = () => {
               return;
             }
 
-            // Save orderId temporarily so callback can verify
+            if (!paymentSessionId) {
+              console.error('❌ No payment_session_id returned from Cashfree:', {
+                response: respPayload,
+                cfData: cfData,
+                availableKeys: Object.keys(cfData),
+                fullResponse: JSON.stringify(respPayload, null, 2)
+              });
+              toast.error('Payment initialization failed: no payment session ID received. Please check console for details.');
+              setLoading(false);
+              return;
+            }
+
+            // Save order info BEFORE opening checkout
             localStorage.setItem('cf_orderId', orderId);
-            // Also save address and total so callback can finalize orders
             localStorage.setItem('cf_addressId', data.id);
             localStorage.setItem('cf_total', amount);
+            console.log('💾 Saved payment info:', { orderId, addressId: data.id, total: amount });
 
-            if (paymentLink) {
-              // Redirect user to Cashfree hosted payment page IMMEDIATELY
-              console.log('✅ Payment link received! Redirecting to Cashfree payment gateway NOW...');
-              console.log('🔗 Payment URL:', paymentLink);
+            // Use Cashfree JS SDK to open checkout (PG Orders Checkout)
+            try {
+              toast.info('Opening secure Cashfree checkout...');
               
-              // Save order info BEFORE redirect
-              if (orderId) {
-                localStorage.setItem('cf_orderId', orderId);
-                localStorage.setItem('cf_addressId', data.id);
-                localStorage.setItem('cf_total', amount);
-                console.log('💾 Saved payment info before redirect:', { orderId, addressId: data.id, total: amount });
-              }
-              
-              toast.success('Redirecting to payment gateway...');
-              setLoading(false);
-              
-              // IMMEDIATE redirect - use replace to prevent back button issues
-              // Force immediate redirect - no delays
-              window.location.replace(paymentLink);
-              // Fallback if replace doesn't work (shouldn't happen)
-              setTimeout(() => {
-                if (window.location.href !== paymentLink) {
-                  window.location.href = paymentLink;
-                }
-              }, 100);
-              return; // Exit immediately
-            }
+              // Load Cashfree SDK
+              const loadCashfreeSDK = () => {
+                return new Promise((resolve, reject) => {
+                  if (window?.Cashfree) {
+                    return resolve(window.Cashfree);
+                  }
+                  const existingScript = document.getElementById('cashfree-sdk');
+                  if (existingScript) {
+                    existingScript.onload = () => resolve(window.Cashfree);
+                    existingScript.onerror = reject;
+                    return;
+                  }
+                  const script = document.createElement('script');
+                  script.id = 'cashfree-sdk';
+                  script.src = 'https://sdk.cashfree.com/js/ui/pg-sdk.js';
+                  script.async = true;
+                  script.onload = () => resolve(window.Cashfree);
+                  script.onerror = (err) => reject(err);
+                  document.body.appendChild(script);
+                });
+              };
 
-            // If no payment link, check if we have payment_session_id
-            // Check both backend response and Cashfree data
-            const paymentSessionId = respPayload.payment_session_id || 
-                                    cfData.payment_session_id || 
-                                    cfData.paymentSessionId ||
-                                    cfData.paymentSessionID;
-            
-            if (paymentSessionId) {
-              // For Cashfree, if we have payment_session_id, construct the payment URL
-              // Format: https://payments.cashfree.com/forms/{payment_session_id}
-              const cashfreePayUrl = `https://payments.cashfree.com/forms/${paymentSessionId}`;
-              console.log('✅ Payment session ID found! Constructing payment URL...');
-              console.log('🔗 Payment URL:', cashfreePayUrl);
+              const cashfree = await loadCashfreeSDK();
               
-              // Save order info BEFORE redirect
-              if (orderId) {
-                localStorage.setItem('cf_orderId', orderId);
-                localStorage.setItem('cf_addressId', data.id);
-                localStorage.setItem('cf_total', amount);
-                console.log('💾 Saved payment info before redirect:', { orderId, addressId: data.id, total: amount });
+              if (!cashfree || typeof cashfree.checkout !== 'function') {
+                throw new Error('Cashfree SDK checkout method not available');
               }
+
+              // Open checkout using payment_session_id
+              await cashfree.checkout({
+                paymentSessionId: paymentSessionId,
+                redirectTarget: '_self'
+              });
               
-              toast.success('Redirecting to payment gateway...');
               setLoading(false);
-              
-              // IMMEDIATE redirect - use replace() to prevent back button/redirect loops
-              console.log('🚀 Redirecting NOW to payment gateway...');
-              window.location.replace(cashfreePayUrl);
-              // Force redirect if replace doesn't work (shouldn't happen)
-              setTimeout(() => {
-                if (window.location.href !== cashfreePayUrl && !window.location.href.includes('cashfree')) {
-                  console.warn('⚠️ Redirect may have failed, trying again...');
-                  window.location.href = cashfreePayUrl;
-                }
-              }, 200);
-              return; // Exit immediately - prevent any further execution
+              return;
+            } catch (sdkError) {
+              console.error('❌ Cashfree SDK checkout error:', sdkError);
+              toast.error(sdkError?.message || 'Failed to open Cashfree checkout. Please try again.');
+              setLoading(false);
+              return;
             }
-            
-            // If no payment link or session ID, show error and log for debugging
-            console.error('❌ No payment link or session ID returned from Cashfree:', {
-              response: respPayload,
-              cfData: cfData,
-              availableKeys: Object.keys(cfData),
-              fullResponse: JSON.stringify(respPayload, null, 2)
-            });
-            toast.error('Payment initialization failed: no payment link received. Please check console for details.');
-            setLoading(false);
           } catch (err) {
               // Show detailed server response when available
               console.error('❌ Cashfree create error:', {
