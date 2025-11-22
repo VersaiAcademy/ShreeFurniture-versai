@@ -8,7 +8,9 @@ import {
   faChevronDown,
   faChevronUp,
   faTh,
-  faThList
+  faThList,
+  faFilter, // Added filter icon for mobile button
+  faTimes // Added close icon for mobile filter modal
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import API from '../utils/api';
@@ -37,6 +39,9 @@ const Productpage = () => {
   const [isPriceOpen, setIsPriceOpen] = useState(true);
   const [isMaterialOpen, setIsMaterialOpen] = useState(true);
   const [isSeaterOpen, setIsSeaterOpen] = useState(true);
+
+  // *** NEW: Mobile Filter Modal State ***
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   // Material options (from products)
   const [materials, setMaterials] = useState([]);
@@ -287,6 +292,8 @@ const Productpage = () => {
     }
 
     setFilteredProducts(filtered);
+    // NEW: Close modal after applying filters on mobile
+    if(isFilterModalOpen) setIsFilterModalOpen(false);
   };
 
   const calcDiscountedPrice = (price, offer) => {
@@ -416,184 +423,236 @@ const Productpage = () => {
     );
   }
 
+  // Component to render the filters (reused in both sidebar and mobile modal)
+  const FiltersContent = ({ isMobile }) => (
+    <>
+      <div className="p-4 border-b">
+        <h2 className="text-lg font-semibold text-gray-800">Filters</h2>
+      </div>
+
+      <div className={`overflow-y-auto ${isMobile ? 'max-h-[calc(100vh-160px)]' : 'max-h-[calc(100vh-120px)]'}`}>
+        {/* Fast Delivery Toggle */}
+        <div className="p-4 border-b">
+          <label className="flex items-center cursor-pointer">
+            <div className="relative">
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={fastDelivery}
+                onChange={(e) => setFastDelivery(e.target.checked)}
+              />
+              <div className={`w-11 h-6 rounded-full transition ${fastDelivery ? 'bg-orange-500' : 'bg-gray-300'}`}></div>
+              <div className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform ${fastDelivery ? 'transform translate-x-5' : ''}`}></div>
+            </div>
+            <span className="ml-3 text-sm font-medium text-gray-700">FAST DELIVERY</span>
+          </label>
+        </div>
+
+        {/* Price Range */}
+        <div className="border-b">
+          <button
+            onClick={() => setIsPriceOpen(!isPriceOpen)}
+            className="w-full p-4 flex items-center justify-between hover:bg-gray-50"
+          >
+            <span className="font-medium text-gray-800">PRICE RANGE</span>
+            <FontAwesomeIcon icon={isPriceOpen ? faChevronUp : faChevronDown} className="text-gray-500" />
+          </button>
+          {isPriceOpen && (
+            <div className="px-4 pb-4">
+              <div className="flex justify-between text-sm text-gray-600 mb-3">
+                <span>₹{priceRange[0].toLocaleString()}</span>
+                <span>₹{priceRange[1].toLocaleString()}</span>
+              </div>
+              {/* Range inputs can be complex with Tailwind/basic HTML, keeping the original logic */}
+              <input
+                type="range"
+                min="19989"
+                max="194989"
+                value={priceRange[0]}
+                onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                className="w-full accent-orange-500"
+              />
+              <input
+                type="range"
+                min="19989"
+                max="194989"
+                value={priceRange[1]}
+                onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                className="w-full accent-orange-500 mt-2"
+              />
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={applyFilters}
+                  className="flex-1 bg-orange-500 text-white py-2 rounded text-sm font-medium hover:bg-orange-600"
+                >
+                  Apply
+                </button>
+                <button
+                  onClick={() => setPriceRange([19989, 194989])}
+                  className="px-4 py-2 text-orange-500 text-sm font-medium hover:bg-orange-50 rounded"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Material Filter */}
+        <div className="border-b">
+          <button
+            onClick={() => setIsMaterialOpen(!isMaterialOpen)}
+            className="w-full p-4 flex items-center justify-between hover:bg-gray-50"
+          >
+            <span className="font-medium text-gray-800">MATERIAL</span>
+            <FontAwesomeIcon icon={isMaterialOpen ? faChevronUp : faChevronDown} className="text-gray-500" />
+          </button>
+          {isMaterialOpen && (
+            <div className="px-4 pb-4 space-y-2">
+              {materials.map((mat) => (
+                <label key={mat.name} className="flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded">
+                  <input
+                    type="checkbox"
+                    checked={selectedMaterials.includes(mat.name)}
+                    onChange={() => handleMaterialToggle(mat.name)}
+                    className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">{mat.name}</span>
+                  <span className="ml-auto text-xs text-gray-500">({mat.count})</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Seater Filter */}
+        <div className="border-b">
+          <button
+            onClick={() => setIsSeaterOpen(!isSeaterOpen)}
+            className="w-full p-4 flex items-center justify-between hover:bg-gray-50"
+          >
+            <span className="font-medium text-gray-800">SEATER</span>
+            <FontAwesomeIcon icon={isSeaterOpen ? faChevronUp : faChevronDown} className="text-gray-500" />
+          </button>
+          {isSeaterOpen && (
+            <div className="px-4 pb-4 space-y-2">
+              {seaterOptions.map((seater) => (
+                <label key={seater} className="flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded">
+                  <input
+                    type="checkbox"
+                    checked={selectedSeaters.includes(seater)}
+                    onChange={() => handleSeaterToggle(seater)}
+                    className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">{seater}</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Reset All Button */}
+        <div className="p-4">
+          <button
+            onClick={resetFilters}
+            className="w-full py-2 text-orange-500 border border-orange-500 rounded hover:bg-orange-50 font-medium"
+          >
+            Reset All Filters
+          </button>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-[1400px] mx-auto px-4 py-6">
-        <div className="flex gap-6">
-          {/* Left Sidebar - Filters */}
-          <div className="w-80 flex-shrink-0">
+      <div className="max-w-[1400px] mx-auto px-2 sm:px-4 py-3 sm:py-6">
+        {/* Mobile Filter Button (Visible on small screens) */}
+        <div className="sticky top-0 z-20 bg-gray-50 pt-2 pb-1 lg:hidden">
+            <button 
+                onClick={() => setIsFilterModalOpen(true)}
+                className="w-full flex items-center justify-center gap-2 py-3 mb-3 bg-orange-500 text-white rounded-lg shadow-md font-semibold"
+            >
+                <FontAwesomeIcon icon={faFilter} />
+                Filter Products
+            </button>
+        </div>
+
+        {/* Main Content Area: Flex layout on large screens, single column on mobile */}
+        {/* Added lg:flex and gap-6 classes to control layout */}
+        <div className="flex flex-col lg:flex-row gap-6"> 
+          {/* Left Sidebar - Filters (Hidden on small screens, shown on large screens) */}
+          <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="bg-white rounded-lg shadow-sm sticky top-4">
-              {/* Filters Header */}
-              <div className="p-4 border-b">
-                <h2 className="text-lg font-semibold text-gray-800">Filters</h2>
-              </div>
-
-              <div className="overflow-y-auto max-h-[calc(100vh-120px)]">
-                {/* Fast Delivery Toggle */}
-                <div className="p-4 border-b">
-                  <label className="flex items-center cursor-pointer">
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        className="sr-only"
-                        checked={fastDelivery}
-                        onChange={(e) => setFastDelivery(e.target.checked)}
-                      />
-                      <div className={`w-11 h-6 rounded-full transition ${fastDelivery ? 'bg-orange-500' : 'bg-gray-300'}`}></div>
-                      <div className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform ${fastDelivery ? 'transform translate-x-5' : ''}`}></div>
-                    </div>
-                    <span className="ml-3 text-sm font-medium text-gray-700">FAST DELIVERY</span>
-                  </label>
-                </div>
-
-                {/* Price Range */}
-                <div className="border-b">
-                  <button
-                    onClick={() => setIsPriceOpen(!isPriceOpen)}
-                    className="w-full p-4 flex items-center justify-between hover:bg-gray-50"
-                  >
-                    <span className="font-medium text-gray-800">PRICE RANGE</span>
-                    <FontAwesomeIcon icon={isPriceOpen ? faChevronUp : faChevronDown} className="text-gray-500" />
-                  </button>
-                  {isPriceOpen && (
-                    <div className="px-4 pb-4">
-                      <div className="flex justify-between text-sm text-gray-600 mb-3">
-                        <span>₹{priceRange[0].toLocaleString()}</span>
-                        <span>₹{priceRange[1].toLocaleString()}</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="19989"
-                        max="194989"
-                        value={priceRange[0]}
-                        onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
-                        className="w-full accent-orange-500"
-                      />
-                      <input
-                        type="range"
-                        min="19989"
-                        max="194989"
-                        value={priceRange[1]}
-                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                        className="w-full accent-orange-500 mt-2"
-                      />
-                      <div className="flex gap-2 mt-3">
-                        <button
-                          onClick={applyFilters}
-                          className="flex-1 bg-orange-500 text-white py-2 rounded text-sm font-medium hover:bg-orange-600"
-                        >
-                          Apply
-                        </button>
-                        <button
-                          onClick={() => setPriceRange([19989, 194989])}
-                          className="px-4 py-2 text-orange-500 text-sm font-medium hover:bg-orange-50 rounded"
-                        >
-                          Reset
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Material Filter */}
-                <div className="border-b">
-                  <button
-                    onClick={() => setIsMaterialOpen(!isMaterialOpen)}
-                    className="w-full p-4 flex items-center justify-between hover:bg-gray-50"
-                  >
-                    <span className="font-medium text-gray-800">MATERIAL</span>
-                    <FontAwesomeIcon icon={isMaterialOpen ? faChevronUp : faChevronDown} className="text-gray-500" />
-                  </button>
-                  {isMaterialOpen && (
-                    <div className="px-4 pb-4 space-y-2">
-                      {materials.map((mat) => (
-                        <label key={mat.name} className="flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded">
-                          <input
-                            type="checkbox"
-                            checked={selectedMaterials.includes(mat.name)}
-                            onChange={() => handleMaterialToggle(mat.name)}
-                            className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                          />
-                          <span className="ml-2 text-sm text-gray-700">{mat.name}</span>
-                          <span className="ml-auto text-xs text-gray-500">({mat.count})</span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Seater Filter */}
-                <div className="border-b">
-                  <button
-                    onClick={() => setIsSeaterOpen(!isSeaterOpen)}
-                    className="w-full p-4 flex items-center justify-between hover:bg-gray-50"
-                  >
-                    <span className="font-medium text-gray-800">SEATER</span>
-                    <FontAwesomeIcon icon={isSeaterOpen ? faChevronUp : faChevronDown} className="text-gray-500" />
-                  </button>
-                  {isSeaterOpen && (
-                    <div className="px-4 pb-4 space-y-2">
-                      {seaterOptions.map((seater) => (
-                        <label key={seater} className="flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded">
-                          <input
-                            type="checkbox"
-                            checked={selectedSeaters.includes(seater)}
-                            onChange={() => handleSeaterToggle(seater)}
-                            className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
-                          />
-                          <span className="ml-2 text-sm text-gray-700">{seater}</span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Reset All Button */}
-                <div className="p-4">
-                  <button
-                    onClick={resetFilters}
-                    className="w-full py-2 text-orange-500 border border-orange-500 rounded hover:bg-orange-50 font-medium"
-                  >
-                    Reset All Filters
-                  </button>
-                </div>
-              </div>
+              <FiltersContent isMobile={false} />
             </div>
           </div>
 
-          {/* Right Side - Products */}
-          <div className="flex-1">
-            {/* Top Bar */}
-              {/* Category Header */}
-              <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
-                <div className="flex items-center justify-between">
-                  <h1 className="text-2xl font-bold text-gray-800">{(MAIN_CATEGORY_MAP[slug] ? slug.split('-').map(w => w[0]?.toUpperCase()+w.slice(1)).join(' ') : formatCategoryName(slug))}</h1>
-                </div>
-                {MAIN_CATEGORY_MAP[slug] && MAIN_CATEGORY_MAP[slug].length > 0 && (
-                  <>
-                    <div className="text-sm text-gray-600 mt-1">{MAIN_CATEGORY_MAP[slug].join(' • ')}</div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {MAIN_CATEGORY_MAP[slug].map((sub) => {
-                        const subSlug = sub.toLowerCase().replace(/\s+/g, '-').replace(/\+/g, '').replace(/&/g, '');
-                        return (
-                          <button key={sub} onClick={() => navigate(`/${subSlug}`)} className="px-3 py-1 rounded bg-white border text-sm text-gray-700 hover:bg-orange-50">
-                            {sub}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </>
-                )}
+          {/* Mobile Filter Modal (Fixed position overlay) */}
+          {isFilterModalOpen && (
+            <div className="fixed inset-0 z-50 bg-white lg:hidden overflow-y-auto">
+              {/* Header for Modal */}
+              <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center shadow-sm">
+                <h2 className="text-xl font-bold">Product Filters</h2>
+                <button onClick={() => setIsFilterModalOpen(false)} className="text-gray-600 hover:text-gray-900">
+                  <FontAwesomeIcon icon={faTimes} size="xl" />
+                </button>
+              </div>
+              
+              {/* Filter Content in Modal */}
+              <div className="pb-20"> {/* pb-20 for space above bottom apply button */}
+                  <FiltersContent isMobile={true} />
               </div>
 
-              {/* Top Bar */}
-              <div className="bg-white rounded-lg shadow-sm p-4 mb-6 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-600">Sort By :</span>
+              {/* Fixed Bottom Bar for Mobile Apply Button */}
+              <div className="fixed bottom-0 left-0 right-0 bg-white p-3 border-t shadow-2xl">
+                <button
+                    onClick={applyFilters}
+                    className="w-full bg-orange-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-orange-600"
+                >
+                    Show {filteredProducts.length} Products
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Right Side - Products */}
+          <div className="flex-1">
+            {/* Category Header */}
+            <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+              <div className="flex items-center justify-between">
+                {/* Text size adjusted for responsiveness */}
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
+                  {(MAIN_CATEGORY_MAP[slug] ? slug.split('-').map(w => w[0]?.toUpperCase()+w.slice(1)).join(' ') : formatCategoryName(slug))}
+                </h1>
+              </div>
+              {MAIN_CATEGORY_MAP[slug] && MAIN_CATEGORY_MAP[slug].length > 0 && (
+                <>
+                  {/* Hide detailed subcategory list on very small screens for brevity */}
+                  <div className="text-sm text-gray-600 mt-1 hidden sm:block">{MAIN_CATEGORY_MAP[slug].join(' • ')}</div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {MAIN_CATEGORY_MAP[slug].map((sub) => {
+                      const subSlug = sub.toLowerCase().replace(/\s+/g, '-').replace(/\+/g, '').replace(/&/g, '');
+                      return (
+                        // Chip size adjusted for mobile
+                        <button key={sub} onClick={() => navigate(`/${subSlug}`)} className="px-3 py-1 rounded bg-white border text-xs sm:text-sm text-gray-700 hover:bg-orange-50 whitespace-nowrap">
+                          {sub}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Top Bar - Sort & View */}
+            <div className="bg-white rounded-lg shadow-sm p-4 mb-6 flex items-center justify-between">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <span className="text-sm text-gray-600 hidden sm:block">Sort By :</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="px-2 sm:px-4 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="recommended">Recommended</option>
                   <option value="price-low">Price: Low to High</option>
@@ -603,7 +662,8 @@ const Productpage = () => {
                 </select>
               </div>
 
-              <div className="flex items-center gap-3">
+              {/* View Mode buttons - Hidden on smallest screen to keep bar clean */}
+              <div className="hidden sm:flex items-center gap-3">
                 <span className="text-sm text-gray-600">View As</span>
                 <button
                   onClick={() => setViewMode('grid')}
@@ -622,28 +682,32 @@ const Productpage = () => {
 
             {/* Products Grid */}
             {filteredProducts.length === 0 ? (
-              <div className="bg-white rounded-lg p-12 text-center">
-                <img src="https://saferoomdesigns.com/wp-content/uploads/2021/06/item_no.png" alt="No products" className="w-64 mx-auto mb-6" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">No Products Found</h3>
-                <p className="text-gray-600 mb-4">Try adjusting your filters</p>
-                <button onClick={resetFilters} className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600">
+              <div className="bg-white rounded-lg p-6 sm:p-12 text-center">
+                {/* Image size and margin adjusted for responsiveness */}
+                 
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">No Products Found</h3>
+                <p className="text-gray-600 mb-4 text-sm sm:text-base">Try adjusting your filters</p>
+                <button onClick={resetFilters} className="px-4 sm:px-6 py-2 sm:py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm sm:text-base">
                   Reset Filters
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              // Responsive grid layout: 1 column on mobile, 2 on sm, 3 on lg, 4 on xl (if viewMode is grid)
+              <div className={`gap-4 sm:gap-5 ${viewMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'flex flex-col'}`}>
                 {filteredProducts.map((product) => (
+                  // Product Card
                   <div
                     key={product._id}
                     onClick={() => navigate(`/dtproduct/${product._id}`)}
-                    className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                    // Added conditional styling for list vs grid view
+                    className={`bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer group 
+                      ${viewMode === 'list' ? 'flex flex-col sm:flex-row' : ''}
+                    `}
                   >
                     {/* Image Container */}
-                    <div className="relative overflow-hidden aspect-[4/3]">
+                    <div className={`relative overflow-hidden aspect-[4/3] ${viewMode === 'list' ? 'w-full sm:w-1/3 flex-shrink-0' : ''}`}>
                       {(() => {
-                        // Prefer natural finish image as primary, then stone finish, then img1, then a generic image
                         const displayImage = product.natural_finish_image || product.stone_finish_image || product.img1 || product.image || (product.images && product.images[0]) || '';
-
                         return (
                           <img
                             src={displayImage}
@@ -654,27 +718,28 @@ const Productpage = () => {
                         );
                       })()}
                       
-                      
                       {/* Wishlist Button */}
                       <button
                         onClick={(e) => handleAddToWishlist(e, product)}
-                        className={`absolute top-3 right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg transition z-10 ${wishlistLoadingMap[product._id] ? 'opacity-60 cursor-wait' : 'hover:bg-orange-500 hover:text-white'}`}
+                        className={`absolute top-3 right-3 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-lg transition z-10 ${wishlistLoadingMap[product._id] ? 'opacity-60 cursor-wait' : 'hover:bg-orange-500 hover:text-white'}`}
                       >
                         <FontAwesomeIcon icon={faHeart} className={userWishlistIds.has(product._id) ? 'text-red-500' : 'text-gray-500'} />
                       </button>
 
                       {/* Badges */}
                       {product.offer > 0 && (
-                        <div className="absolute top-3 left-3 bg-red-500 text-white px-3 py-1 rounded text-xs font-semibold">
+                        <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-0.5 rounded text-xs font-semibold">
                           {product.offer}% Off
                         </div>
                       )}
 
                       {/* Hover Overlay */}
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                      <div className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 transition-transform duration-300
+                          ${viewMode === 'grid' ? 'translate-y-full group-hover:translate-y-0' : 'group-hover:opacity-100 opacity-0'}
+                      `}>
                         <button
                           onClick={(e) => handleAddToCart(e, product)}
-                          className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition flex items-center justify-center gap-2"
+                          className="w-full bg-orange-500 text-white py-2 sm:py-3 rounded-lg font-semibold text-sm hover:bg-orange-600 transition flex items-center justify-center gap-2"
                         >
                           <FontAwesomeIcon icon={faShoppingCart} />
                           Add to Cart
@@ -683,44 +748,56 @@ const Productpage = () => {
 
                       {product.stock_count === 0 && (
                         <div className="absolute inset-0 bg-white/90 flex items-center justify-center">
-                          <span className="bg-red-500 text-white px-4 py-2 rounded font-semibold">Out of Stock</span>
+                          <span className="bg-red-500 text-white px-3 py-1 rounded font-semibold text-sm">Out of Stock</span>
                         </div>
                       )}
                     </div>
 
                     {/* Product Info */}
-                    <div className="p-4">
-                      <h3 className="font-semibold text-gray-800 mb-1 line-clamp-2 min-h-[48px]">{product.pname}</h3>
-                      <p className="text-sm text-gray-500 mb-2">By {product.brand}</p>
+                    <div className={`p-3 sm:p-4 ${viewMode === 'list' ? 'w-full sm:w-2/3 flex flex-col justify-between' : ''}`}>
+                      <h3 className="font-semibold text-gray-800 mb-1 line-clamp-2 min-h-[40px] sm:min-h-[48px] text-sm sm:text-base">{product.pname}</h3>
+                      <p className="text-xs text-gray-500 mb-2">By {product.brand}</p>
 
                       {/* Rating */}
                       <div className="flex items-center gap-1 mb-2">
-                        {renderStars(product.rating)}
+                        <div className="text-xs sm:text-sm">
+                            {renderStars(product.rating)}
+                        </div>
                         <span className="text-xs text-gray-600 ml-1">({product.rating})</span>
                       </div>
 
-                      {/* Options Badge */}
-                      <div className="inline-flex items-center gap-2 bg-gray-100 px-3 py-1 rounded text-xs text-gray-600 mb-3">
-                        <div className="w-3 h-3 rounded-full bg-orange-300 border border-gray-300"></div>
+                      {/* Options Badge - Hidden on smallest screens if space is tight */}
+                      <div className="inline-flex items-center gap-2 bg-gray-100 px-2 py-0.5 rounded text-[10px] sm:text-xs text-gray-600 mb-3">
+                        <div className="w-2 h-2 rounded-full bg-orange-300 border border-gray-300"></div>
                         4+ Options
                       </div>
 
                       {/* Price Section */}
-                      <div className="border-t pt-3">
+                      <div className="border-t pt-2 sm:pt-3">
                         {product.offer > 0 && (
-                          <span className="inline-block bg-orange-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded mb-2">Deal Price</span>
+                          <span className="inline-block bg-orange-500 text-white text-[9px] sm:text-[10px] font-semibold px-2 py-0.5 rounded mb-1 sm:mb-2">Deal Price</span>
                         )}
                         <div className="flex items-baseline gap-2 flex-wrap">
-                          <span className="text-2xl font-bold text-green-600">
+                          <span className="text-xl sm:text-2xl font-bold text-green-600">
                             ₹ {calcDiscountedPrice(product.price, product.offer).toLocaleString()}
                           </span>
                           {product.offer > 0 && (
                             <>
-                              <span className="text-gray-400 line-through">₹{product.price.toLocaleString()}</span>
-                              <span className="text-green-600 font-semibold text-sm">{product.offer}% Off</span>
+                              <span className="text-gray-400 line-through text-xs sm:text-sm">₹{product.price.toLocaleString()}</span>
+                              <span className="text-green-600 font-semibold text-xs sm:text-sm">{product.offer}% Off</span>
                             </>
                           )}
                         </div>
+                        {/* Add to Cart button visible in list view, not just on hover */}
+                        {viewMode === 'list' && (
+                          <button
+                            onClick={(e) => handleAddToCart(e, product)}
+                            className="w-full mt-3 bg-orange-500 text-white py-2 rounded-lg font-semibold text-sm hover:bg-orange-600 transition flex items-center justify-center gap-2"
+                          >
+                            <FontAwesomeIcon icon={faShoppingCart} />
+                            Add to Cart
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
