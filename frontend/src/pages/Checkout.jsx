@@ -10,56 +10,46 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState('online'); // Default to online
+  const [paymentMethod, setPaymentMethod] = useState('online');
   const [address, setAddress] = useState(null);
   const [addressLoading, setAddressLoading] = useState(true);
 
   useEffect(() => {
-    // Check authentication
     const token = localStorage.getItem('token');
     if (!token) {
-      // Save that we want to checkout
       localStorage.setItem('afterLoginRedirect', '/checkout');
       toast.info('Please login to checkout');
       navigate('/login?next=/checkout');
       return;
     }
 
-    // Load cart and address
     loadCartData();
     loadAddress();
   }, [navigate]);
 
-  // Auto-trigger payment after login (runs when cart and address are loaded)
+  // Auto-trigger payment after login
   useEffect(() => {
     const shouldAutoPay = localStorage.getItem('shouldAutoPayAfterLogin');
     const paymentMode = sessionStorage.getItem('paymentMode');
     
-    // Only auto-trigger if: flag is set, cart loaded, address loaded, not already loading
     if (shouldAutoPay === 'true' && !loading && !addressLoading && cartItems.length > 0) {
-      // Set payment method to online if saved
       if (paymentMode === 'online') {
         setPaymentMethod('online');
         sessionStorage.removeItem('paymentMode');
         
-        // Wait a moment for paymentMethod state to update, then check
         setTimeout(() => {
-          // For online payment, address is required - check if we have it
           if (address) {
             console.log('✅ Address available, auto-triggering payment after login...');
             localStorage.removeItem('shouldAutoPayAfterLogin');
-            // Trigger payment
             handlePayment();
           } else {
-            // If no address, clear flag and let user add address first
-            console.log('⚠️ Address required for payment, user needs to add address first');
+            console.log('⚠️ Address required for payment');
             localStorage.removeItem('shouldAutoPayAfterLogin');
             toast.info('Please add delivery address to continue payment');
           }
         }, 500);
         return;
       } else {
-        // Payment mode not set or not online, clear flag
         localStorage.removeItem('shouldAutoPayAfterLogin');
       }
     }
@@ -68,7 +58,6 @@ const Checkout = () => {
 
   const loadCartData = async () => {
     try {
-      const token = localStorage.getItem('token');
       const response = await API.get('/api/cart');
       
       let items = [];
@@ -82,7 +71,6 @@ const Checkout = () => {
 
       setCartItems(items);
       
-      // Calculate total
       const total = items.reduce((sum, item) => {
         const price = item.price || (item.product?.price || 0);
         const qty = item.qty || 1;
@@ -102,32 +90,58 @@ const Checkout = () => {
       const response = await API.get('/api/address');
       setAddress(response.data);
     } catch (error) {
-      // Address may not exist yet
       setAddress(null);
     } finally {
       setAddressLoading(false);
     }
   };
 
-  const [cashfreeLoading, setCashfreeLoading] = useState(false);
-
+  /**
+   * Load Cashfree JS SDK v3
+   * Uses the correct SDK for PG Orders API
+   */
   const loadCashfreeSDK = () => {
     return new Promise((resolve, reject) => {
-      if (window?.Cashfree) {
+      // Check if SDK is already loaded
+      if (window?.Cashfree && typeof window.Cashfree === 'function') {
+        console.log('✅ Cashfree SDK already loaded');
         return resolve(window.Cashfree);
       }
-      const existingScript = document.getElementById('cashfree-sdk');
+
+      // Check if script is already being loaded
+      const existingScript = document.getElementById('cashfree-sdk-v3');
       if (existingScript) {
-        existingScript.onload = () => resolve(window.Cashfree);
-        existingScript.onerror = reject;
+        existingScript.onload = () => {
+          if (window?.Cashfree) {
+            resolve(window.Cashfree);
+          } else {
+            reject(new Error('Cashfree SDK loaded but window.Cashfree not available'));
+          }
+        };
+        existingScript.onerror = () => reject(new Error('Failed to load Cashfree SDK script'));
         return;
       }
+
+      // Load Cashfree JS SDK v3 (correct SDK for PG Orders)
       const script = document.createElement('script');
-      script.id = 'cashfree-sdk';
-      script.src = 'https://sdk.cashfree.com/js/ui/pg-sdk.js';
+      script.id = 'cashfree-sdk-v3';
+      script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
       script.async = true;
-      script.onload = () => resolve(window.Cashfree);
-      script.onerror = (err) => reject(err);
+      
+      script.onload = () => {
+        console.log('✅ Cashfree SDK v3 loaded successfully');
+        if (window?.Cashfree && typeof window.Cashfree === 'function') {
+          resolve(window.Cashfree);
+        } else {
+          reject(new Error('Cashfree SDK loaded but initialization function not found'));
+        }
+      };
+      
+      script.onerror = (err) => {
+        console.error('❌ Failed to load Cashfree SDK:', err);
+        reject(new Error('Failed to load Cashfree SDK script'));
+      };
+      
       document.body.appendChild(script);
     });
   };
@@ -147,11 +161,11 @@ const Checkout = () => {
         return;
       }
 
+      // Handle COD
       if (paymentMethod === 'cod') {
-        // For COD, user needs address first
         if (!address) {
           toast.error('Please add delivery address first');
-          navigate('/address/0/0/0'); // Navigate to address page
+          navigate('/address/0/0/0');
           return;
         }
 
@@ -168,9 +182,8 @@ const Checkout = () => {
         return;
       }
 
-      // Online payment - directly open Cashfree payment gateway
+      // Online payment - Cashfree
       if (!address) {
-        // For online payment, we can create address after payment, but user should add it
         toast.error('Please add delivery address first');
         navigate('/address/0/0/0');
         return;
@@ -191,79 +204,85 @@ const Checkout = () => {
       const phone = address.mob1 ? String(address.mob1) : '9999999999';
       const customerId = localStorage.getItem('id') || email || phone;
 
+      // Create Cashfree order
       const payload = {
         amount: amountNumber,
-        currency: 'INR',
-        name,
-        email,
-        phone,
-        customer_id: customerId
+        email: email,
+        phone: phone,
+        customer_id: customerId,
+        name: name
       };
 
-      console.log('🟢 Sending Cashfree create payload:', payload);
+      console.log('🟢 Creating Cashfree order:', payload);
       const res = await API.post('/api/cashfree/create', payload);
 
       const respPayload = res.data || {};
-      const cfData = respPayload.data || {};
-      const backendOrderId = respPayload.orderId;
+      const paymentSessionId = respPayload.payment_session_id;
+      const orderId = respPayload.orderId;
 
       console.log('📦 Cashfree response:', {
-        orderId: backendOrderId,
-        payment_link: respPayload.payment_link,
-        payment_session_id: respPayload.payment_session_id,
-        cfDataKeys: Object.keys(cfData)
+        orderId,
+        hasPaymentSessionId: !!paymentSessionId,
+        paymentSessionIdLength: paymentSessionId?.length
       });
 
-      // Extract payment_session_id from backend response (PG Orders API)
-      const paymentSessionId = respPayload.payment_session_id || 
-                              cfData.payment_session_id || 
-                              cfData.paymentSessionId ||
-                              cfData.paymentSessionID;
-
-      const orderId = backendOrderId || cfData.order_id || cfData.orderId;
-
+      // Validate response
       if (!orderId) {
-        console.error('❌ No orderId in Cashfree response:', respPayload);
+        console.error('❌ No orderId in response:', respPayload);
         toast.error('Payment initialization failed: missing order ID');
         setLoading(false);
         return;
       }
 
       if (!paymentSessionId || typeof paymentSessionId !== 'string') {
-        console.error('❌ No payment_session_id returned from Cashfree:', respPayload);
-        toast.error('Payment initialization failed: Cashfree did not return payment session ID. Please check console.');
+        console.error('❌ Invalid payment_session_id:', {
+          paymentSessionId,
+          type: typeof paymentSessionId,
+          fullResponse: respPayload
+        });
+        toast.error('Payment initialization failed: invalid payment session ID');
         setLoading(false);
         return;
       }
 
-      // Save order info BEFORE opening checkout
+      // Save order info
       localStorage.setItem('cf_orderId', orderId);
       localStorage.setItem('cf_addressId', address._id);
       localStorage.setItem('cf_total', String(amountNumber));
       console.log('💾 Saved payment info:', { orderId, addressId: address._id, total: amountNumber });
 
-      // Use Cashfree JS SDK to open checkout (PG Orders Checkout)
+      // Initialize Cashfree checkout
       try {
-        setCashfreeLoading(true);
-        const cashfree = await loadCashfreeSDK();
+        console.log('🔄 Loading Cashfree SDK...');
+        const Cashfree = await loadCashfreeSDK();
+        
+        console.log('🔄 Initializing Cashfree with production mode...');
+        const cashfree = await Cashfree({ mode: 'production' });
         
         if (!cashfree || typeof cashfree.checkout !== 'function') {
-          throw new Error('Cashfree SDK checkout method not available');
+          throw new Error('Cashfree checkout method not available after initialization');
         }
-        
+
+        console.log('✅ Opening Cashfree checkout with paymentSessionId:', paymentSessionId.substring(0, 20) + '...');
         toast.info('Opening secure Cashfree checkout...');
+        
+        // Open checkout
         await cashfree.checkout({
           paymentSessionId: paymentSessionId,
           redirectTarget: '_self'
         });
         
-        setCashfreeLoading(false);
+        console.log('✅ Cashfree checkout opened successfully');
         setLoading(false);
         return;
       } catch (sdkError) {
-        console.error('❌ Cashfree SDK checkout error:', sdkError);
+        console.error('❌ Cashfree SDK error:', {
+          error: sdkError,
+          message: sdkError?.message,
+          stack: sdkError?.stack,
+          paymentSessionId: paymentSessionId?.substring(0, 20)
+        });
         toast.error(sdkError?.message || 'Failed to open Cashfree checkout. Please try again.');
-        setCashfreeLoading(false);
         setLoading(false);
         return;
       }
@@ -273,7 +292,7 @@ const Checkout = () => {
         error?.response?.data?.message ||
         error?.response?.data?.error ||
         error?.message ||
-        (typeof error === 'string' ? error : 'Failed to initiate payment. Please try again.');
+        'Failed to initiate payment. Please try again.';
       toast.error(message);
       setLoading(false);
     }
@@ -464,4 +483,3 @@ const Checkout = () => {
 };
 
 export default Checkout;
-

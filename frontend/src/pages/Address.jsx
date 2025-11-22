@@ -414,48 +414,85 @@ const Address = () => {
             localStorage.setItem('cf_total', amount);
             console.log('💾 Saved payment info:', { orderId, addressId: data.id, total: amount });
 
-            // Use Cashfree JS SDK to open checkout (PG Orders Checkout)
+            // Use Cashfree JS SDK v3 to open checkout (PG Orders Checkout)
             try {
+              console.log('🔄 Loading Cashfree SDK v3...');
               toast.info('Opening secure Cashfree checkout...');
               
-              // Load Cashfree SDK
+              // Load Cashfree JS SDK v3 (correct SDK for PG Orders API)
               const loadCashfreeSDK = () => {
                 return new Promise((resolve, reject) => {
-                  if (window?.Cashfree) {
+                  // Check if SDK is already loaded
+                  if (window?.Cashfree && typeof window.Cashfree === 'function') {
+                    console.log('✅ Cashfree SDK already loaded');
                     return resolve(window.Cashfree);
                   }
-                  const existingScript = document.getElementById('cashfree-sdk');
+
+                  // Check if script is already being loaded
+                  const existingScript = document.getElementById('cashfree-sdk-v3');
                   if (existingScript) {
-                    existingScript.onload = () => resolve(window.Cashfree);
-                    existingScript.onerror = reject;
+                    existingScript.onload = () => {
+                      if (window?.Cashfree) {
+                        resolve(window.Cashfree);
+                      } else {
+                        reject(new Error('Cashfree SDK loaded but window.Cashfree not available'));
+                      }
+                    };
+                    existingScript.onerror = () => reject(new Error('Failed to load Cashfree SDK script'));
                     return;
                   }
+
+                  // Load Cashfree JS SDK v3
                   const script = document.createElement('script');
-                  script.id = 'cashfree-sdk';
-                  script.src = 'https://sdk.cashfree.com/js/ui/pg-sdk.js';
+                  script.id = 'cashfree-sdk-v3';
+                  script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
                   script.async = true;
-                  script.onload = () => resolve(window.Cashfree);
-                  script.onerror = (err) => reject(err);
+                  
+                  script.onload = () => {
+                    console.log('✅ Cashfree SDK v3 loaded successfully');
+                    if (window?.Cashfree && typeof window.Cashfree === 'function') {
+                      resolve(window.Cashfree);
+                    } else {
+                      reject(new Error('Cashfree SDK loaded but initialization function not found'));
+                    }
+                  };
+                  
+                  script.onerror = (err) => {
+                    console.error('❌ Failed to load Cashfree SDK:', err);
+                    reject(new Error('Failed to load Cashfree SDK script'));
+                  };
+                  
                   document.body.appendChild(script);
                 });
               };
 
-              const cashfree = await loadCashfreeSDK();
+              const Cashfree = await loadCashfreeSDK();
+              
+              console.log('🔄 Initializing Cashfree with production mode...');
+              const cashfree = await Cashfree({ mode: 'production' });
               
               if (!cashfree || typeof cashfree.checkout !== 'function') {
-                throw new Error('Cashfree SDK checkout method not available');
+                throw new Error('Cashfree checkout method not available after initialization');
               }
 
+              console.log('✅ Opening Cashfree checkout with paymentSessionId:', paymentSessionId.substring(0, 20) + '...');
+              
               // Open checkout using payment_session_id
               await cashfree.checkout({
                 paymentSessionId: paymentSessionId,
                 redirectTarget: '_self'
               });
               
+              console.log('✅ Cashfree checkout opened successfully');
               setLoading(false);
               return;
             } catch (sdkError) {
-              console.error('❌ Cashfree SDK checkout error:', sdkError);
+              console.error('❌ Cashfree SDK checkout error:', {
+                error: sdkError,
+                message: sdkError?.message,
+                stack: sdkError?.stack,
+                paymentSessionId: paymentSessionId?.substring(0, 20)
+              });
               toast.error(sdkError?.message || 'Failed to open Cashfree checkout. Please try again.');
               setLoading(false);
               return;
