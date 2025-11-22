@@ -26,6 +26,8 @@ import SecurityPrivacyPage from "./pages/SecurityPrivacyPage";
 import DeliveryShippingPage from "./pages/DeliveryShippingPage";
 import CashfreeCallback from './pages/CashfreeCallback';
 import CheckoutSuccess from './pages/CheckoutSuccess';
+import WhatsAppWidget from './components/WhatsAppWidget';
+import CustomFurniture from './pages/CustomFurniture';
 
 
 function App() {
@@ -69,11 +71,13 @@ function App() {
         <Route path="/terms" element={<TermsConditions />} />
         <Route path="/return-refunds" element={< CancellationRefundPolicy/>} />
         <Route path="/delivery-policy" element={<DeliveryShippingPage />} />
+        <Route path="/custom-furnitures" element={<CustomFurniture />} />
         {/* Category pages: handled by root `/:slug` route to preserve original paths */}
         {/* ✅ Backwards-compatible slug routing (keeps existing behavior) */}
         <Route path="/:slug" element={<Productpage />} />
       </Routes>
       <Footer />
+      <WhatsAppWidget />
     </BrowserRouter>
   );
 }

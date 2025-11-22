@@ -81,7 +81,7 @@ const Header = () => {
     { _id: '4', name: 'Dining & Kitchen', slug: 'dining-kitchen' },
     { _id: '5', name: 'Storage', slug: 'storage' },
     { _id: '6', name: 'Study & Office', slug: 'study-office' },
-    { _id: '7', name: 'Custom Furniture', slug: 'custom-furnitures' },
+    { _id: '7', name: 'Custom Furniture', slug: 'custom-furnitures' }
   ]);
   
   const [activeMenu, setActiveMenu] = useState(null);

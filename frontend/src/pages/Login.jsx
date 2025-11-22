@@ -44,49 +44,41 @@ const Login = () => {
         localStorage.setItem("email", response.data.email || "");
         toast.success(response.data.message);
         dispatch(addCustomer(response.data.username));
-        // Check for redirect target from URL params (next) or localStorage
+        
         const urlParams = new URLSearchParams(window.location.search);
         const nextParam = urlParams.get('next');
         let after = nextParam || localStorage.getItem('afterLoginRedirect');
         const shouldAutoPay = localStorage.getItem('shouldAutoPayAfterLogin');
         
-        // Fix: Never redirect to broken address paths or profile - always use /checkout for checkout flow
         if (after) {
-          // Block broken paths
           if (after.includes('/address/') && !after.match(/^\/checkout/)) {
             console.warn('⚠️ Blocked redirect to broken address path, using /checkout instead:', after);
             after = '/checkout';
           }
           
-          // Block profile redirect if coming from checkout flow
           if (shouldAutoPay === 'true' && after === '/userprofile' || after === '/profile') {
             console.warn('⚠️ Blocked profile redirect during checkout flow, using /checkout instead');
             after = '/checkout';
           }
           
-          // Ensure checkout path for payment flow
           if (shouldAutoPay === 'true' && !after.includes('/checkout')) {
             console.log('✅ Forcing /checkout for auto-pay flow');
             after = '/checkout';
           }
         }
         
-        // Clear redirect flags but preserve auto-pay flag for checkout page
         if (after) {
           localStorage.removeItem('afterLoginRedirect');
-          // If should auto-pay, keep the flag for Checkout page to handle
           if (shouldAutoPay === 'true') {
-            // Keep shouldAutoPayAfterLogin for Checkout page
             console.log('✅ User logged in, will auto-trigger payment on checkout page');
           } else {
             localStorage.removeItem('shouldAutoPayAfterLogin');
           }
           console.log('🔄 Redirecting to:', after);
-          navigate(after, { replace: true }); // Use replace to prevent back button issues
+          navigate(after, { replace: true });
         } else {
-          // Default: go to home, NOT profile (only go to profile if explicitly clicked)
           console.log('✅ Login successful, redirecting to home');
-          localStorage.removeItem('shouldAutoPayAfterLogin'); // Clear flag if no redirect
+          localStorage.removeItem('shouldAutoPayAfterLogin');
           navigate("/", { replace: true });
         }
       } else {
@@ -100,81 +92,105 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center mt-10 px-4">
-      <div 
-        className="border shadow-lg hover:shadow-2xl rounded-lg w-full max-w-4xl bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: "url('/dining/Login Page Banner (1280x720Pxl.) (2).png')"
-        }}
-      >
-        <div className="flex items-center gap-5 flex-col md:flex-row md:p-0">
-          <div className=" w-full p-6 bg-white text-white bg-opacity-20 rounded-lg ">
-            <h2 className="text-2xl text-center font-bold md:text-2xl text-white">Login</h2>
-            <p className="text-center">Track your order, create wishlist & more</p>
-            <Formik
-              initialValues={initialValues}
-              validationSchema={validationSchema}
-              onSubmit={onSubmit}
-            >
-              {({ isSubmitting }) => (
-                <Form className="pt-3 flex flex-col justify-between items-center pr-2 w-full">
-                  <Field
-                    type="text"
-                    name="name"
-                    placeholder="User Name"
-                    className="w-full md:w-80 rounded-md px-3 py-2"
-                  />
-                  <ErrorMessage
-                    name="name"
-                    component="p"
-                    className="error text-xs text-red-500"
-                  />
+    <div 
+      className="h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center px-4 overflow-hidden"
+      style={{
+        backgroundImage: "url('/home/Login Page Banner (1280x720Pxl.) (1).png')"
+      }}
+    >
+      {/* Semi-transparent overlay */}
+      {/* <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30"></div> */}
+      
+      {/* Login Form Container */}
+      <div className="relative z-10 bg-transparent backdrop-blur-md rounded-3xl shadow-2xl p-8 sm:p-10 w-full max-w-lg">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-3">Login</h2>
+          <p className="text-sm sm:text-base text-gray-700">Track your order, create wishlist & more</p>
+        </div>
 
-                  <Field
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    className="w-full md:w-80 rounded-md mt-5 mr-1 px-3 py-2"
-                  />
-                  <ErrorMessage
-                    name="password"
-                    component="p"
-                    className="error text-xs text-red-500"
-                  />
+        {/* Form */}
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={onSubmit}
+        >
+          {({ isSubmitting }) => (
+            <Form className="space-y-5">
+              {/* Username */}
+              <div>
+                <Field
+                  type="text"
+                  name="name"
+                  placeholder="User Name"
+                  className="w-full px-5 py-3.5 rounded-xl border-2 border-gray-200 bg-white/90 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-gray-800 placeholder:text-gray-500"
+                />
+                <ErrorMessage
+                  name="name"
+                  component="p"
+                  className="text-xs text-red-500 mt-1 ml-1"
+                />
+              </div>
 
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="p-2 rounded-lg text-white bg-gradient-to-r mt-5 from-orange-500 to-orange-300 w-full md:w-60 h-10 hover:bg-gradient-to-r hover:from-orange-300 hover:to-orange-500"
-                  >
-                    {isSubmitting ? "Logging in..." : "Login"}
-                  </button>
-                </Form>
-              )}
-            </Formik>
-            <p className="pt-3 pb-3 text-base text-center">
-              New to SRI Furniture Village?{" "}
-              <Link to="/register" className="text-orange-400 cursor-pointer">
-                Register Here
-              </Link>{" "}
-            </p>
-            <hr />
-            <p className="text-center pt-3 text-bold text-orange-200 items-center">
-              OR Continue With{" "}
-              <span
-                role="button"
-                onClick={() => {
-                  const base = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '';
-                  const url = (base ? base.replace(/\/$/, '') : '') + '/api/auth/google';
-                  window.location.href = url;
-                }}
-                className="text-blue-300 hover:text-orange-200 text-xl cursor-pointer"
+              {/* Password */}
+              <div>
+                <Field
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  className="w-full px-5 py-3.5 rounded-xl border-2 border-gray-200 bg-white/90 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-gray-800 placeholder:text-gray-500"
+                />
+                <ErrorMessage
+                  name="password"
+                  component="p"
+                  className="text-xs text-red-500 mt-1 ml-1"
+                />
+              </div>
+
+              {/* Login Button */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-400 text-white font-bold text-base hover:from-orange-600 hover:to-orange-500 transform hover:scale-[1.02] transition-all shadow-xl hover:shadow-2xl uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <FontAwesomeIcon icon={faGoogle} />
-              </span>{" "}
-              
-            </p>
+                {isSubmitting ? "Logging in..." : "LOGIN"}
+              </button>
+            </Form>
+          )}
+        </Formik>
+
+        {/* Register Link */}
+        <p className="text-center text-sm text-gray-700 mt-6 font-medium">
+          New to SRI Furniture Village?{" "}
+          <Link to="/register" className="text-orange-500 hover:text-orange-600 font-bold cursor-pointer">
+            Register Here
+          </Link>
+        </p>
+
+        {/* Divider */}
+        <div className="relative my-7">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t-2 border-gray-300"></div>
           </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-4 bg-white/85 text-gray-600 font-medium">OR Continue With</span>
+          </div>
+        </div>
+
+        {/* Social Login Button */}
+        <div className="flex justify-center">
+          <button 
+            type="button"
+            onClick={() => {
+              const base = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '';
+              const url = (base ? base.replace(/\/$/, '') : '') + '/api/auth/google';
+              window.location.href = url;
+            }}
+            className="flex items-center justify-center w-14 h-14 rounded-full bg-white/90 border-2 border-gray-300 hover:border-orange-500 hover:bg-orange-50 transition-all shadow-md hover:shadow-xl transform hover:scale-110"
+            aria-label="Continue with Google"
+          >
+            <FontAwesomeIcon icon={faGoogle} className="text-orange-500 text-2xl" />
+          </button>
         </div>
       </div>
     </div>

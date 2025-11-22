@@ -31,7 +31,6 @@ const Register = () => {
           name: datas.name,
           email: datas.email,
           password: datas.password,
-          // keep extended fields too for compatibility
           username: datas.name,
           first_name: datas.fname,
           last_name: datas.lname,
@@ -71,133 +70,157 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center mt-10 px-4">
-      <div className="border shadow-lg hover:shadow-2xl bg-white rounded-lg w-full max-w-4xl">
-        <div className="flex items-center gap-5 flex-col md:flex-row md:p-0">
-          <div className="w-full md:w-1/3">
-            <img
-              src="/images/reg.jpg"
-              alt=""
-              className="object-cover w-full h-40 md:h-[35rem] md:w-full rounded-t-lg md:rounded-none"
+    <div 
+      className="h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center px-4 overflow-hidden"
+      style={{
+        backgroundImage: "url('/home/Login Page Banner (1280x720Pxl.) (2) (1).png')"
+      }}
+    >
+      {/* Semi-transparent overlay */}
+      {/* <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30"></div> */}
+      
+      {/* Register Form Container */}
+      <div className="relative z-10 bg-transparent backdrop-blur-md rounded-3xl shadow-2xl p-8 sm:p-10 w-full max-w-lg">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl sm:text-4xl font-bold text-Black mb-2">Register</h2>
+          <p className="text-sm sm:text-base text-gray-900">Get exclusive discounts, newsletters and more</p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleOnSubmit} className="space-y-5">
+          {/* Username */}
+          <div>
+            <input
+              type="text"
+              name="name"
+              id="username-field"
+              value={datas.name}
+              placeholder="User Name"
+              className="w-full px-5 py-3.5 rounded-xl border-2 border-gray-200 bg-white/90 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-gray-800 placeholder:text-gray-500"
+              required
+              minLength={3}
+              onChange={handleOnChange}
             />
           </div>
-          <div className="font-mono w-full md:w-2/3 p-6">
-            <h2 className="text-xl md:text-2xl">Register</h2>
-            <small>Get exclusive discounts, newsletters and more</small>
-            <form
-              className="pt-3 flex flex-col justify-between items-center pr-2"
-              onSubmit={handleOnSubmit}
-            >
-              <input
-                type="text"
-                name="name"
-                id="username-field"
-                value={datas.name}
-                placeholder=" User Name"
-                className="w-full md:w-80 rounded-md px-3 py-2"
-                required
-                minLength={3}
-                onChange={handleOnChange}
-              />
-              <div className="flex gap-1 pt-5">
-                <input
-                  type="text"
-                  name="fname"
-                  value={datas.fname}
-                  placeholder=" First Name"
-                  className="w-1/2 md:w-40 rounded-md px-2"
-                  required
-                  minLength={3}
-                  onChange={handleOnChange}
-                />
-                <input
-                  type="text"
-                  name="lname"
-                  value={datas.lname}
-                  placeholder=" Last Name"
-                  className="w-1/2 md:w-40 rounded-md px-2"
-                  required
-                  minLength={3}
-                  onChange={handleOnChange}
-                />
-              </div>
-              <input
-                type="email"
-                name="email"
-                value={datas.email}
-                id="email-field"
-                placeholder="Email"
-                className="w-full md:w-80 rounded-md mt-5 px-3 py-2"
-                required
-                minLength={5}
-                onChange={handleOnChange}
-              />
 
-              <div className="relative flex">
-                <input
-                  type="password"
-                  name="password"
-                  value={datas.password}
-                  id="password-field"
-                  placeholder="Password"
-                  className="w-50 md:w-80 rounded-md mt-5 mr-1"
-                  required
-                  minLength={5}
-                  onChange={handleOnChange}
-                />
-
-                <button
-                  data-tooltip-target="tooltip-dark"
-                  type="button"
-                  className="text-green-500 pt-3"
-                >
-                  ?
-                </button>
-
-                <div
-                  id="tooltip-dark"
-                  role="tooltip"
-                  className="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-                >
-                  Password can contain alphabets, numbers and underscore. It
-                  should contain a minimum of 8 and a maximum of 12 characters.
-                  <div className="tooltip-arrow" data-popper-arrow></div>
-                </div>
-              </div>
-              <p className="text-xs pt-3">
-                By continuing, I agree to the{" "}
-                <span className="text-orange-400 cursor-pointer">
-                  Terms of Use{" "}
-                </span>
-                &{" "}
-                <span className="text-orange-300 cursor-pointer">
-                  Privacy Policy
-                </span>
-              </p>
-              <button className="p-2 ml-0 rounded-lg text-white bg-gradient-to-r mt-3 from-orange-500 to-orange-300 w-full md:w-60 h-10 hover:bg-gradient-to-r hover:from-orange-300 hover:to-orange-500 ">
-                REGISTER
-              </button>
-            </form>
-            <p className="pt-3 pb-3 text-base text-center">
-              {" "}
-              Already have an account?{" "}
-              <Link to={"/login"} className="text-orange-400 cursor-pointer">
-                Sign in
-              </Link>{" "}
-            </p>
-            <hr />
-            <p className="text-center pt-3 text-gray-500 items-center">
-              OR Continue With{" "}
-              <span className="text-orange-300 hover:text-orange-700 text-xl cursor-pointer">
-                {" "}
-                <FontAwesomeIcon icon={faGoogle} />
-              </span>{" "}
-              <FontAwesomeIcon
-                icon={faFacebook}
-                className="text-blue-400  cursor-pointer  text-xl hover:text-blue-600"
-              />
-            </p>
+          {/* First Name & Last Name */}
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="text"
+              name="fname"
+              value={datas.fname}
+              placeholder="First Name"
+              className="w-full px-5 py-3.5 rounded-xl border-2 border-gray-200 bg-white/90 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-gray-800 placeholder:text-gray-500"
+              required
+              minLength={3}
+              onChange={handleOnChange}
+            />
+            <input
+              type="text"
+              name="lname"
+              value={datas.lname}
+              placeholder="Last Name"
+              className="w-full px-5 py-3.5 rounded-xl border-2 border-gray-200 bg-white/90 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-gray-800 placeholder:text-gray-500"
+              required
+              minLength={3}
+              onChange={handleOnChange}
+            />
           </div>
+
+          {/* Email */}
+          <div>
+            <input
+              type="email"
+              name="email"
+              id="email-field"
+              value={datas.email}
+              placeholder="Email"
+              className="w-full px-5 py-3.5 rounded-xl border-2 border-gray-200 bg-white/90 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-gray-800 placeholder:text-gray-500"
+              required
+              minLength={5}
+              onChange={handleOnChange}
+            />
+          </div>
+
+          {/* Password with Help Icon */}
+          <div className="relative">
+            <input
+              type="password"
+              name="password"
+              id="password-field"
+              value={datas.password}
+              placeholder="Password"
+              className="w-full px-5 py-3.5 rounded-xl border-2 border-gray-200 bg-white/90 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-gray-800 placeholder:text-gray-500 pr-14"
+              required
+              minLength={5}
+              onChange={handleOnChange}
+            />
+            <button
+              type="button"
+              className="absolute right-5 top-1/2 -translate-y-1/2 text-orange-500 font-bold text-xl hover:text-orange-600 transition-colors"
+              title="Password can contain alphabets, numbers and underscore. It should contain a minimum of 8 and a maximum of 12 characters."
+            >
+              ?
+            </button>
+          </div>
+
+          {/* Terms & Conditions */}
+          <p className="text-xs text-center text-gray-700 px-2 leading-relaxed">
+            By continuing, I agree to the{" "}
+            <span className="text-orange-500 hover:text-orange-600 font-semibold cursor-pointer">
+              Terms of Use
+            </span>
+            {" "}&{" "}
+            <span className="text-orange-500 hover:text-orange-600 font-semibold cursor-pointer">
+              Privacy Policy
+            </span>
+          </p>
+
+          {/* Register Button */}
+          <button 
+            type="submit"
+            className="w-full py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-400 text-white font-bold text-base hover:from-orange-600 hover:to-orange-500 transform hover:scale-[1.02] transition-all shadow-xl hover:shadow-2xl uppercase tracking-wide"
+          >
+            REGISTER
+          </button>
+        </form>
+
+        {/* Sign In Link */}
+        <p className="text-center text-sm text-gray-700 mt-6 font-medium">
+          Already have an account?{" "}
+          <Link to="/login" className="text-orange-500 hover:text-orange-600 font-bold cursor-pointer">
+            Sign in
+          </Link>
+        </p>
+
+        {/* Divider */}
+        <div className="relative my-7">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t-2 border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-4 bg-white/85 text-gray-600 font-medium">OR Continue With</span>
+          </div>
+        </div>
+
+        {/* Social Login Buttons */}
+        <div className="flex justify-center gap-5">
+          <button 
+            type="button"
+            className="flex items-center justify-center w-14 h-14 rounded-full bg-white/90 border-2 border-gray-300 hover:border-orange-500 hover:bg-orange-50 transition-all shadow-md hover:shadow-xl transform hover:scale-110"
+            aria-label="Continue with Google"
+          >
+            <FontAwesomeIcon icon={faGoogle} className="text-orange-500 text-2xl" />
+          </button>
+          
+          <button 
+            type="button"
+            className="flex items-center justify-center w-14 h-14 rounded-full bg-white/90 border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-all shadow-md hover:shadow-xl transform hover:scale-110"
+            aria-label="Continue with Facebook"
+          >
+            <FontAwesomeIcon icon={faFacebook} className="text-blue-500 text-2xl" />
+          </button>
         </div>
       </div>
     </div>

@@ -50,18 +50,18 @@ const Homepage = () => {
   // Top small banner
   const topSmallBanner = {
     id: 5,
-    imageUrl: "/home/Header Web Baneer.png",
-    tag: "SPECIAL DEAL",
-    subtitle: "INSTANT DISCOUNT",
-    tagColor: "bg-orange-500"
+    imageUrl: "/home/Header Web Baneer (1) (1).png",
+    tag: "",
+    subtitle: "",
+    tagColor: ""
   };
 
   // Bottom small banner
   const bottomSmallBanner = {
     id: 6,
-    imageUrl: "/home/Header Web Baneer (1).png",
-    tag: "Ships In 2 Days",
-    tagColor: "bg-blue-500"
+    imageUrl: "/home/Header Web Baneer Jpeg (1).jpg",
+    tag: "",
+    tagColor: ""
   };
 
   // Auto-slide effect
@@ -85,97 +85,120 @@ const Homepage = () => {
   };
 
   return (
-    <div className="px-2 md:px-4 lg:px-8 pt-4">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-stretch">
-        {/* Left: Main Carousel Banner */}
-        <div className="lg:col-span-2 h-[300px] sm:h-[380px] md:h-[450px] lg:h-[520px]">
-          <div className="relative w-full h-full rounded-lg overflow-hidden bg-gray-100 shadow-lg group">
-            {/* Carousel Images */}
-            <div className="relative w-full h-full">
-              {mainBanners.map((banner, index) => (
-                <div
-                  key={banner.id}
-                  className={`absolute inset-0 transition-opacity duration-700 ${
-                    index === currentSlide ? "opacity-100" : "opacity-0"
-                  }`}
-                >
-                  <img
-                    src={banner.imageUrl}
-                    alt={banner.title}
-                    className="w-full h-full object-cover"
+    <div className="w-full px-3 sm:px-4 md:px-2 lg:px-4 py-3 sm:py-4 md:py-4">
+      <div className="max-w-[1600px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
+          
+          {/* Left: Main Carousel Banner - Takes 8 columns on desktop */}
+          <div className="lg:col-span-8">
+            <div className="relative w-full h-[280px] sm:h-[350px] md:h-[420px] lg:h-[480px] xl:h-[540px] rounded-xl overflow-hidden bg-gray-100 shadow-xl group">
+              
+              {/* Carousel Images */}
+              <div className="relative w-full h-full">
+                {mainBanners.map((banner, index) => (
+                  <div
+                    key={banner.id}
+                    className={`absolute inset-0 transition-opacity duration-700 ${
+                      index === currentSlide ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
+                    <img
+                      src={banner.imageUrl}
+                      alt={banner.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&h=800&fit=crop';
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Previous Button */}
+              <button
+                onClick={prevSlide}
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10 shadow-lg"
+                aria-label="Previous slide"
+              >
+                <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              {/* Next Button */}
+              <button
+                onClick={nextSlide}
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10 shadow-lg"
+                aria-label="Next slide"
+              >
+                <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+              {/* Dots Indicator */}
+              <div className="absolute bottom-4 sm:bottom-5 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-2.5 z-10">
+                {mainBanners.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToSlide(index)}
+                    className={`h-2 sm:h-2.5 rounded-full transition-all ${
+                      index === currentSlide
+                        ? "bg-white w-8 sm:w-10"
+                        : "bg-white/60 hover:bg-white/90 w-2 sm:w-2.5"
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
                   />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Top and Bottom Small Banners - Takes 4 columns on desktop */}
+          <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-2 md:gap-3 lg:gap-2">
+            
+            {/* Top Small Banner */}
+            <div className="relative w-full h-[200px] sm:h-[220px] md:h-[240px] lg:h-[237px] xl:h-[267px] rounded-xl overflow-hidden shadow-xl group">
+              <img
+                src={topSmallBanner.imageUrl}
+                alt="Special Deal Banner"
+                className="w-full h-full object-cover transition-transform duration-500 "
+                onError={(e) => {
+                  e.target.src = 'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=800&h=600&fit=crop';
+                }}
+              />
+              {/* Optional overlay with text */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-4 left-4 right-4">
+                  <span className="inline-block px-3 py-1 bg-orange-500 text-white text-xs font-bold rounded-full mb-2">
+                    {topSmallBanner.tag}
+                  </span>
+                  <p className="text-white text-sm font-semibold">{topSmallBanner.subtitle}</p>
                 </div>
-              ))}
+              </div>
             </div>
 
-            {/* Previous Button */}
-            <button
-              onClick={prevSlide}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/30 hover:bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
-            >
-              <span className="text-white text-2xl font-bold">‹</span>
-            </button>
-
-            {/* Next Button */}
-            <button
-              onClick={nextSlide}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/30 hover:bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
-            >
-              <span className="text-white text-2xl font-bold">›</span>
-            </button>
-
-            {/* Dots Indicator */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-              {mainBanners.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    index === currentSlide
-                      ? "bg-white w-8"
-                      : "bg-white/50 hover:bg-white/75"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Right: Top and Bottom Small Banners (desktop) */}
-        <div className="hidden lg:flex lg:col-span-1 flex-col gap-3 h-[520px]">
-          {/* Top Small Banner */}
-          <div className="relative flex-1 rounded-lg overflow-hidden shadow-lg group h-1/2">
-            <img
-              src={topSmallBanner.imageUrl}
-              alt="Top Banner"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 flex flex-col justify-between p-5">
-              {/* Optional Text or Tag */}
+            {/* Bottom Small Banner */}
+            <div className="relative w-full h-[200px] sm:h-[220px] md:h-[240px] lg:h-[237px] xl:h-[267px] rounded-xl overflow-hidden shadow-xl group">
+              <img
+                src={bottomSmallBanner.imageUrl}
+                alt=""
+                className="w-full h-full object-cover transition-transform duration-500 "
+                onError={(e) => {
+                  e.target.src = 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=800&h=600&fit=crop';
+                }}
+              />
+              {/* Optional overlay with text */}
+              <div className="absolute inset-0  opacity-0  duration-300">
+                <div className="absolute bottom-4 left-4 right-4">
+                  <span className="inline-block px-3 py-1 text-white text-xs font-bold rounded-full">
+                    {bottomSmallBanner.tag}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Bottom Small Banner */}
-          <div className="relative flex-1 rounded-lg overflow-hidden shadow-lg group h-1/2">
-            <img
-              src={bottomSmallBanner.imageUrl}
-              alt="Bottom Banner"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 flex flex-col justify-between p-5">
-              {/* Optional Text or Tag */}
-            </div>
-          </div>
-        </div>
-
-        {/* On small screens show the two small banners under the main carousel */}
-        <div className="lg:hidden mt-3 w-full flex flex-col gap-3">
-          <div className="relative w-full rounded-lg overflow-hidden shadow-lg">
-            <img src={topSmallBanner.imageUrl} alt="Top Banner" className="w-full h-40 md:h-48 object-cover" />
-          </div>
-          <div className="relative w-full rounded-lg overflow-hidden shadow-lg">
-            <img src={bottomSmallBanner.imageUrl} alt="Bottom Banner" className="w-full h-40 md:h-48 object-cover" />
-          </div>
         </div>
       </div>
     </div>

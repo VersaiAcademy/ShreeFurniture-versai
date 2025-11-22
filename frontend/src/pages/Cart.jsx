@@ -13,6 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Loader from "../components/Loader";
+
 const Cart = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -21,6 +22,7 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [cartleng, setCartleng] = useState(0);
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (!token || !id) {
       navigate("/login");
@@ -37,11 +39,8 @@ const Cart = () => {
           },
           withCredentials: true,
         });
-        try {
-          console.log('📦 /api/cart response:', JSON.stringify(response.data, null, 2));
-        } catch (e) {
-          console.log('📦 /api/cart response (raw):', response.data);
-        }
+        
+        console.log('📦 /api/cart response:', response.data);
 
         // Normalize response to an array of cart items
         let items = [];
@@ -56,25 +55,10 @@ const Cart = () => {
 
         items = (items || []).filter(Boolean);
 
-        if (items.length > 1) {
-          const [firstItem, ...rest] = items;
-          console.warn('⚠️ Multiple cart items detected. Keeping only the first item.');
-          toast.info('Only one product can be purchased at a time. Keeping your first item.');
-
-          // Attempt to remove remaining items on the backend so state stays in sync
-          await Promise.allSettled(
-            rest.map((extra) =>
-              axios.delete(`/api/cart/${extra._id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-                withCredentials: true,
-              })
-            )
-          );
-
-          setCartItems([firstItem]);
-        } else {
-          setCartItems(items);
-        }
+        // REMOVED THE SINGLE ITEM LIMITATION - Now allows multiple items
+        setCartItems(items);
+        console.log(`✅ Loaded ${items.length} items in cart`);
+        
       } catch (error) {
         console.error("Error fetching cart item:", error);
         setCartItems([]);
@@ -85,6 +69,7 @@ const Cart = () => {
 
     getCartItem();
   }, [token, id, navigate]);
+
   useEffect(() => {
     const cartCount = Array.isArray(cartItems) ? cartItems.length : 0;
     setCartleng(cartCount);
@@ -104,6 +89,7 @@ const Cart = () => {
     const qty = Number(item?.qty ?? 1);
     return tprice + price * qty;
   }, 0);
+
   const todaysDeal = 2000;
 
   const states = {
@@ -111,6 +97,7 @@ const Cart = () => {
     totalprice: totalPrice,
     todaydeal: todaysDeal,
   };
+
   const removeCartItems = async (id) => {
     try {
       const response = await axios.delete(`/api/cart/${id}`, {
@@ -120,18 +107,18 @@ const Cart = () => {
         withCredentials: true,
       });
       if (response.data.status === 200) {
-        toast.success(response.data.message);
+        toast.success(response.data.message || "Item removed from cart");
         const updatedCartItems = cartItems.filter((item) => item._id !== id);
         setCartItems(updatedCartItems);
-        navigate("/cart");
       } else {
         toast.warning(response.data.message);
       }
     } catch (error) {
-      console.log("error");
-      toast.error("Erroro Occured ! Try Again");
+      console.log("error", error);
+      toast.error("Error Occurred! Try Again");
     }
   };
+
   const handleQuantity = async (itemId, action) => {
     try {
       const itemIndex = cartItems.findIndex((item) => item._id === itemId);
@@ -139,22 +126,25 @@ const Cart = () => {
         console.log("Item not found in cart");
         return;
       }
+
       const updatedCartItems = [...cartItems];
       const itemToUpdate = updatedCartItems[itemIndex];
+
       if (action === "desc" && itemToUpdate.qty > 1) {
         itemToUpdate.qty -= 1;
       } else if (
         action === "inc" &&
-        itemToUpdate.qty < itemToUpdate.product.stock_count
+        itemToUpdate.qty < (itemToUpdate.product?.stock_count || 999)
       ) {
         itemToUpdate.qty += 1;
-        1;
       } else {
         toast.warning("Maximum/minimum quantity reached");
         return;
       }
+
       updatedCartItems[itemIndex] = itemToUpdate;
       setCartItems(updatedCartItems);
+
       const response = await axios.put(
         `/api/cart/${itemId}`,
         {
@@ -167,8 +157,13 @@ const Cart = () => {
           withCredentials: true,
         }
       );
+
+      if (response.data.status === 200) {
+        toast.success("Quantity updated");
+      }
     } catch (error) {
       console.error("Error updating quantity:", error);
+      toast.error("Failed to update quantity");
     }
   };
 
@@ -182,63 +177,66 @@ const Cart = () => {
         <>
           {cartleng > 0 ? (
             <>
-              <div className="pt-3 pb-2 px-4 md:px-8 bg-blue-50">
-                <div className="flex flex-col lg:flex-row gap-6 lg:items-start">
-                  <div className="flex-1 mt-5 border-2 bg-white shadow-lg rounded-md mb-3 pb-3">
-                    <div className="flex flex-col md:flex-row pt-2 px-2 justify-between items-center gap-3">
-                      <span className="font-semibold text-lg pr-10">
-                        My Cart ({cartleng})
-                      </span>
-                      <div className="flexitems-center">
-                        <span className="text-xl text-gray-400 pr-3">
-                          <FontAwesomeIcon
-                            icon={faLocationDot}
-                            className="pr-3"
-                          />
-                          Deliver to
+              <div className="pt-3 pb-2 px-4 sm:px-6 md:px-8 lg:px-10 bg-blue-50">
+                <div className="max-w-7xl mx-auto">
+                  <div className="flex flex-col lg:flex-row gap-4 md:gap-6 lg:items-start">
+                    <div className="flex-1 mt-5 border-2 bg-white shadow-lg rounded-md mb-3 pb-3">
+                      <div className="flex flex-col sm:flex-row pt-3 sm:pt-4 px-3 sm:px-4 md:px-6 justify-between items-start sm:items-center gap-3 sm:gap-4">
+                        <span className="font-semibold text-base sm:text-lg">
+                          My Cart ({cartleng})
                         </span>
-                          <div className="relative w-full md:w-60 ">
-                              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                            <svg
-                              className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 20 20"
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                          <span className="text-sm sm:text-base text-gray-600 sm:text-gray-400 flex items-center">
+                            <FontAwesomeIcon
+                              icon={faLocationDot}
+                              className="pr-2"
+                            />
+                            Deliver to
+                          </span>
+                          <div className="relative w-full sm:w-60">
+                            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                              <svg
+                                className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                                />
+                              </svg>
+                            </div>
+                            <input
+                              type="search"
+                              id="default-search"
+                              className="block w-full p-2 sm:p-3 ps-8 sm:ps-10 text-xs sm:text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 h-9 sm:h-10"
+                              placeholder="Enter location"
+                              required
+                            />
+                            <button
+                              type="submit"
+                              className="text-white absolute end-1 bottom-1 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs sm:text-sm px-2 sm:px-4 py-1.5 sm:py-2"
                             >
-                              <path
-                                stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                              />
-                            </svg>
+                              <span className="hidden sm:inline">Search</span>
+                              <span className="sm:hidden">Go</span>
+                            </button>
                           </div>
-                          <input
-                            type="search"
-                            id="default-search"
-                            className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 h-10"
-                            placeholder="Enter location"
-                            required
-                          />
-                          <button
-                            type="submit"
-                            className="text-white absolute end-1 bottom-1  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                          >
-                            Search
-                          </button>
                         </div>
                       </div>
                     </div>
 
                     <hr className="mt-3" />
-                    {/* single item */}
+                    {/* Cart Items List */}
 
                     {cartItems.map((item) => (
                       <div key={item._id}>
-                        <div className="pt-3 flex flex-col sm:flex-row justify-start items-center px-2 pb-2 gap-4">
-                          <div className="w-32 h-28 flex-shrink-0">
+                        <div className="pt-3 sm:pt-4 flex flex-col sm:flex-row justify-start items-start sm:items-center px-3 sm:px-4 md:px-6 pb-2 gap-3 sm:gap-4">
+                          <div className="w-full sm:w-32 h-48 sm:h-28 flex-shrink-0 rounded-lg overflow-hidden">
                             {(() => {
                               // Helper to pick best image from product or item
                               const prod = item.product || {};
@@ -269,51 +267,62 @@ const Cart = () => {
                               }
 
                               return (
-                                <img src={displayImage || 'https://via.placeholder.com/400x300?text=No+Image'} alt={item.product_name || ''} className="w-full h-full object-cover" onError={(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'} />
+                                <img 
+                                  src={displayImage || 'https://via.placeholder.com/400x300?text=No+Image'} 
+                                  alt={item.product_name || ''} 
+                                  className="w-full h-full object-cover" 
+                                  onError={(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'} 
+                                />
                               );
                             })()}
                           </div>
-                          <div className="flex-1">
-                            <h2 className="text-sm font-semibold cursor-pointer hover:text-orange-300">
+                          <div className="flex-1 w-full sm:w-auto">
+                            <h2 className="text-sm sm:text-base font-semibold cursor-pointer hover:text-orange-500 transition-colors mb-1">
                               {item.product_name}
                             </h2>
-                            <small className="text-gray-400 truncate overflow-hidden">
+                            <small className="text-xs sm:text-sm text-gray-500 line-clamp-2">
                               {item?.product?.pdesc || ''}
                             </small>
-                            <div className="pt-3 flex items-center">
-                              <div className="flex items-center">
-                                Quantity
-                                <div className="border flex ml-2">
-                                  <div
-                                    className="cursor-pointer border-r px-2"
+                            <div className="pt-3 flex flex-col sm:flex-row sm:items-center flex-wrap gap-3 sm:gap-4">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs sm:text-sm text-gray-600">Quantity:</span>
+                                <div className="border border-gray-300 rounded flex items-center">
+                                  <button
+                                    className="cursor-pointer border-r px-2 sm:px-3 py-1 hover:bg-gray-100 transition-colors"
                                     onClick={() => {
                                       handleQuantity(item._id, "desc");
                                     }}
+                                    aria-label="Decrease quantity"
                                   >
-                                    <FontAwesomeIcon icon={faSubtract} />
-                                  </div>
-                                  <div className="px-4">{item.qty}</div>
-                                  <div
-                                    className="cursor-pointer border-l px-2"
+                                    <FontAwesomeIcon icon={faSubtract} className="text-xs sm:text-sm" />
+                                  </button>
+                                  <div className="px-3 sm:px-4 text-sm sm:text-base font-medium">{item.qty}</div>
+                                  <button
+                                    className="cursor-pointer border-l px-2 sm:px-3 py-1 hover:bg-gray-100 transition-colors"
                                     onClick={() => {
                                       handleQuantity(item._id, "inc");
                                     }}
+                                    aria-label="Increase quantity"
                                   >
-                                    <FontAwesomeIcon icon={faPlus} />
-                                  </div>
+                                    <FontAwesomeIcon icon={faPlus} className="text-xs sm:text-sm" />
+                                  </button>
                                 </div>
                               </div>
-                              <h2 className="font-semibold text-xl">
-                                <span className="pr-1 pl-2">Rs</span>{" "}
-                                {item.price}
-                              </h2>
-                              <p className="text-green-400 pl-3">
-                                {item?.product?.offer || 0}% Off
-                              </p>
+                              <div className="flex items-center gap-2 sm:gap-3">
+                                <h2 className="font-semibold text-lg sm:text-xl">
+                                  <span className="pr-1">₹</span>
+                                  {(item.price * item.qty).toLocaleString('en-IN')}
+                                </h2>
+                                {item?.product?.offer > 0 && (
+                                  <p className="text-green-600 text-xs sm:text-sm font-medium">
+                                    {item?.product?.offer || 0}% Off
+                                  </p>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div className="px-4 md:px-20 text-gray-400 flex gap-5">
+                        <div className="px-3 sm:px-4 md:px-6 lg:px-20 text-gray-600 flex flex-wrap gap-3 sm:gap-5 text-sm sm:text-base">
                           <p>
                             <FontAwesomeIcon icon={faHeart} className="pr-3" />
                             <span className="hover:text-orange-400 cursor-pointer">
@@ -333,58 +342,69 @@ const Cart = () => {
                             </span>
                           </p>
                         </div>
+                        <hr className="mt-3" />
                       </div>
                     ))}
-                    {/* end sinle item */}
+                    {/* End Cart Items List */}
                   </div>
-                  <div className="w-full lg:w-96 bg-white shadow-sm mt-5 p-4 border border-orange-400">
-                    <p className="text-lg font-medium">Price Detail</p>
-                    <hr />
-                    <div className="space-y-3 pt-3">
-                      <div className="flex justify-between text-sm">
-                        <span>MRP</span>
-                        <span>Rs {totalPrice || 0}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span>OFFER</span>
-                        <span className="text-green-400">{averageOfferPercent || 0}%</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Today Deal</span>
-                        <span className="text-green-400">Rs {todaysDeal}</span>
-                      </div>
-                      <div className="flex justify-between text-base font-semibold pt-2">
-                        <span>Total Payable</span>
-                        <span className="text-orange-400">Rs { (totalPrice || 0) - (todaysDeal || 0) }</span>
-                      </div>
-                    </div>
 
-                    <Link
-                      className="flex justify-center items-center mt-5"
-                      to="/checkout"
-                    >
-                      <button className="p-2 rounded-lg text-white bg-gradient-to-r from-orange-300 to-orange-500 w-full md:w-60 h-12 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-300 ">
-                        <FontAwesomeIcon icon={faBuyNLarge} className="pr-3" /> Continue to Checkout
-                      </button>
-                    </Link>
+                  {/* Price Details Sidebar */}
+                  <div className="w-full lg:w-96 bg-white shadow-sm mt-5 p-4 sm:p-5 md:p-6 border border-orange-400 rounded-lg sticky top-4">
+                      <p className="text-base sm:text-lg font-semibold mb-3">Price Detail</p>
+                      <hr className="border-gray-200" />
+                      <div className="space-y-3 pt-3">
+                        <div className="flex justify-between text-sm sm:text-base">
+                          <span className="text-gray-600">MRP ({cartleng} {cartleng === 1 ? 'item' : 'items'})</span>
+                          <span className="font-medium">₹{totalPrice.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div className="flex justify-between text-sm sm:text-base">
+                          <span className="text-gray-600">OFFER</span>
+                          <span className="text-green-600 font-medium">{averageOfferPercent || 0}%</span>
+                        </div>
+                        <div className="flex justify-between text-sm sm:text-base">
+                          <span className="text-gray-600">Today Deal</span>
+                          <span className="text-green-600 font-medium">₹{todaysDeal.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div className="flex justify-between text-base sm:text-lg font-semibold pt-3 border-t border-gray-200">
+                          <span>Total Payable</span>
+                          <span className="text-orange-500">
+                            ₹{((totalPrice || 0) - (todaysDeal || 0)).toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                      </div>
+
+                      <Link
+                        className="flex justify-center items-center mt-5 sm:mt-6"
+                        to="/checkout"
+                      >
+                        <button className="p-3 rounded-lg text-white bg-gradient-to-r from-orange-400 to-orange-600 w-full h-12 sm:h-14 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-700 transition-all shadow-md hover:shadow-lg active:scale-95 text-sm sm:text-base font-semibold">
+                          <FontAwesomeIcon icon={faBuyNLarge} className="pr-2 sm:pr-3" /> 
+                          Continue to Checkout
+                        </button>
+                      </Link>
                   </div>
                 </div>
               </div>
             </>
           ) : (
-            <p className="flex justify-center items-center ">
-              <img src="https://expresshub.com.bd/img/404.png" alt="" />
-              <span className="bg-white p-2 rounded-lg shadow-lg">
-                No Product{" "}
+            <div className="flex flex-col justify-center items-center min-h-[60vh] px-4">
+              <img 
+                src="https://expresshub.com.bd/img/404.png" 
+                alt="Empty Cart" 
+                className="max-w-xs sm:max-w-md w-full h-auto"
+              />
+              <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg mt-4 sm:mt-6 text-center max-w-md w-full">
+                <p className="text-base sm:text-lg md:text-xl font-semibold text-gray-800 mb-4">
+                  No Products in Cart
+                </p>
                 <Link
-                  to={"/product"}
-                  className="underline text-orange-300 px-3 "
+                  to={"/"}
+                  className="inline-block mt-3 px-6 sm:px-8 py-2.5 sm:py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm sm:text-base font-medium shadow-md hover:shadow-lg"
                 >
-                  Shop Now
-                </Link>{" "}
-                <FontAwesomeIcon icon={faShoppingBag} />
-              </span>
-            </p>
+                  Shop Now <FontAwesomeIcon icon={faShoppingBag} className="ml-2" />
+                </Link>
+              </div>
+            </div>
           )}
         </>
       )}

@@ -160,23 +160,26 @@ const RecommendedProducts = () => {
 
   if (loading) {
     return (
-      <div className="pt-5 px-5">
-        <h3 className="text-2xl font-bold">Recommended For You</h3>
-        <p className="pb-3">Dive Into Your Tailored Selections Today!</p>
-        <div className="flex justify-center py-10">
-          <Loader />
+      <div className="pt-5 md:pt-8 lg:pt-10 px-4 sm:px-6 md:px-8 lg:px-10">
+        <div className="max-w-7xl mx-auto">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2">Recommended For You</h3>
+          <p className="text-sm sm:text-base text-gray-600 pb-4 md:pb-6">Dive Into Your Tailored Selections Today!</p>
+          <div className="flex justify-center py-10">
+            <Loader />
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="pt-5 px-5">
-      <h3 className="text-2xl font-bold">Recommended For You</h3>
-      <p className="pb-3">Dive Into Your Tailored Selections Today!</p>
+    <div className="pt-5 md:pt-8 lg:pt-10 px-4 sm:px-6 md:px-8 lg:px-10">
+      <div className="max-w-7xl mx-auto">
+        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2">Recommended For You</h3>
+        <p className="text-sm sm:text-base text-gray-600 pb-4 md:pb-6">Dive Into Your Tailored Selections Today!</p>
 
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6">
+        {/* Products Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-5 mb-6">
         {displayedProducts.map((product) => {
           const imageUrl = getImageUrl(product);
           const hasImageError = imageErrors[product._id];
@@ -188,7 +191,7 @@ const RecommendedProducts = () => {
               onClick={() => handleProductClick(product._id)}
             >
               {/* Product Image */}
-              <div className="relative overflow-hidden bg-gray-100 h-48 sm:h-56 flex items-center justify-center">
+              <div className="relative overflow-hidden bg-gray-100 aspect-square flex items-center justify-center">
                 {imageUrl && !hasImageError ? (
                   <img
                     src={imageUrl}
@@ -235,9 +238,9 @@ const RecommendedProducts = () => {
               </div>
 
               {/* Product Info */}
-              <div className="p-3 sm:p-4">
+              <div className="p-2 sm:p-3 md:p-4">
                 {/* Product Name */}
-                <p className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2 h-9">
+                <p className="text-xs sm:text-sm font-semibold text-gray-800 mb-1 line-clamp-2 min-h-[2.5rem]">
                   {product.pname || 'Unnamed Product'}
                 </p>
 
@@ -272,15 +275,16 @@ const RecommendedProducts = () => {
 
                 {/* Add to Cart Button */}
                 <button
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-md text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 sm:py-2.5 rounded-md text-xs sm:text-sm font-semibold flex items-center justify-center gap-1 sm:gap-2 transition-colors active:scale-95"
                   onClick={(e) => {
                     e.stopPropagation();
                     alert('Added to cart!');
                   }}
                   aria-label="Add to cart"
                 >
-                  <ShoppingCart size={16} />
-                  Add to Cart
+                  <ShoppingCart size={14} className="sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Add to Cart</span>
+                  <span className="sm:hidden">Add</span>
                 </button>
               </div>
             </div>
@@ -288,33 +292,34 @@ const RecommendedProducts = () => {
         })}
       </div>
 
-      {/* View More Button */}
-      {visibleCount < products.length && (
-        <div className="flex justify-center mb-6">
-          <button
-            onClick={handleViewMore}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg"
-          >
-            View More Products →
-          </button>
-        </div>
-      )}
+        {/* View More Button */}
+        {visibleCount < products.length && (
+          <div className="flex justify-center mb-6">
+            <button
+              onClick={handleViewMore}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-semibold transition-colors shadow-md hover:shadow-lg active:scale-95"
+            >
+              View More Products →
+            </button>
+          </div>
+        )}
 
-      {/* Show All Products Message */}
-      {visibleCount === products.length && products.length > 5 && (
-        <div className="text-center py-6 text-gray-600">
-          Showing all {products.length} products
-        </div>
-      )}
+        {/* Show All Products Message */}
+        {visibleCount === products.length && products.length > 5 && (
+          <div className="text-center py-6 text-gray-600 text-sm sm:text-base">
+            Showing all {products.length} products
+          </div>
+        )}
 
-      {/* Empty State */}
-      {products.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">No products available at the moment</p>
-        </div>
-      )}
+        {/* Empty State */}
+        {products.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-base sm:text-lg">No products available at the moment</p>
+          </div>
+        )}
 
-      <hr className="mt-6" />
+        <hr className="mt-6 border-gray-200" />
+      </div>
     </div>
   );
 };

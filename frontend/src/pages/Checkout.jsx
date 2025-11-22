@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import API from '../utils/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCreditCard, faTruck, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faCreditCard, faTruck, faLock, faTrash, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState('online');
   const [address, setAddress] = useState(null);
   const [addressLoading, setAddressLoading] = useState(true);
+  const [updatingItems, setUpdatingItems] = useState({});
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -70,18 +71,20 @@ const Checkout = () => {
       }
 
       setCartItems(items);
-      
-      const total = items.reduce((sum, item) => {
-        const price = item.price || (item.product?.price || 0);
-        const qty = item.qty || 1;
-        return sum + (price * qty);
-      }, 0);
-      
-      setTotalAmount(total);
+      calculateTotal(items);
     } catch (error) {
       console.error('Failed to load cart:', error);
       toast.error('Failed to load cart items');
     }
+  };
+
+  const calculateTotal = (items) => {
+    const total = items.reduce((sum, item) => {
+      const price = item.price || (item.product?.price || 0);
+      const qty = item.qty || 1;
+      return sum + (price * qty);
+    }, 0);
+    setTotalAmount(total);
   };
 
   const loadAddress = async () => {
@@ -93,6 +96,52 @@ const Checkout = () => {
       setAddress(null);
     } finally {
       setAddressLoading(false);
+    }
+  };
+
+  // Update quantity
+  const handleUpdateQuantity = async (itemId, newQty) => {
+    if (newQty < 1) return;
+    
+    setUpdatingItems(prev => ({ ...prev, [itemId]: true }));
+    try {
+      await API.put(`/api/cart/${itemId}`, { qty: newQty });
+      
+      // Update local state
+      const updatedItems = cartItems.map(item => 
+        item._id === itemId ? { ...item, qty: newQty } : item
+      );
+      setCartItems(updatedItems);
+      calculateTotal(updatedItems);
+      toast.success('Quantity updated');
+    } catch (error) {
+      console.error('Failed to update quantity:', error);
+      toast.error('Failed to update quantity');
+    } finally {
+      setUpdatingItems(prev => ({ ...prev, [itemId]: false }));
+    }
+  };
+
+  // Remove item from cart
+  const handleRemoveItem = async (itemId) => {
+    setUpdatingItems(prev => ({ ...prev, [itemId]: true }));
+    try {
+      await API.delete(`/api/cart/${itemId}`);
+      
+      // Update local state
+      const updatedItems = cartItems.filter(item => item._id !== itemId);
+      setCartItems(updatedItems);
+      calculateTotal(updatedItems);
+      toast.success('Item removed from cart');
+      
+      // If cart becomes empty, redirect to home
+      if (updatedItems.length === 0) {
+        setTimeout(() => navigate('/'), 1500);
+      }
+    } catch (error) {
+      console.error('Failed to remove item:', error);
+      toast.error('Failed to remove item');
+      setUpdatingItems(prev => ({ ...prev, [itemId]: false }));
     }
   };
 
@@ -319,7 +368,7 @@ const Checkout = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* Cart Items */}
             <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+              <h2 className="text-xl font-semibold mb-4">Order Summary ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})</h2>
               {cartItems.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-gray-500 mb-4">Your cart is empty</p>
@@ -337,6 +386,7 @@ const Checkout = () => {
                     const price = item.price || 0;
                     const qty = item.qty || 1;
                     const image = product.natural_finish_image || product.stone_finish_image || product.img1 || product.image || '';
+                    const isUpdating = updatingItems[item._id];
                     
                     return (
                       <div key={item._id} className="flex gap-4 pb-4 border-b last:border-0">
@@ -347,9 +397,44 @@ const Checkout = () => {
                           onError={(e) => e.target.src = 'https://via.placeholder.com/100'}
                         />
                         <div className="flex-1">
-                          <h3 className="font-semibold">{item.product_name || product.pname}</h3>
-                          <p className="text-sm text-gray-600">Quantity: {qty}</p>
-                          <p className="text-lg font-bold text-orange-500 mt-2">₹{price.toLocaleString()}</p>
+                          <div className="flex justify-between items-start mb-2">
+                            <h3 className="font-semibold">{item.product_name || product.pname}</h3>
+                            <button
+                              onClick={() => handleRemoveItem(item._id)}
+                              disabled={isUpdating}
+                              className="text-red-500 hover:text-red-700 disabled:opacity-50"
+                              title="Remove item"
+                            >
+                              <FontAwesomeIcon icon={faTrash} />
+                            </button>
+                          </div>
+                          
+                          {/* Quantity Controls */}
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-sm text-gray-600">Quantity:</span>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleUpdateQuantity(item._id, qty - 1)}
+                                disabled={qty <= 1 || isUpdating}
+                                className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <FontAwesomeIcon icon={faMinus} className="text-xs" />
+                              </button>
+                              <span className="w-12 text-center font-semibold">{qty}</span>
+                              <button
+                                onClick={() => handleUpdateQuantity(item._id, qty + 1)}
+                                disabled={isUpdating}
+                                className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+                              >
+                                <FontAwesomeIcon icon={faPlus} className="text-xs" />
+                              </button>
+                            </div>
+                          </div>
+                          
+                          <div className="flex justify-between items-center">
+                            <p className="text-sm text-gray-600">Price: ₹{price.toLocaleString()}</p>
+                            <p className="text-lg font-bold text-orange-500">₹{(price * qty).toLocaleString()}</p>
+                          </div>
                         </div>
                       </div>
                     );

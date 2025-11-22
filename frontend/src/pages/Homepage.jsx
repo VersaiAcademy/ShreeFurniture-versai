@@ -10,91 +10,126 @@ import RecommendedProducts from "../components/RecommendedProducts";
 const Homepage = () => {
 
   return (
-    <div>
+    <div className="min-h-screen">
      <Hero/>
       
-      <div className="banner pt-5 px-10 rounded-md">
-        <img className="rounded-md" 
-         src="/india/2624x308 Pixle (3).jpg" alt="" />
+      {/* Banner Section 1 */}
+      <div className="pt-5 md:pt-8 px-4 sm:px-6 md:px-8 lg:px-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative w-full rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+            <img 
+              className="w-full h-auto object-cover rounded-lg" 
+              src="/india/2624x308 Pixle (3).jpg" 
+              alt="Special Offer Banner" 
+              loading="lazy"
+            />
+          </div>
+        </div>
       </div>
       
       <Toppicks/>
 
-      <div className="banner pt-5 px-10 rounded-md ">
-        <img
-        className="rounded-md" 
-        src="/Sri/2624x308 Pixle.jpg" alt="" />
+      {/* Banner Section 2 */}
+      <div className="pt-5 md:pt-8 px-4 sm:px-6 md:px-8 lg:px-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative w-full rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+            <img
+              className="w-full h-auto object-cover rounded-lg" 
+              src="/Sri/2624x308 Pixle.jpg" 
+              alt="Featured Collection Banner" 
+              loading="lazy"
+            />
+          </div>
+        </div>
       </div>
 
-  <div className="pt-10 pb-10 px-5 md:px-10 bg-gradient-to-b from-white to-gray-50">
+  <div className="pt-10 md:pt-16 pb-10 md:pb-16 px-4 sm:px-6 md:px-8 lg:px-16 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-center text-2xl md:text-4xl font-bold text-gray-800 mb-3">
+          <h1 className="text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-3 md:mb-4">
             India's Finest Online Furniture Brand
           </h1>
-          <p className="text-center text-sm md:text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
+          <p className="text-center text-sm sm:text-base md:text-lg text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto px-4">
             Buy Furniture Online from our extensive collection of wooden furniture units
           </p>
 
           <div className="space-y-4 md:space-y-6">
             {/* First Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <a href="/dining" className="group relative overflow-hidden rounded shadow-md hover:shadow-xl transition-shadow duration-300">
-                <img
-                  className="w-full h-full object-cover"
-                  src="/india/IMG_5698.JPG"
-                  alt="Dining Collection"
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              <a href="/dining" className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                <div className="aspect-[4/3] w-full overflow-hidden">
+                  <img
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    src="/india/IMG_5698.JPG"
+                    alt="Dining Collection"
+                    loading="lazy"
+                  />
+                </div>
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300"></div>
               </a>
-              <a href="/sofa" className="group relative overflow-hidden rounded shadow-md hover:shadow-xl transition-shadow duration-300">
-                <img
-                  className="w-full h-full object-cover"
-                  src="/india/IMG_5696.JPG"
-                  alt="Sofa Collection"
-                />
+              <a href="/sofa" className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                <div className="aspect-[4/3] w-full overflow-hidden">
+                  <img
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    src="/india/IMG_5696.JPG"
+                    alt="Sofa Collection"
+                    loading="lazy"
+                  />
+                </div>
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300"></div>
               </a>
-              <a href="/bedroom" className="group relative overflow-hidden rounded shadow-md hover:shadow-xl transition-shadow duration-300">
-                <img
-                  className="w-full h-full object-cover"
-                  src="/india/IMG_5697.JPG"
-                  alt="Bedroom Collection"
-                />
+              <a href="/bedroom" className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] sm:col-span-2 lg:col-span-1">
+                <div className="aspect-[4/3] w-full overflow-hidden">
+                  <img
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    src="/india/IMG_5697.JPG"
+                    alt="Bedroom Collection"
+                    loading="lazy"
+                  />
+                </div>
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300"></div>
               </a>
             </div>
 
             {/* Second Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <a href="/living-room" className="group relative overflow-hidden rounded shadow-md hover:shadow-xl transition-shadow duration-300">
-                <img
-                  className="w-full h-full object-cover"
-                  src="/images/Web 1.jpg"
-                  alt="Living Room Collection"
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              <a href="/living" className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                <div className="aspect-[4/3] w-full overflow-hidden">
+                  <img
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    src="/images/Web 1.jpg"
+                    alt="Living Room Collection"
+                    loading="lazy"
+                  />
+                </div>
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300"></div>
               </a>
-              <a href="/study-table" className="group relative overflow-hidden rounded shadow-md hover:shadow-xl transition-shadow duration-300">
-                <img
-                  className="w-full h-full object-cover"
-                  src="/images/Web 2.jpg"
-                  alt="Study Table Collection"
-                />
+              <a href="/study-table" className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                <div className="aspect-[4/3] w-full overflow-hidden">
+                  <img
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    src="/images/Web 2.jpg"
+                    alt="Study Table Collection"
+                    loading="lazy"
+                  />
+                </div>
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300"></div>
               </a>
-              <a href="/center-table" className="group relative overflow-hidden rounded shadow-md hover:shadow-xl transition-shadow duration-300">
-                <img
-                  className="w-full h-full object-cover"
-                  src="/images/Web 3.jpg"
-                  alt="Center Table Collection"
-                />
+              <a href="/center-table" className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] sm:col-span-2 lg:col-span-1">
+                <div className="aspect-[4/3] w-full overflow-hidden">
+                  <img
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    src="/images/Web 3.jpg"
+                    alt="Center Table Collection"
+                    loading="lazy"
+                  />
+                </div>
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300"></div>
               </a>
             </div>
           </div>
         </div>
 
-        <hr className="mt-10 border-gray-200" />
+        <hr className="mt-10 md:mt-16 border-gray-200" />
       </div>
       
       {/* Recommended Products Component */}
@@ -102,101 +137,101 @@ const Homepage = () => {
 
       {/* setcion start */}
       
-      <div className="pt-5 px-5">
-  <div className="flex flex-col md:flex-row mb-10">
-    <div className="pt-0 md:pt-10 cursor-pointer" onClick={() => window.location.href = '/living-room'}>
+      <div className="pt-5 px-4 sm:px-6 md:px-8 lg:px-10">
+  <div className="flex flex-col lg:flex-row mb-10 gap-4 lg:gap-6">
+    <div className="pt-0 lg:pt-10 cursor-pointer flex-1" onClick={() => window.location.href = '/living'}>
       <img
         src="/india/Living Room 2.jpg"
         alt="Living Room"
-        className="w-[50rem]"
+        className="w-full h-auto object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow"
       />
     </div>
-    <div className="flex flex-col gap-3">
-      <div className="flex pl-0 md:pl-10 gap-3 pt-5 md:pt-10">
-        <div className="cursor-pointer" onClick={() => window.location.href = '/living-room'}>
+    <div className="flex flex-col gap-3 lg:flex-1">
+      <div className="grid grid-cols-2 lg:flex lg:flex-row gap-3 lg:pl-10 pt-5 lg:pt-10">
+        <div className="cursor-pointer" onClick={() => window.location.href = '/living'}>
           <img
             src="/Sri/5.jpg"
             alt="Living Room"
-            className="w-96"
+            className="w-full h-auto object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow"
           />
         </div>
-        <div className="cursor-pointer" onClick={() => window.location.href = '/living-room'}>
+        <div className="cursor-pointer" onClick={() => window.location.href = '/living'}>
           <img
             src="/Sri/6.jpg"
             alt="Living Room"
-            className="w-96"
+            className="w-full h-auto object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow"
           />
         </div>
       </div>
-      <div className="flex justify-between gap-3 pl-0 md:pl-10">
-        <div className="cursor-pointer" onClick={() => window.location.href = '/living-room'}>
+      <div className="grid grid-cols-2 lg:flex lg:flex-row gap-3 lg:pl-10">
+        <div className="cursor-pointer" onClick={() => window.location.href = '/living'}>
           <img
             src="/Sri/7.jpg"
             alt="Living Room"
-            className="w-96"
+            className="w-full h-auto object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow"
           />
         </div>
-        <div className="cursor-pointer" onClick={() => window.location.href = '/living-room'}>
+        <div className="cursor-pointer" onClick={() => window.location.href = '/living'}>
           <img
             src="/Sri/8.jpg"
             alt="Living Room"
-            className="w-96"
+            className="w-full h-auto object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow"
           />
         </div>
       </div>
     </div>
   </div>
-  <hr />
+  <hr className="border-gray-200" />
 </div>
 
 
   
 
- <div className="pt-5 px-5">
-  <div className="flex flex-col md:flex-row mb-10">
-    <div className="pt-0 md:pt-10 cursor-pointer" onClick={() => window.location.href = '/dining'}>
+ <div className="pt-5 px-4 sm:px-6 md:px-8 lg:px-10">
+  <div className="flex flex-col lg:flex-row mb-10 gap-4 lg:gap-6">
+    <div className="pt-0 lg:pt-10 cursor-pointer flex-1" onClick={() => window.location.href = '/dining-kitchen'}>
       <img
         src="/dining/Web Dining table Sets.jpg"
         alt="Dining Table Sets"
-        className="w-full md:w-[50rem] transition-transform transform-gpu hover:scale-[1.02]"
+        className="w-full h-auto object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow"
       />
     </div>
-    <div className="flex flex-col gap-3">
-      <div className="flex pl-0 md:pl-10 gap-3 pt-5 md:pt-10">
-        <div className="cursor-pointer" onClick={() => window.location.href = '/dining'}>
+    <div className="flex flex-col gap-3 lg:flex-1">
+      <div className="grid grid-cols-2 lg:flex lg:flex-row gap-3 lg:pl-10 pt-5 lg:pt-10">
+        <div className="cursor-pointer" onClick={() => window.location.href = '/dining-kitchen'}>
           <img
             src="/dining/1.jpg"
             alt="Dining Furniture"
-            className="w-full md:w-96 transition-transform transform-gpu hover:scale-105"
+            className="w-full h-auto object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow"
           />
         </div>
-        <div className="cursor-pointer" onClick={() => window.location.href = '/dining'}>
+        <div className="cursor-pointer" onClick={() => window.location.href = '/dining-kitchen'}>
           <img
             src="/dining/2.jpg"
             alt="Dining Furniture"
-            className="w-full md:w-96 transition-transform transform-gpu hover:scale-105"
+            className="w-full h-auto object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow"
           />
         </div>
       </div>
-      <div className="flex justify-between gap-3 pl-0 md:pl-10">
-        <div className="cursor-pointer" onClick={() => window.location.href = '/dining'}>
+      <div className="grid grid-cols-2 lg:flex lg:flex-row gap-3 lg:pl-10">
+        <div className="cursor-pointer" onClick={() => window.location.href = '/dining-kitchen'}>
           <img
             src="/dining/3.jpg"
             alt="Dining Furniture"
-            className="w-full md:w-96 transition-transform transform-gpu hover:scale-105"
+            className="w-full h-auto object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow"
           />
         </div>
-        <div className="cursor-pointer" onClick={() => window.location.href = '/dining'}>
+        <div className="cursor-pointer" onClick={() => window.location.href = '/dining-kitchen'}>
           <img
             src="/dining/4.jpg"
             alt="Dining Furniture"
-            className="w-full md:w-96 transition-transform transform-gpu hover:scale-105"
+            className="w-full h-auto object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow"
           />
         </div>
       </div>
     </div>
   </div>
-  <hr />
+  <hr className="border-gray-200" />
 </div>
 
 
@@ -205,20 +240,20 @@ const Homepage = () => {
       <StoreLocator/>
      
 
-      <div className="pt-10 pb-5 px-5 md:px-10 bg-gradient-to-b from-orange-100 to-white">
+      <div className="pt-10 pb-10 px-4 sm:px-6 md:px-8 lg:px-10 bg-gradient-to-b from-orange-100 to-white">
   <div className="max-w-7xl mx-auto">
     {/* Section Heading */}
-    <div className="text-center mb-4">
-      <h2 className="text-2xl md:text-4xl font-bold text-black mb-3">
+    <div className="text-center mb-6 md:mb-8">
+      <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-2 md:mb-3 px-2">
         Behind The Scenes: Our Manufacturing Excellence
       </h2>
-      <p className="text-sm md:text-lg text-black">
+      <p className="text-xs sm:text-sm md:text-base lg:text-lg text-black px-4 max-w-3xl mx-auto">
         Take a tour of our state-of-the-art facility where quality meets craftsmanship
       </p>
     </div>
 
     {/* Video Section - Center */}
-    <div className="mb-10">
+    <div className="mb-8 md:mb-10">
       <div className="relative w-full max-w-5xl mx-auto rounded-lg overflow-hidden shadow-2xl">
         <div className="relative pb-[56.25%] h-0">
           <iframe
@@ -233,8 +268,8 @@ const Homepage = () => {
       </div>
       
       {/* Optional: Additional Info Below Video */}
-      <div className="text-center mt-6">
-        <p className="text-black text-sm md:text-base">
+      <div className="text-center mt-4 md:mt-6 px-4">
+        <p className="text-black text-xs sm:text-sm md:text-base">
           🏭 Witness our dedication to quality | ✨ Premium materials & expert craftsmanship | 🔧 Modern manufacturing process
         </p>
       </div>

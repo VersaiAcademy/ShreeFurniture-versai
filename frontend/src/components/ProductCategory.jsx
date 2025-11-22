@@ -14,9 +14,9 @@ const ProductCategoryGrid = () => {
     [
       { name: 'Coffee Tables', image: '/product/6.png', route: '/coffee-tables' },
       { name: 'Side Board', image: '/product/7.png', route: '/sideboards' },
-      { name: 'TV Unit', image: '/product/8.png', route: '/tv-unit' },
+      { name: 'TV Unit', image: '/product/8.png', route: '/tv-units' },
       { name: 'Book Shelf', image: '/product/9.png', route: '/book-shelves' },
-      { name: 'Shoes Rack', image: '/product/10.png', route: '/shoe-rack' }
+      { name: 'Shoes Rack', image: '/product/10.png', route: '/shoe-racks' }
     ]
   ];
 
