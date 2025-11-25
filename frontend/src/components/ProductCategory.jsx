@@ -4,7 +4,7 @@ const ProductCategoryGrid = () => {
   const categories = [
     // Top Row (5 items)
     [
-      { name: 'Beds', image: '/product/1.png', route: '/beds' },
+      { name: 'Beds', image: '/product/1.png', route: '/bedroom' },
       { name: 'Sofas', image: '/product/2.png', route: '/sofas' }, 
       { name: 'Dining', image: '/product/3.png', route: '/dining-tables' },
       { name: 'Study Table', image: '/product/4.png', route: '/study-tables' },

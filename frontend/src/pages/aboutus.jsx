@@ -16,37 +16,37 @@ export default function AboutUs() {
     { 
       year: '1999', 
       title: 'Humble Beginning', 
-      desc: 'Founded in 1999 in the small village of Satyun in Taranagar, Churu (Rajasthan). Our journey was born from artisan excellence rooted in traditional craftsmanship.'
+      desc: 'Founded in Satyun village, Churu district, Rajasthan. Started with a small workshop and dedicated artisans.'
     },
     { 
       year: '2003', 
       title: 'First Manufacturing unit', 
-      desc: 'In 2003, Sri Furniture Village took a significant step forward by setting up its first manufacturing plant in Satana (Nasik). This expansion marked the beginning of our commitment to scaling quality production.'
+      desc: 'In 2003, as demand for their finely crafted furniture grew, Satyun Art Palace relocated to the Ramgarh Ricco area. This strategic move enabled the establishment of their first large-scale manufacturing unit.'
     },
     { 
       year: '2007', 
       title: 'German Machinery', 
-      desc: 'Sri Furniture Village enhanced its production capabilities by importing state-of-the-art German machinery. This investment in technology allowed the company to maintain its high standards while meeting growing demand.'
+      desc: 'Sri Furniture Village continued to expand, adding four more manufacturing units. Embracing advanced German furniture machinery.'
     },
     { 
       year: '2010', 
       title: 'First Showroom', 
-      desc: 'The company opened its first showroom, designed to showcase a beautiful selection of furniture to customers, allowing them to experience the quality and craftsmanship firsthand.'
+      desc: 'In a significant milestone, Sri Furniture Village opened its first exclusive Sheesham wood furniture showroom in Hyderabad. The showroom showcased the exquisite range of products and received an overwhelming response from customers.'
     },
     { 
       year: '2020', 
       title: '10+ Experience store Across India', 
-      desc: 'Sri Furniture Village continued its expansion, opening 10+ experience stores across India. These stores serve as touchpoints for customers to explore and purchase from our extensive furniture collection.'
+      desc: 'Sri Furniture Village boasts a network of ten showrooms across India, located in Pune, Guntur, Vijayawada, Bengaluru, Hyderabad, Visakhapatnam, and other major cities. These showrooms have become the go-to destinations for customers seeking high-quality, beautifully crafted Sheesham wood furniture.'
     },
     { 
       year: '2024', 
       title: 'Embracing the Digital Era', 
-      desc: 'In 2024, Sri Furniture Village embraced the digital era by launching srifurniturevillage.com. This online platform allows customers to explore products, place orders, and access services from anywhere.'
+      desc: 'In April 2024, under the visionary leadership of Mr. Manish Jangid, Sri Furniture Village proudly stepped into the digital world. With a mission to connect tradition with technology, the brand launched its digital presence—bringing its exquisite craftsmanship, rich heritage, and premium Sheesham wood furniture to customers across India with just a click.'
     },
     { 
       year: '2025', 
       title: '15+ Experience store Across India', 
-      desc: 'With sustained growth and unwavering commitment to quality, Sri Furniture Village now operates 15+ experience stores across India, solidifying its presence as a leading furniture brand.'
+      desc: 'Sri Furniture Village boasts a network of ten showrooms across India, located in Pune, Guntur, 3 Showroom in Vijayawada, Bengaluru, 4 Showroom in Hyderabad, Visakhapatnam, and other major cities. These showrooms have become the go-to destinations for customers seeking high-quality, beautifully crafted Sheesham wood furniture.'
     }
   ];
 
@@ -110,7 +110,7 @@ export default function AboutUs() {
               
               <h3 className="text-2xl sm:text-3xl font-bold text-orange-500 mt-6 sm:mt-8 mb-4">Beginning</h3>
               <p>
-                The journey of Sri Furniture Village began in a small workshop in Satyun village, where a handful of skilled artisans crafted beautiful Sheesham wood furniture with passion and precision. In those early days, the focus was simple—create genuine quality rooted in traditional craftsmanship. This dedication quickly earned local recognition, and the exceptional standard of their work laid a strong foundation for the company's future growth.
+               The journey of Sri Furniture Village began in a small workshop in Satyun village, where a handful of skilled artisans crafted beautiful Sheesham wood furniture with passion and precision. In those early days, the focus was simple—deliver genuine quality rooted in traditional craftsmanship. This dedication quickly earned local recognition, and the exceptional standard of their work laid a strong foundation for the company's future growth.
               </p>
             </div>
           </div>

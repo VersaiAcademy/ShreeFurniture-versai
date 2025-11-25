@@ -91,7 +91,7 @@ const Homepage = () => {
           
           {/* Left: Main Carousel Banner - Takes 8 columns on desktop */}
           <div className="lg:col-span-8">
-            <div className="relative w-full h-[280px] sm:h-[350px] md:h-[420px] lg:h-[480px] xl:h-[540px] rounded-xl overflow-hidden bg-gray-100 shadow-xl group">
+            <div className="relative w-full h-[200px] xs:h-[240px] sm:h-[300px] md:h-[420px] lg:h-[480px] xl:h-[540px] rounded-xl overflow-hidden bg-gray-100 shadow-xl group">
               
               {/* Carousel Images */}
               <div className="relative w-full h-full">
@@ -105,7 +105,7 @@ const Homepage = () => {
                     <img
                       src={banner.imageUrl}
                       alt={banner.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-center"
                       onError={(e) => {
                         e.target.src = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&h=800&fit=crop';
                       }}
@@ -117,10 +117,10 @@ const Homepage = () => {
               {/* Previous Button */}
               <button
                 onClick={prevSlide}
-                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10 shadow-lg"
+                className="absolute left-1 sm:left-2 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10 shadow-lg"
                 aria-label="Previous slide"
               >
-                <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
@@ -128,24 +128,24 @@ const Homepage = () => {
               {/* Next Button */}
               <button
                 onClick={nextSlide}
-                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10 shadow-lg"
+                className="absolute right-1 sm:right-2 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10 shadow-lg"
                 aria-label="Next slide"
               >
-                <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
 
               {/* Dots Indicator */}
-              <div className="absolute bottom-4 sm:bottom-5 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-2.5 z-10">
+              <div className="absolute bottom-2 sm:bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 md:gap-2.5 z-10">
                 {mainBanners.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => goToSlide(index)}
-                    className={`h-2 sm:h-2.5 rounded-full transition-all ${
+                    className={`h-1.5 sm:h-2 md:h-2.5 rounded-full transition-all ${
                       index === currentSlide
-                        ? "bg-white w-8 sm:w-10"
-                        : "bg-white/60 hover:bg-white/90 w-2 sm:w-2.5"
+                        ? "bg-white w-6 sm:w-8 md:w-10"
+                        : "bg-white/60 hover:bg-white/90 w-1.5 sm:w-2 md:w-2.5"
                     }`}
                     aria-label={`Go to slide ${index + 1}`}
                   />
@@ -158,11 +158,11 @@ const Homepage = () => {
           <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-2 md:gap-3 lg:gap-2">
             
             {/* Top Small Banner */}
-            <div className="relative w-full h-[200px] sm:h-[220px] md:h-[240px] lg:h-[237px] xl:h-[267px] rounded-xl overflow-hidden shadow-xl group">
+            <div className="relative w-full h-[150px] xs:h-[180px] sm:h-[200px] md:h-[240px] lg:h-[237px] xl:h-[267px] rounded-xl overflow-hidden shadow-xl group">
               <img
                 src={topSmallBanner.imageUrl}
                 alt="Special Deal Banner"
-                className="w-full h-full object-cover transition-transform duration-500 "
+                className="w-full h-full object-cover object-center transition-transform duration-500"
                 onError={(e) => {
                   e.target.src = 'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=800&h=600&fit=crop';
                 }}
@@ -179,17 +179,17 @@ const Homepage = () => {
             </div>
 
             {/* Bottom Small Banner */}
-            <div className="relative w-full h-[200px] sm:h-[220px] md:h-[240px] lg:h-[237px] xl:h-[267px] rounded-xl overflow-hidden shadow-xl group">
+            <div className="relative w-full h-[150px] xs:h-[180px] sm:h-[200px] md:h-[240px] lg:h-[237px] xl:h-[267px] rounded-xl overflow-hidden shadow-xl group">
               <img
                 src={bottomSmallBanner.imageUrl}
                 alt=""
-                className="w-full h-full object-cover transition-transform duration-500 "
+                className="w-full h-full object-cover object-center transition-transform duration-500"
                 onError={(e) => {
                   e.target.src = 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=800&h=600&fit=crop';
                 }}
               />
               {/* Optional overlay with text */}
-              <div className="absolute inset-0  opacity-0  duration-300">
+              <div className="absolute inset-0 opacity-0 duration-300">
                 <div className="absolute bottom-4 left-4 right-4">
                   <span className="inline-block px-3 py-1 text-white text-xs font-bold rounded-full">
                     {bottomSmallBanner.tag}
