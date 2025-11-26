@@ -226,8 +226,13 @@ const Checkout = () => {
         });
         
         toast.success(response.data.message || 'Order placed successfully!');
+        const summary = response.data.orderSummary || null;
+        if (summary) {
+          sessionStorage.setItem('paymentSuccessSummary', JSON.stringify(summary));
+        }
+        sessionStorage.setItem('paymentSuccessMessage', response.data.message || 'Order placed successfully!');
         setLoading(false);
-        navigate('/');
+        navigate(`/payment-success?order_id=${response.data.orderId || ''}&mode=cod`);
         return;
       }
 

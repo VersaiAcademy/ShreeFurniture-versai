@@ -8,11 +8,7 @@ export default function CancellationRefundPolicy() {
       title: "Immediate Cancellation",
       description: "Cancellations will be considered only if the request is made immediately after placing the order. However, the cancellation request may not be entertained if the orders have been communicated to the vendors/merchants and they have initiated the process of shipping them."
     },
-    {
-      icon: <Package className="w-6 h-6" />,
-      title: "Perishable Items",
-      description: "SRI FURNITURE VILLAGE does not accept cancellation requests for perishable items like flowers, eatables etc. However, refund/replacement can be made if the customer establishes that the quality of product delivered is not good."
-    },
+    
     {
       icon: <AlertCircle className="w-6 h-6" />,
       title: "Damaged or Defective Items",

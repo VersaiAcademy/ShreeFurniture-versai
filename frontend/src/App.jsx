@@ -28,6 +28,7 @@ import CashfreeCallback from './pages/CashfreeCallback';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import WhatsAppWidget from './components/WhatsAppWidget';
 import CustomFurniture from './pages/CustomFurniture';
+import BulkOrder from "./pages/bulkorder";
 
 
 function App() {
@@ -72,6 +73,7 @@ function App() {
         <Route path="/return-refunds" element={< CancellationRefundPolicy/>} />
         <Route path="/delivery-policy" element={<DeliveryShippingPage />} />
         <Route path="/custom-furnitures" element={<CustomFurniture />} />
+         <Route path="/bulk-order" element={<BulkOrder />} />
         {/* Category pages: handled by root `/:slug` route to preserve original paths */}
         {/* ✅ Backwards-compatible slug routing (keeps existing behavior) */}
         <Route path="/:slug" element={<Productpage />} />

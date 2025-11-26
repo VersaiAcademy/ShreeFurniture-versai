@@ -55,17 +55,16 @@ export default function AboutUs() {
     { city: 'Pune', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 2 },
     { city: 'Bhubaneswar', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
     { city: 'Hyderabad', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 3 },
-    { city: 'Warangal', type: 'warehouse', icon: <Warehouse className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
+    // { city: 'Warangal', type: 'warehouse', icon: <Warehouse className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
     { city: 'Guntur', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
     { city: 'Vijayawada', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
-    { city: 'Nalgonda', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
-    { city: 'Khammam', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
-    { city: 'Karimnagar', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
-    { city: 'Siddipet', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
+    // { city: 'Khammam', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
+    // { city: 'Karimnagar', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
+    // { city: 'Siddipet', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
     { city: 'Bangalore', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
-    { city: 'Raipur', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
-    { city: 'Nasik', type: 'office', icon: <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
-    { city: 'Nasik', type: 'factory', icon: <Factory className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 }
+    // { city: 'Raipur', type: 'store', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
+    // { city: 'Nasik', type: 'office', icon: <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 },
+    // { city: 'Nasik', type: 'factory', icon: <Factory className="w-5 h-5 sm:w-6 sm:h-6" />, count: 1 }
   ];
 
   // Visionaries matching Image 4

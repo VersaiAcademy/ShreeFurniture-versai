@@ -236,5 +236,7 @@ export const removeFromCart = (id) => {
   return API.delete(`/api/cart/${id}`);
 };
 
+export const submitPublicOrder = (payload) => API.post('/api/order/create', payload);
+
 // Default export
 export default API;

@@ -243,7 +243,7 @@ export default function HelpPage() {
       </div>
 
       {/* Store Information Section */}
-      <div id="contact-section" className="max-w-6xl mx-auto px-4 py-16">
+      {/* <div id="contact-section" className="max-w-6xl mx-auto px-4 py-16">
         <div className="bg-gradient-to-br from-orange-500 to-amber-600 rounded-3xl shadow-2xl p-8 md:p-12 text-white">
           <h2 className="text-4xl font-bold mb-8 text-center flex items-center justify-center gap-3">
             <MapPin className="w-10 h-10" />
@@ -273,7 +273,7 @@ export default function HelpPage() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Bottom CTA */}
       <div 

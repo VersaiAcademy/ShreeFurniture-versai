@@ -87,8 +87,8 @@ const Footer = () => {
             <ul className={`${openSections.topcats ? 'block' : 'hidden'} md:block space-y-2 text-xs text-gray-700`}>
               <li><a href="/bedroom" className="hover:text-orange-500 transition cursor-pointer">Bedroom</a></li>
               <li><a href="/sofas" className="hover:text-orange-500 transition cursor-pointer">Sofas</a></li>
-              <li><a href="/living-room" className="hover:text-orange-500 transition cursor-pointer">Living Room</a></li>
-              <li><a href="/dinning" className="hover:text-orange-500 transition cursor-pointer">Dinning</a></li>
+              <li><a href="/living" className="hover:text-orange-500 transition cursor-pointer">Living Room</a></li>
+              <li><a href="/dining-kitchen" className="hover:text-orange-500 transition cursor-pointer">Dinning</a></li>
             </ul>
           </div>
         </div>
@@ -116,9 +116,18 @@ const Footer = () => {
               © 2023 - 2025 Sri Furniture Village All Rights Reserved
             </p>
             <p className="text-xs sm:text-sm text-gray-600 mt-1 md:mt-2">
-              Design & Developed By <span className="font-semibold text-orange-500">Versai Technology</span>
+              Design & Developed By &nbsp;
+              <a 
+                href="https://versaitechnology.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="font-semibold text-orange-500 hover:underline"
+              >
+                Versai Technology
+              </a>
             </p>
           </div>
+
 
           {/* Social Media Icons */}
           <div className="order-1 md:order-2 w-full md:w-auto">

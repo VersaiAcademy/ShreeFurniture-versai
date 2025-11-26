@@ -3,8 +3,28 @@ const { body, validationResult } = require('express-validator');
 const { ContactUs, ReviewSite } = require('../models');
 const { authenticateToken } = require('../middleware/auth');
 const { upload } = require('../utils/cloudinary');
+const sendMail = require('../utils/sendMail');
 
 const router = express.Router();
+const ADMIN_EMAIL = process.env.MAIL_TO_ADMIN || process.env.MAIL_USER;
+
+const notifyContact = async (payload) => {
+  if (!ADMIN_EMAIL) return;
+  const html = `
+    <h2>New Contact/Enquiry</h2>
+    <p><strong>Name:</strong> ${payload.name}</p>
+    <p><strong>Email:</strong> ${payload.email}</p>
+    <p><strong>Phone:</strong> ${payload.mob}</p>
+    <p><strong>Reason:</strong> ${payload.reason}</p>
+    <p><strong>Message:</strong></p>
+    <p>${payload.message}</p>
+  `;
+  await sendMail({
+    to: ADMIN_EMAIL,
+    subject: 'New Contact Submission',
+    html
+  });
+};
 
 // Contact us form submission
 router.post('/contactus', upload.single('img'), [
@@ -37,6 +57,7 @@ router.post('/contactus', upload.single('img'), [
     });
 
     await contactUs.save();
+    notifyContact(contactUs).catch((err) => console.warn('Contact email failed', err.message));
 
     res.status(201).json({
       message: 'Thank you for your response. We will get back to you soon.',

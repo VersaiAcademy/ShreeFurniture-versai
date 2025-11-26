@@ -43,94 +43,105 @@ const Homepage = () => {
         </div>
       </div>
 
-  <div className="pt-10 md:pt-16 pb-10 md:pb-16 px-4 sm:px-6 md:px-8 lg:px-16 bg-gradient-to-b from-white to-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-3 md:mb-4">
-            India's Finest Online Furniture Brand
-          </h1>
-          <p className="text-center text-sm sm:text-base md:text-lg text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto px-4">
-            Buy Furniture Online from our extensive collection of wooden furniture units
-          </p>
+ <div className="pt-10 md:pt-16 pb-10 md:pb-16 px-4 sm:px-6 md:px-8 lg:px-16 bg-gradient-to-b from-white to-gray-50">
+  <div className="max-w-7xl mx-auto">
+    <h1 className="text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-3 md:mb-4">
+      India's Finest Online Furniture Brand
+    </h1>
 
-          <div className="space-y-4 md:space-y-6">
-            {/* First Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              <a href="/dining" className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-                <div className="aspect-[4/3] w-full overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    src="/india/IMG_5698.JPG"
-                    alt="Dining Collection"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300"></div>
-              </a>
-              <a href="/sofa" className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-                <div className="aspect-[4/3] w-full overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    src="/india/IMG_5696.JPG"
-                    alt="Sofa Collection"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300"></div>
-              </a>
-              <a href="/bedroom" className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] sm:col-span-2 lg:col-span-1">
-                <div className="aspect-[4/3] w-full overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    src="/india/IMG_5697.JPG"
-                    alt="Bedroom Collection"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300"></div>
-              </a>
-            </div>
+    <p className="text-center text-sm sm:text-base md:text-lg text-gray-600 mb-8 md:mb-12 max-w-3xl mx-auto px-4">
+      Buy Furniture Online from our extensive collection of wooden furniture units
+    </p>
 
-            {/* Second Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              <a href="/living" className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-                <div className="aspect-[4/3] w-full overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    src="/images/Web 1.jpg"
-                    alt="Living Room Collection"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300"></div>
-              </a>
-              <a href="/study-table" className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-                <div className="aspect-[4/3] w-full overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    src="/images/Web 2.jpg"
-                    alt="Study Table Collection"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300"></div>
-              </a>
-              <a href="/center-table" className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] sm:col-span-2 lg:col-span-1">
-                <div className="aspect-[4/3] w-full overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    src="/images/Web 3.jpg"
-                    alt="Center Table Collection"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300"></div>
-              </a>
-            </div>
+    <div className="space-y-4 md:space-y-6">
+
+      {/* First Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+
+        {/* Dining */}
+        <a href="/dining-kitchen" className="relative overflow-hidden rounded-lg shadow-md bg-white">
+          <div className="w-full h-[240px] md:h-[260px] lg:h-[280px] overflow-hidden flex items-center justify-center bg-white">
+            <img
+              className="max-h-full max-w-full object-contain"
+              src="/india/IMG_5698.JPG"
+              alt="Dining Collection"
+              loading="lazy"
+            />
           </div>
-        </div>
+        </a>
 
-        <hr className="mt-10 md:mt-16 border-gray-200" />
+        {/* Sofa */}
+        <a href="/sofas" className="relative overflow-hidden rounded-lg shadow-md bg-white">
+          <div className="w-full h-[240px] md:h-[260px] lg:h-[280px] overflow-hidden flex items-center justify-center bg-white">
+            <img
+              className="max-h-full max-w-full object-contain"
+              src="/india/IMG_5696.JPG"
+              alt="Sofa Collection"
+              loading="lazy"
+            />
+          </div>
+        </a>
+
+        {/* Bedroom */}
+        <a href="/bedroom" className="relative overflow-hidden rounded-lg shadow-md bg-white sm:col-span-2 lg:col-span-1">
+          <div className="w-full h-[240px] md:h-[260px] lg:h-[280px] overflow-hidden flex items-center justify-center bg-white">
+            <img
+              className="max-h-full max-w-full object-contain"
+              src="/india/IMG_5697.JPG"
+              alt="Bedroom Collection"
+              loading="lazy"
+            />
+          </div>
+        </a>
       </div>
+
+      {/* Second Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+
+        {/* Living */}
+        <a href="/living" className="relative overflow-hidden rounded-lg shadow-md bg-white">
+          <div className="w-full h-[240px] md:h-[260px] lg:h-[280px] overflow-hidden flex items-center justify-center bg-white">
+            <img
+              className="max-h-full max-w-full object-contain"
+              src="/images/Web 1.jpg"
+              alt="Living Room Collection"
+              loading="lazy"
+            />
+          </div>
+        </a>
+
+        {/* Study */}
+        <a href="/study-tables" className="relative overflow-hidden rounded-lg shadow-md bg-white">
+          <div className="w-full h-[240px] md:h-[260px] lg:h-[280px] overflow-hidden flex items-center justify-center bg-white">
+            <img
+              className="max-h-full max-w-full object-contain"
+              src="/images/Web 2.jpg"
+              alt="Study Table Collection"
+              loading="lazy"
+            />
+          </div>
+        </a>
+
+        {/* Center Table */}
+        <a href="/coffee-tables" className="relative overflow-hidden rounded-lg shadow-md bg-white sm:col-span-2 lg:col-span-1">
+          <div className="w-full h-[240px] md:h-[260px] lg:h-[280px] overflow-hidden flex items-center justify-center bg-white">
+            <img
+              className="max-h-full max-w-full object-contain"
+              src="/images/Web 3.jpg"
+              alt="Center Table Collection"
+              loading="lazy"
+            />
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <hr className="mt-10 md:mt-16 border-gray-200" />
+</div>
+
+
       
       {/* Recommended Products Component */}
       <RecommendedProducts />

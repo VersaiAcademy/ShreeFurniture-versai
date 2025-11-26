@@ -1,3 +1,5 @@
+//frontend/src/pages/CheckoutSuccess.jsx
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import API from '../utils/api';
@@ -12,12 +14,35 @@ const CheckoutSuccess = () => {
   const [success, setSuccess] = useState(false);
   const [message, setMessage] = useState('Verifying payment...');
   const [orderId, setOrderId] = useState(null);
+  const [orderSummary, setOrderSummary] = useState(null);
+  const mode = searchParams.get('mode') || 'online';
+  const formatCurrency = (value) => {
+    const num = Number(value);
+    if (!Number.isFinite(num)) return 'N/A';
+    return `₹${num.toLocaleString('en-IN')}`;
+  };
 
   useEffect(() => {
     const verifyPayment = async () => {
+      if (mode === 'cod') {
+        const summary = sessionStorage.getItem('paymentSuccessSummary');
+        const messageFromStorage = sessionStorage.getItem('paymentSuccessMessage');
+        setOrderSummary(summary ? JSON.parse(summary) : null);
+        setOrderId(searchParams.get('order_id'));
+        setMessage(messageFromStorage || 'Order placed successfully! Our team will reach you shortly.');
+        setSuccess(true);
+        setLoading(false);
+        sessionStorage.removeItem('paymentSuccessSummary');
+        sessionStorage.removeItem('paymentSuccessMessage');
+        setTimeout(() => {
+          navigate('/', { replace: true });
+        }, 5000);
+        return;
+      }
+
       try {
         setLoading(true);
-        // Check if user is authenticated
+
         const token = localStorage.getItem('token');
         if (!token) {
           setMessage('Please login to verify payment');
@@ -27,11 +52,10 @@ const CheckoutSuccess = () => {
           return;
         }
 
-        // Get order_id from URL params or localStorage
         const orderIdFromUrl = searchParams.get('order_id') || searchParams.get('orderId');
         const orderIdFromStorage = localStorage.getItem('cf_orderId');
         const finalOrderId = orderIdFromUrl || orderIdFromStorage;
-        
+
         if (!finalOrderId) {
           setMessage('Missing order ID for verification');
           toast.error('Missing order ID for verification');
@@ -41,24 +65,31 @@ const CheckoutSuccess = () => {
         }
 
         setOrderId(finalOrderId);
-        
-        // Get address and total from localStorage
+
         const addressId = localStorage.getItem('cf_addressId');
         const total = localStorage.getItem('cf_total');
 
-        // Verify payment and create order
         const res = await API.post('/api/cashfree/verify', { 
           orderId: finalOrderId, 
           addressId, 
           total 
         });
-        
+
         if (res.status === 200 && res.data.message) {
           setSuccess(true);
-          setMessage(res.data.message || 'Payment successful! Order placed.');
-          toast.success('Payment successful! Order placed.');
-          
-          // Clear stored payment info
+
+          setMessage(
+            res.data.message || 
+            'Payment successful! Your order has been confirmed.'
+          );
+          if (res.data.orderSummary) {
+            setOrderSummary(res.data.orderSummary);
+            sessionStorage.setItem('paymentSuccessSummary', JSON.stringify(res.data.orderSummary));
+          }
+
+          toast.success('Order Confirmed! Email Sent.');
+
+          // Clear data
           localStorage.removeItem('cf_orderId');
           localStorage.removeItem('cf_addressId');
           localStorage.removeItem('cf_total');
@@ -66,13 +97,16 @@ const CheckoutSuccess = () => {
           sessionStorage.removeItem('checkoutData');
           sessionStorage.removeItem('buyNowProduct');
           sessionStorage.removeItem('paymentMode');
-          
+
           setLoading(false);
-          
-          // Navigate to home after showing success
+
+          // DO NOT redirect immediately — give user confirmation UI
           setTimeout(() => {
+            sessionStorage.removeItem('paymentSuccessSummary');
+            sessionStorage.removeItem('paymentSuccessMessage');
             navigate('/', { replace: true });
-          }, 3000);
+          }, 6000); // 6 seconds stay on confirmation page
+
           return;
         }
 
@@ -80,63 +114,97 @@ const CheckoutSuccess = () => {
         setMessage('Payment verification failed');
         toast.error('Payment verification failed');
         setLoading(false);
+
       } catch (err) {
-        console.error('Payment verification error:', err.response?.data || err.message || err);
+        console.error('Payment verification error:', err.response?.data || err.message);
         const errorMsg = err.response?.data?.message || err.message || 'Unknown error';
         setSuccess(false);
         setMessage(`Verification error: ${errorMsg}`);
-        toast.error(err.response?.data?.message || 'Verification failed. If payment succeeded, contact support.');
+        toast.error(
+          err.response?.data?.message || 
+          'Verification failed. If payment succeeded, contact support.'
+        );
         setLoading(false);
-        
-        // Navigate to cart on error
-        setTimeout(() => navigate('/cart'), 3000);
+
+        setTimeout(() => navigate('/cart'), 4000);
       }
     };
 
     verifyPayment();
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, mode]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 px-4">
       <div className="bg-white p-8 rounded-lg shadow-lg text-center w-full max-w-lg">
-        <h2 className="text-2xl font-bold mb-6">Payment Status</h2>
+        
         {loading ? (
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-gray-600">{message}</p>
-          </div>
+          <>
+            <h2 className="text-2xl font-bold mb-6">Payment Status</h2>
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-gray-600">{message}</p>
+            </div>
+          </>
         ) : success ? (
-          <div className="flex flex-col items-center gap-4">
-            <FontAwesomeIcon 
-              icon={faCheckCircle} 
-              className="text-green-500 text-6xl mb-2" 
+          <>
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              className="text-green-500 text-6xl mb-4"
             />
-            <p className="text-green-600 font-semibold text-lg">{message}</p>
-            {orderId && (
+            <h2 className="text-3xl font-bold text-green-600 mb-2">
+              Order Confirmed!
+            </h2>
+
+            <p className="text-gray-700 text-md mb-2">{message}</p>
+
+            <div className="space-y-4 mt-4 text-left">
+              {orderId && (
+                <p className="text-gray-800 text-md">
+                  <strong>Order ID:</strong>{' '}
+                  <span className="font-mono font-semibold">{orderId}</span>
+                </p>
+              )}
+              {orderSummary && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-2">Order Summary</h3>
+                  <p className="text-gray-700"><strong>Name:</strong> {orderSummary.name}</p>
+                  <p className="text-gray-700"><strong>Phone:</strong> {orderSummary.phone}</p>
+                  <p className="text-gray-700"><strong>Address:</strong> {orderSummary.address}</p>
+                  <p className="text-gray-700"><strong>Pincode:</strong> {orderSummary.pincode}</p>
+                  <p className="text-gray-700"><strong>Product:</strong> {orderSummary.productName || 'Custom order'}</p>
+                  <p className="text-gray-700"><strong>Amount:</strong> {formatCurrency(orderSummary.productPrice)}</p>
+                  <p className="text-gray-700">
+                    <strong>Payment Status:</strong> {orderSummary.paymentStatus?.toUpperCase()}
+                  </p>
+                </div>
+              )}
               <p className="text-gray-600 text-sm">
-                Order ID: <span className="font-mono font-semibold">{orderId}</span>
+                A confirmation email has been sent to your registered email address.
               </p>
-            )}
-            <p className="text-gray-500 text-sm mt-4">
-              Redirecting to home page...
-            </p>
-          </div>
+              <p className="text-gray-500 text-sm">
+                Redirecting to home page...
+              </p>
+            </div>
+          </>
         ) : (
-          <div className="flex flex-col items-center gap-4">
-            <FontAwesomeIcon 
-              icon={faTimesCircle} 
-              className="text-red-500 text-6xl mb-2" 
+          <>
+            <FontAwesomeIcon
+              icon={faTimesCircle}
+              className="text-red-500 text-6xl mb-4"
             />
-            <p className="text-red-600 font-semibold text-lg">{message}</p>
-            <p className="text-gray-500 text-sm mt-4">
+            <h2 className="text-2xl font-bold text-red-600 mb-2">
+              Payment Failed
+            </h2>
+            <p className="text-gray-700 text-md mb-4">{message}</p>
+            <p className="text-gray-500 text-sm">
               Redirecting to cart...
             </p>
-          </div>
+          </>
         )}
+
       </div>
     </div>
   );
 };
 
 export default CheckoutSuccess;
-

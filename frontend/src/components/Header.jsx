@@ -101,7 +101,7 @@ const Header = () => {
       sections: [
         {
           title: 'SOFA SETS',
-          items: [ 'Wooden Sofas','Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas'],
+          items: [ 'Sofas','Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas'],
           hasDropdown: true
         },
         {

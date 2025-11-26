@@ -1,8 +1,8 @@
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import API from "../utils/api";
 
 const Contactus = () => {
   const [btnval, setBtnval] = useState("Submit Your Request");
@@ -38,7 +38,7 @@ const Contactus = () => {
       formData.append('img', e.target.img.files[0]);
       formData.append('message', values.message);
 
-      const response = await axios.post("/api/contact/contactus", formData, {
+      const response = await API.post("/api/contact/contactus", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

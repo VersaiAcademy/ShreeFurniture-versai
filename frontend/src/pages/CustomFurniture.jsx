@@ -1,6 +1,6 @@
 // CustomFurniture.jsx - Custom Furniture Contact Form Page
 import { useState } from 'react';
-import API from '../utils/api';
+import { submitPublicOrder } from '../utils/api';
 
 const CustomFurniture = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +9,7 @@ const CustomFurniture = () => {
     phoneNumber: '',
     pinCode: '',
     city: '',
+    address: '',
     description: ''
   });
   const [loading, setLoading] = useState(false);
@@ -27,7 +28,20 @@ const CustomFurniture = () => {
     
     try {
       // Update this endpoint according to your backend API
-      await API.post('/api/custom-furniture-request', formData);
+      await submitPublicOrder({
+        formType: 'custom',
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phoneNumber,
+        address: formData.address || `${formData.city}, ${formData.pinCode}`,
+        city: formData.city,
+        pincode: formData.pinCode,
+        productName: 'Custom Furniture Request',
+        productPrice: 0,
+        paymentStatus: 'pending',
+        paymentMode: 'na',
+        notes: formData.description
+      });
       setSuccess(true);
       setFormData({
         fullName: '',
@@ -35,6 +49,7 @@ const CustomFurniture = () => {
         phoneNumber: '',
         pinCode: '',
         city: '',
+        address: '',
         description: ''
       });
     } catch (err) {
@@ -136,6 +151,18 @@ const CustomFurniture = () => {
                       value={formData.city}
                       onChange={handleChange}
                       placeholder="City*"
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <input
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      placeholder="Complete Address *"
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                     />
