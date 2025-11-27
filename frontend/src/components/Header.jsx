@@ -122,7 +122,17 @@ const Header = () => {
           title: 'WARDROBES',
           items: ['1 Door Wardrobe', '2 Door Wardrobe', '3 Door Wardrobe', '4 Door Wardrobe'],
           hasDropdown: true
-        }
+        },
+         {
+          title: 'DRESSING TABLES',
+          items: ['Wooden Dressing Table'],
+          hasDropdown: true
+        },
+            {
+          title: 'BED SIDES',
+          items: ['Bed Side Table'],
+          hasDropdown: true
+        },
       ]
     },
     'Living': {
