@@ -1,9 +1,17 @@
 import axios from 'axios';
 
 // ✅ Get API base URL from environment
-const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+// Priority: VITE_API_BASE_URL > VITE_API_URL > Production URL > localhost
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL 
+  || import.meta.env.VITE_API_URL 
+  || 'https://shreefurniture-backend-production.up.railway.app';
 
 console.log('🌐 API Base URL:', API_BASE_URL);
+console.log('🌐 Environment check:', {
+  VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
+  VITE_API_URL: import.meta.env.VITE_API_URL,
+  using: API_BASE_URL
+});
 
 // ✅ Create axios instance with default config
 const API = axios.create({
@@ -126,7 +134,20 @@ API.interceptors.response.use(
     } else if (error.request) {
       // Request was made but no response received
       console.error('📡 No response from server');
-      alert(message);
+      console.error('📡 Connection Error Details:', {
+        url: error.config?.url,
+        baseURL: error.config?.baseURL,
+        fullURL: `${error.config?.baseURL}${error.config?.url}`,
+        message: error.message,
+        code: error.code
+      });
+      
+      // Show user-friendly error message
+      const errorMsg = error.code === 'ERR_NETWORK' || error.message === 'Network Error'
+        ? 'Cannot connect to server. Please check:\n1. Backend server is running\n2. Backend URL is correct\n3. No firewall blocking connection'
+        : message;
+      
+      alert(errorMsg);
     } else {
       // Something else happened
       console.error('⚠️ Error:', message);

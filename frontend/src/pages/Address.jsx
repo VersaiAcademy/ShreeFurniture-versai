@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Notification from "../components/Notification";
 import useRazorpay from "react-razorpay";
+import { validatePhone, validatePincode, validateName, validateAddress, validateRequired } from "../utils/validation";
 
 const Address = () => {
   const navigate = useNavigate();
@@ -26,6 +27,8 @@ const Address = () => {
     city: "",
     state: "",
   });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // Check if should auto-trigger payment after login
   useEffect(() => {
     const shouldAutoPay = localStorage.getItem('shouldAutoPayAfterLogin');
@@ -139,27 +142,110 @@ const Address = () => {
   const handleOnChange = (e) => {
     let name = e.target.name;
     let value = e.target.value;
+    
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+    
     Setdata((prev) => {
       return { ...prev, [name]: value };
     });
   };
+
+  // Validate all address fields
+  const validateAddressForm = () => {
+    const newErrors = {};
+    
+    // Validate mobile 1 (required, 10 digits)
+    const mob1Validation = validatePhone(data.mob1);
+    if (!mob1Validation.valid) {
+      newErrors.mob1 = mob1Validation.message;
+    }
+    
+    // Validate mobile 2 (required, 10 digits)
+    const mob2Validation = validatePhone(data.mob2);
+    if (!mob2Validation.valid) {
+      newErrors.mob2 = mob2Validation.message;
+    }
+    
+    // Validate pincode (required, 6 digits)
+    const pincodeValidation = validatePincode(data.postalcode);
+    if (!pincodeValidation.valid) {
+      newErrors.postalcode = pincodeValidation.message;
+    }
+    
+    // Validate society/address (required, min 10 chars)
+    const societyValidation = validateAddress(data.society);
+    if (!societyValidation.valid) {
+      newErrors.society = societyValidation.message;
+    }
+    
+    // Validate area (required)
+    const areaValidation = validateRequired(data.area, 'Area');
+    if (!areaValidation.valid) {
+      newErrors.area = areaValidation.message;
+    }
+    
+    // Validate landmark (required)
+    const landmarkValidation = validateRequired(data.landmark, 'Landmark');
+    if (!landmarkValidation.valid) {
+      newErrors.landmark = landmarkValidation.message;
+    }
+    
+    // Validate city (required, min 2 chars)
+    const cityValidation = validateRequired(data.city, 'City');
+    if (!cityValidation.valid || cityValidation.value.length < 2) {
+      newErrors.city = 'City must be at least 2 characters long';
+    }
+    
+    // Validate state (required)
+    const stateValidation = validateRequired(data.state, 'State');
+    if (!stateValidation.valid) {
+      newErrors.state = stateValidation.message;
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
   const handleOnSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate all fields before submission
+    if (!validateAddressForm()) {
+      toast.error("Please fix all validation errors before submitting");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setLoading(true);
+    
     try {
-      if (method == "post") {
-        setLoading(true);
-        const response = await axios.post(
+      // Clean and format data
+      const phone1Validation = validatePhone(data.mob1);
+      const phone2Validation = validatePhone(data.mob2);
+      const pincodeValidation = validatePincode(data.postalcode);
+      
+      const payload = {
+        mob1: phone1Validation.value,
+        mob2: phone2Validation.value,
+        postalcode: pincodeValidation.value,
+        address: data.society.trim(),
+        area: data.area.trim(),
+        landmark: data.landmark.trim(),
+        city: data.city.trim(),
+        state: data.state.trim(),
+      };
+      
+      let response;
+      if (method === "post") {
+        response = await axios.post(
           "/api/address/",
-          {
-            mob1: data.mob1,
-            mob2: data.mob2,
-            postalcode: data.postalcode,
-            address: data.society,
-            area: data.area,
-            landmark: data.landmark,
-            city: data.city,
-            state: data.state,
-          },
+          payload,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -167,34 +253,11 @@ const Address = () => {
             withCredentials: true,
           }
         );
-        console.log(response.data.address.mob1);
-        Setdata({
-          id: response.data.address._id,
-          mob1: response.data.address.mob1,
-          mob2: response.data.address.mob2,
-          postalcode: response.data.address.postalcode,
-          society: response.data.address.address,
-          area: response.data.address.area,
-          landmark: response.data.address.landmark,
-          city: response.data.address.city,
-          state: response.data.address.state,
-        });
-        setLoading(false);
-        toast.success("Adress added successfully");
-      } else if (method == "put") {
-        setLoading(true);
-        const response = await axios.put(
+        toast.success("Address added successfully");
+      } else if (method === "put") {
+        response = await axios.put(
           `/api/address/`,
-          {
-            mob1: data.mob1,
-            mob2: data.mob2,
-            postalcode: data.postalcode,
-            address: data.society,
-            area: data.area,
-            landmark: data.landmark,
-            city: data.city,
-            state: data.state,
-          },
+          payload,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -202,6 +265,16 @@ const Address = () => {
             withCredentials: true,
           }
         );
+        toast.success("Address updated successfully");
+      } else {
+        toast.warning("Something went wrong. Please refresh and try again.");
+        setIsSubmitting(false);
+        setLoading(false);
+        return;
+      }
+      
+      // Update state with response data
+      if (response.data?.address) {
         Setdata({
           id: response.data.address._id,
           mob1: response.data.address.mob1,
@@ -213,17 +286,34 @@ const Address = () => {
           city: response.data.address.city,
           state: response.data.address.state,
         });
-        setLoading(false);
-        toast.success("Updated Successfully ");
-      } else {
-        toast.warning("Something went wrong");
+        setMethod("put"); // Update method for future edits
       }
+      
+      setErrors({}); // Clear all errors on success
     } catch (error) {
-      setLoading(false);
-      console.log(error);
-      if (response.data.message) {
-        toast.error(response.data.message);
+      console.error("Address submission error:", error);
+      
+      // Handle validation errors from backend
+      if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+        const backendErrors = {};
+        error.response.data.errors.forEach((err) => {
+          if (err.param) {
+            backendErrors[err.param] = err.msg || err.message;
+          }
+        });
+        setErrors(backendErrors);
+        toast.error("Please fix the validation errors");
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        navigate("/login");
+      } else {
+        toast.error("Failed to save address. Please try again.");
       }
+    } finally {
+      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
@@ -619,111 +709,130 @@ const Address = () => {
               <div className="grid grid-cols-1 gap-4">
                 <div className="flex flex-col md:flex-row md:items-center md:gap-4">
                   <label className="w-full md:w-36 text-gray-700">Mobile No 1*</label>
-                  <input
-                    type="number"
-                    name="mob1"
-                    id=""
-                    className="w-full md:w-72 border rounded px-3 py-2"
-                    placeholder="95XXXXXX09"
-                    onChange={handleOnChange}
-                    value={data.mob1}
-                    minLength={10}
-                    maxLength={10}
-                    required
-                  />
+                  <div className="w-full md:w-72">
+                    <input
+                      type="tel"
+                      name="mob1"
+                      id="mob1"
+                      className={`w-full border rounded px-3 py-2 ${errors.mob1 ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="95XXXXXX09"
+                      onChange={handleOnChange}
+                      value={data.mob1}
+                      maxLength={10}
+                      required
+                    />
+                    {errors.mob1 && <p className="text-red-500 text-xs mt-1">{errors.mob1}</p>}
+                  </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:gap-4">
                   <label className="w-full md:w-36 text-gray-700">Mobile No 2*</label>
-                  <input
-                    type="number"
-                    name="mob2"
-                    id=""
-                    value={data.mob2}
-                    onChange={handleOnChange}
-                    className="w-full md:w-72 border rounded px-3 py-2"
-                    placeholder="95XXXXXX09"
-                    minLength={10}
-                    maxLength={10}
-                    required
-                  />
+                  <div className="w-full md:w-72">
+                    <input
+                      type="tel"
+                      name="mob2"
+                      id="mob2"
+                      value={data.mob2}
+                      onChange={handleOnChange}
+                      className={`w-full border rounded px-3 py-2 ${errors.mob2 ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="95XXXXXX09"
+                      maxLength={10}
+                      required
+                    />
+                    {errors.mob2 && <p className="text-red-500 text-xs mt-1">{errors.mob2}</p>}
+                  </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:gap-4">
                   <label className="w-full md:w-36 text-gray-700">Postal Code *</label>
-                  <input
-                    type="number"
-                    name="postalcode"
-                    id=""
-                    onChange={handleOnChange}
-                    value={data.postalcode}
-                    className="w-full md:w-72 border rounded px-3 py-2"
-                    placeholder="Enter PinCode"
-                    minLength={6}
-                    maxLength={6}
-                    required
-                  />
+                  <div className="w-full md:w-72">
+                    <input
+                      type="text"
+                      name="postalcode"
+                      id="postalcode"
+                      onChange={handleOnChange}
+                      value={data.postalcode}
+                      className={`w-full border rounded px-3 py-2 ${errors.postalcode ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="Enter PinCode"
+                      maxLength={6}
+                      required
+                    />
+                    {errors.postalcode && <p className="text-red-500 text-xs mt-1">{errors.postalcode}</p>}
+                  </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:gap-4">
                   <label className="w-full md:w-36 text-gray-700">Society *</label>
-                  <input
-                    type="text"
-                    name="society"
-                    id=""
-                    value={data.society}
-                    onChange={handleOnChange}
-                    className="w-full md:w-72 border rounded px-3 py-2"
-                    placeholder="Flat,House no,Building,Company,Appartment"
-                    required
-                  />
+                  <div className="w-full md:w-72">
+                    <input
+                      type="text"
+                      name="society"
+                      id="society"
+                      value={data.society}
+                      onChange={handleOnChange}
+                      className={`w-full border rounded px-3 py-2 ${errors.society ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="Flat,House no,Building,Company,Appartment"
+                      required
+                    />
+                    {errors.society && <p className="text-red-500 text-xs mt-1">{errors.society}</p>}
+                  </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:gap-4">
                   <label className="w-full md:w-36 text-gray-700">Area *</label>
-                  <input
-                    type="text"
-                    name="area"
-                    id=""
-                    onChange={handleOnChange}
-                    value={data.area}
-                    className="w-full md:w-72 border rounded px-3 py-2"
-                    placeholder="Area,Street,Sector,Village"
-                    required
-                  />
+                  <div className="w-full md:w-72">
+                    <input
+                      type="text"
+                      name="area"
+                      id="area"
+                      onChange={handleOnChange}
+                      value={data.area}
+                      className={`w-full border rounded px-3 py-2 ${errors.area ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="Area,Street,Sector,Village"
+                      required
+                    />
+                    {errors.area && <p className="text-red-500 text-xs mt-1">{errors.area}</p>}
+                  </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:gap-4">
                   <label className="w-full md:w-36 text-gray-700">Landmark *</label>
-                  <input
-                    type="text"
-                    name="landmark"
-                    id=""
-                    onChange={handleOnChange}
-                    value={data.landmark}
-                    className="w-full md:w-72 border rounded px-3 py-2"
-                    placeholder="Landmark"
-                    required
-                  />
+                  <div className="w-full md:w-72">
+                    <input
+                      type="text"
+                      name="landmark"
+                      id="landmark"
+                      onChange={handleOnChange}
+                      value={data.landmark}
+                      className={`w-full border rounded px-3 py-2 ${errors.landmark ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="Landmark"
+                      required
+                    />
+                    {errors.landmark && <p className="text-red-500 text-xs mt-1">{errors.landmark}</p>}
+                  </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:gap-4">
                   <label className="w-full md:w-36 text-gray-700">City *</label>
-                  <input
-                    type="text"
-                    name="city"
-                    id=""
-                    onChange={handleOnChange}
-                    value={data.city}
-                    className="w-full md:w-72 border rounded px-3 py-2"
-                    placeholder="City"
-                    required
-                  />
+                  <div className="w-full md:w-72">
+                    <input
+                      type="text"
+                      name="city"
+                      id="city"
+                      onChange={handleOnChange}
+                      value={data.city}
+                      className={`w-full border rounded px-3 py-2 ${errors.city ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="City"
+                      required
+                    />
+                    {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
+                  </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center md:gap-4">
                   <label className="w-full md:w-36 text-gray-700">State *</label>
-                  <select
-                    name="state"
-                    id=""
-                    onChange={handleOnChange}
-                    value={data.state}
-                    className="w-full md:w-72 h-10 text-center border rounded"
-                    required
-                  >
+                  <div className="w-full md:w-72">
+                    <select
+                      name="state"
+                      id="state"
+                      onChange={handleOnChange}
+                      value={data.state}
+                      className={`w-full h-10 text-center border rounded ${errors.state ? 'border-red-500' : 'border-gray-300'}`}
+                      required
+                    >
                   <option value="">Select state</option>
                   <option value="Andaman and Nicobar Islands">
                     Andaman and Nicobar Islands
@@ -769,15 +878,18 @@ const Address = () => {
                   <option value="Uttarakhand">Uttarakhand</option>
                   <option value="West Bengal">West Bengal</option>
                 </select>
-              </div>
+                    {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
+                  </div>
+                </div>
               </div>
 
               <div className="flex justify-center items-center mt-5">
                 <button
-                  className="p-2 rounded-lg text-white bg-gradient-to-r from-orange-300 to-orange-500 w-full md:w-60 h-10 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-300 "
+                  className="p-2 rounded-lg text-white bg-gradient-to-r from-orange-300 to-orange-500 w-full md:w-60 h-10 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   type="submit"
+                  disabled={isSubmitting || loading}
                 >
-                  Submit
+                  {isSubmitting || loading ? "Submitting..." : "Submit"}
                 </button>
               </div>
             </form>

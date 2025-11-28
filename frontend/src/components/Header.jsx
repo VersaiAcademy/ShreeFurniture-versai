@@ -120,7 +120,7 @@ const Header = () => {
         },
         {
           title: 'WARDROBES',
-          items: ['1 Door Wardrobe', '2 Door Wardrobe', '3 Door Wardrobe', '4 Door Wardrobe'],
+          items: ['Wooden Wardrobe'],
           hasDropdown: true
         },
          {
@@ -187,7 +187,7 @@ const Header = () => {
         },
         {
           title: 'BEDROOM STORAGE',
-          items: ['Chest of Drawers', 'Wardrobes' ,'Bed Side Tables' , 'Dressing ' ,'Almira'  ],
+          items: ['Chest of Drawers', 'Wooden Wardrobes' ,'Bed Side Tables' , 'Dressing ' ,'Almira'  ],
           hasDropdown: true
         },
         {
@@ -312,7 +312,7 @@ const Header = () => {
                     }
                   }}
                   placeholder="Search Products, Color & More..."
-                  className="w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 text-sm"
+                  className="w-full px-4 py-2.5 pr-10 border border-orange-300 rounded-lg focus:outline-none focus:border-orange-500 text-sm"
                 />
                 <button
                   onClick={() => {
@@ -333,7 +333,7 @@ const Header = () => {
                 aria-label="Open search"
                 className="p-2 rounded-md bg-white/0 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
-                <Search className="h-5 w-5 text-gray-700" />
+                <Search className="h-5 w-5 text-orange-700" />
               </button>
             </div>
 

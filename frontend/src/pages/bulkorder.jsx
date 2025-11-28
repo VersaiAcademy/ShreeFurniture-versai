@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { submitPublicOrder } from "../utils/api";
+import { validateName, validateEmail, validatePhone, validatePincode, validateAddress, validateRequired } from "../utils/validation";
 
 const defaultValues = {
   fullName: "",
@@ -18,44 +19,123 @@ const defaultValues = {
 export default function BulkOrder() {
   const [values, setValues] = useState(defaultValues);
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+    
     setValues((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Validate bulk order form
+  const validateForm = () => {
+    const newErrors = {};
+    
+    // Validate full name
+    const nameValidation = validateName(values.fullName);
+    if (!nameValidation.valid) {
+      newErrors.fullName = nameValidation.message;
+    }
+    
+    // Validate email
+    const emailValidation = validateEmail(values.email);
+    if (!emailValidation.valid) {
+      newErrors.email = emailValidation.message;
+    }
+    
+    // Validate phone
+    const phoneValidation = validatePhone(values.phone);
+    if (!phoneValidation.valid) {
+      newErrors.phone = phoneValidation.message;
+    }
+    
+    // Validate pincode
+    const pincodeValidation = validatePincode(values.pinCode);
+    if (!pincodeValidation.valid) {
+      newErrors.pinCode = pincodeValidation.message;
+    }
+    
+    // Validate city
+    const cityValidation = validateRequired(values.city, 'City');
+    if (!cityValidation.valid || cityValidation.value.length < 2) {
+      newErrors.city = 'City must be at least 2 characters long';
+    }
+    
+    // Validate address
+    const addressValidation = validateAddress(values.address);
+    if (!addressValidation.valid) {
+      newErrors.address = addressValidation.message;
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const requiredFields = ["fullName", "email", "phone", "pinCode", "city", "address"];
-    const missing = requiredFields.filter((field) => !values[field].trim());
-    if (missing.length) {
-      toast.error(`Please fill ${missing.join(", ")}`);
+    
+    // Validate all fields before submission
+    if (!validateForm()) {
+      toast.error("Please fix all validation errors before submitting");
       return;
     }
 
     try {
       setSubmitting(true);
+      setErrors({});
+      
+      // Clean and format data
+      const nameValidation = validateName(values.fullName);
+      const emailValidation = validateEmail(values.email);
+      const phoneValidation = validatePhone(values.phone);
+      const pincodeValidation = validatePincode(values.pinCode);
+      
       await submitPublicOrder({
         formType: "bulk",
-        name: values.fullName,
-        email: values.email,
-        phone: values.phone,
-        address: values.address,
-        city: values.city,
-        state: values.company || "Business",
-        pincode: values.pinCode,
+        name: nameValidation.value,
+        email: emailValidation.value,
+        phone: phoneValidation.value,
+        address: values.address.trim(),
+        city: values.city.trim(),
+        state: values.company?.trim() || "Business",
+        pincode: pincodeValidation.value,
         productName: `${values.requirementType} (${values.quantity || "qty TBD"})`,
         productId: values.requirementType,
         productPrice: 0,
         paymentStatus: "pending",
         paymentMode: "na",
-        notes: values.message || "Bulk order enquiry",
+        notes: values.message?.trim() || "Bulk order enquiry",
         meta: { company: values.company, requirementType: values.requirementType, quantity: values.quantity }
       });
-      toast.success("Bulk order enquiry submitted. Our team will contact you shortly.");
+      
+      toast.success("Bulk order enquiry submitted successfully! Our team will contact you shortly.");
       setValues(defaultValues);
     } catch (err) {
-      toast.error(err.message || "Unable to submit request");
+      console.error("Bulk order submission error:", err);
+      
+      if (err.response?.data?.message) {
+        toast.error(err.response.data.message);
+      } else if (err.response?.data?.errors) {
+        const backendErrors = {};
+        err.response.data.errors.forEach((error) => {
+          if (error.param) {
+            backendErrors[error.param] = error.msg || error.message;
+          }
+        });
+        setErrors(backendErrors);
+        toast.error("Please fix the validation errors");
+      } else {
+        toast.error(err.message || "Unable to submit request. Please try again.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -83,10 +163,11 @@ export default function BulkOrder() {
                   name="fullName"
                   value={values.fullName}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+                  className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none ${errors.fullName ? 'border-red-500' : 'border-gray-300'}`}
                   placeholder="Enter your full name"
                   required
                 />
+                {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2">Company / Business Name</label>
@@ -109,10 +190,11 @@ export default function BulkOrder() {
                   name="email"
                   value={values.email}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+                  className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                   placeholder="Enter your email"
                   required
                 />
+                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2">Phone Number *</label>
@@ -121,10 +203,12 @@ export default function BulkOrder() {
                   name="phone"
                   value={values.phone}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
-                  placeholder="Enter your phone number"
+                  className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
+                  placeholder="Enter your phone number (10 digits)"
+                  maxLength={10}
                   required
                 />
+                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
               </div>
             </div>
 
@@ -136,10 +220,12 @@ export default function BulkOrder() {
                   name="pinCode"
                   value={values.pinCode}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
-                  placeholder="Postal code"
+                  className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none ${errors.pinCode ? 'border-red-500' : 'border-gray-300'}`}
+                  placeholder="Postal code (6 digits)"
+                  maxLength={6}
                   required
                 />
+                {errors.pinCode && <p className="text-red-500 text-xs mt-1">{errors.pinCode}</p>}
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2">City *</label>
@@ -148,10 +234,11 @@ export default function BulkOrder() {
                   name="city"
                   value={values.city}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+                  className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none ${errors.city ? 'border-red-500' : 'border-gray-300'}`}
                   placeholder="City"
                   required
                 />
+                {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
               </div>
             </div>
 
@@ -162,10 +249,11 @@ export default function BulkOrder() {
                 name="address"
                 value={values.address}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
-                placeholder="Street, building, landmark"
+                className={`w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
+                placeholder="Street, building, landmark (minimum 10 characters)"
                 required
               ></textarea>
+              {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -213,7 +301,7 @@ export default function BulkOrder() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-orange-300 text-white font-semibold py-3 rounded-lg text-lg transition-all"
+              className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-orange-300 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg text-lg transition-all"
             >
               {submitting ? "Submitting..." : "Submit Bulk Order Request"}
             </button>

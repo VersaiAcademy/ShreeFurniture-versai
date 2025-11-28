@@ -7,6 +7,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Modal from "../components/Modal";
 import { useSelector } from "react-redux";
+import { validatePhone, validatePincode, validateRequired } from "../utils/validation";
 
 const UserProfile = () => {
   const [loading, setLoading] = useState(false);
@@ -24,6 +25,7 @@ const UserProfile = () => {
     phone: '',
     landmark: '',
   });
+  const [addressErrors, setAddressErrors] = useState({});
   const navigate = useNavigate();
   const customername = useSelector((state) => state.customer);
   const [value, setvalue] = useState("confirmed");
@@ -128,30 +130,119 @@ const UserProfile = () => {
 
   const handleAddressChange = (e) => {
     const { name, value } = e.target;
+    
+    // Clear error for this field when user starts typing
+    if (addressErrors[name]) {
+      setAddressErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+    
     setAddressForm((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
+  // Validate address form
+  const validateAddressForm = () => {
+    const newErrors = {};
+    
+    // Validate address line 1
+    const address1Validation = validateRequired(addressForm.address_line1, 'Address Line 1');
+    if (!address1Validation.valid || address1Validation.value.length < 10) {
+      newErrors.address_line1 = 'Address must be at least 10 characters long';
+    }
+    
+    // Validate city
+    const cityValidation = validateRequired(addressForm.city, 'City');
+    if (!cityValidation.valid || cityValidation.value.length < 2) {
+      newErrors.city = 'City must be at least 2 characters long';
+    }
+    
+    // Validate state
+    const stateValidation = validateRequired(addressForm.state, 'State');
+    if (!stateValidation.valid) {
+      newErrors.state = stateValidation.message;
+    }
+    
+    // Validate zip/pincode
+    const zipValidation = validatePincode(addressForm.zip);
+    if (!zipValidation.valid) {
+      newErrors.zip = zipValidation.message;
+    }
+    
+    // Validate phone
+    const phoneValidation = validatePhone(addressForm.phone);
+    if (!phoneValidation.valid) {
+      newErrors.phone = phoneValidation.message;
+    }
+    
+    setAddressErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleAddressSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate all fields before submission
+    if (!validateAddressForm()) {
+      toast.error("Please fix all validation errors before submitting");
+      return;
+    }
+    
     try {
       setLoading(true);
+      setAddressErrors({});
+      
+      // Clean and format data
+      const phoneValidation = validatePhone(addressForm.phone);
+      const zipValidation = validatePincode(addressForm.zip);
+      
+      const payload = {
+        address_line1: addressForm.address_line1.trim(),
+        address_line2: addressForm.address_line2?.trim() || '',
+        city: addressForm.city.trim(),
+        state: addressForm.state.trim(),
+        zip: zipValidation.value,
+        phone: phoneValidation.value,
+        landmark: addressForm.landmark?.trim() || '',
+      };
+      
       const userId = localStorage.getItem("id");
       const response = await axios.put(
         `/api/users/${userId}`,
-        addressForm,
+        payload,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      setAddress(response.data.address || addressForm);
+      
+      setAddress(response.data.address || payload);
       setEditingAddress(false);
       toast.success("Address updated successfully!");
     } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || "Failed to update address");
+      console.error("Address update error:", error);
+      
+      if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+        const backendErrors = {};
+        error.response.data.errors.forEach((err) => {
+          if (err.param) {
+            backendErrors[err.param] = err.msg || err.message;
+          }
+        });
+        setAddressErrors(backendErrors);
+        toast.error("Please fix the validation errors");
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        navigate("/login");
+      } else {
+        toast.error("Failed to update address. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -245,60 +336,78 @@ const UserProfile = () => {
                   {editingAddress ? (
                     <form onSubmit={handleAddressSubmit} className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input
-                          type="text"
-                          name="address_line1"
-                          placeholder="Address Line 1 *"
-                          value={addressForm.address_line1}
-                          onChange={handleAddressChange}
-                          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-500"
-                          required
-                        />
-                        <input
-                          type="text"
-                          name="address_line2"
-                          placeholder="Area / Locality"
-                          value={addressForm.address_line2}
-                          onChange={handleAddressChange}
-                          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-500"
-                          required
-                        />
-                        <input
-                          type="text"
-                          name="city"
-                          placeholder="City *"
-                          value={addressForm.city}
-                          onChange={handleAddressChange}
-                          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-500"
-                          required
-                        />
-                        <input
-                          type="text"
-                          name="state"
-                          placeholder="State *"
-                          value={addressForm.state}
-                          onChange={handleAddressChange}
-                          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-500"
-                          required
-                        />
-                        <input
-                          type="text"
-                          name="zip"
-                          placeholder="Zip Code (5-6 digits) *"
-                          value={addressForm.zip}
-                          onChange={handleAddressChange}
-                          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-500"
-                          required
-                        />
-                        <input
-                          type="tel"
-                          name="phone"
-                          placeholder="Phone Number (10 digits) *"
-                          value={addressForm.phone}
-                          onChange={handleAddressChange}
-                          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-500"
-                          required
-                        />
+                        <div>
+                          <input
+                            type="text"
+                            name="address_line1"
+                            placeholder="Address Line 1 *"
+                            value={addressForm.address_line1}
+                            onChange={handleAddressChange}
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:border-orange-500 ${addressErrors.address_line1 ? 'border-red-500' : 'border-gray-300'}`}
+                            required
+                          />
+                          {addressErrors.address_line1 && <p className="text-red-500 text-xs mt-1">{addressErrors.address_line1}</p>}
+                        </div>
+                        <div>
+                          <input
+                            type="text"
+                            name="address_line2"
+                            placeholder="Area / Locality"
+                            value={addressForm.address_line2}
+                            onChange={handleAddressChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-500"
+                          />
+                        </div>
+                        <div>
+                          <input
+                            type="text"
+                            name="city"
+                            placeholder="City *"
+                            value={addressForm.city}
+                            onChange={handleAddressChange}
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:border-orange-500 ${addressErrors.city ? 'border-red-500' : 'border-gray-300'}`}
+                            required
+                          />
+                          {addressErrors.city && <p className="text-red-500 text-xs mt-1">{addressErrors.city}</p>}
+                        </div>
+                        <div>
+                          <input
+                            type="text"
+                            name="state"
+                            placeholder="State *"
+                            value={addressForm.state}
+                            onChange={handleAddressChange}
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:border-orange-500 ${addressErrors.state ? 'border-red-500' : 'border-gray-300'}`}
+                            required
+                          />
+                          {addressErrors.state && <p className="text-red-500 text-xs mt-1">{addressErrors.state}</p>}
+                        </div>
+                        <div>
+                          <input
+                            type="text"
+                            name="zip"
+                            placeholder="Zip Code (6 digits) *"
+                            value={addressForm.zip}
+                            onChange={handleAddressChange}
+                            maxLength={6}
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:border-orange-500 ${addressErrors.zip ? 'border-red-500' : 'border-gray-300'}`}
+                            required
+                          />
+                          {addressErrors.zip && <p className="text-red-500 text-xs mt-1">{addressErrors.zip}</p>}
+                        </div>
+                        <div>
+                          <input
+                            type="tel"
+                            name="phone"
+                            placeholder="Phone Number (10 digits) *"
+                            value={addressForm.phone}
+                            onChange={handleAddressChange}
+                            maxLength={10}
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:border-orange-500 ${addressErrors.phone ? 'border-red-500' : 'border-gray-300'}`}
+                            required
+                          />
+                          {addressErrors.phone && <p className="text-red-500 text-xs mt-1">{addressErrors.phone}</p>}
+                        </div>
                         <input
                           type="text"
                           name="landmark"

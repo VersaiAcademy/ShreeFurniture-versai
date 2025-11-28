@@ -1,6 +1,7 @@
 import "./App.css";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
+import ScrollToTop from "./components/ScrollToTop";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 import Homepage from "./pages/Homepage";
 import Productpage from "./pages/Productpage";
@@ -34,6 +35,7 @@ import BulkOrder from "./pages/bulkorder";
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <ToastContainer 
         position="top-center" 
         autoClose={5000} 

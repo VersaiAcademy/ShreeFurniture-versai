@@ -1,6 +1,8 @@
 // CustomFurniture.jsx - Custom Furniture Contact Form Page
 import { useState } from 'react';
 import { submitPublicOrder } from '../utils/api';
+import { validateName, validateEmail, validatePhone, validatePincode, validateAddress, validateRequired } from '../utils/validation';
+import { toast } from 'react-toastify';
 
 const CustomFurniture = () => {
   const [formData, setFormData] = useState({
@@ -15,33 +17,103 @@ const CustomFurniture = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+    
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Validate custom furniture form
+  const validateForm = () => {
+    const newErrors = {};
+    
+    // Validate full name
+    const nameValidation = validateName(formData.fullName);
+    if (!nameValidation.valid) {
+      newErrors.fullName = nameValidation.message;
+    }
+    
+    // Validate email
+    const emailValidation = validateEmail(formData.email);
+    if (!emailValidation.valid) {
+      newErrors.email = emailValidation.message;
+    }
+    
+    // Validate phone
+    const phoneValidation = validatePhone(formData.phoneNumber);
+    if (!phoneValidation.valid) {
+      newErrors.phoneNumber = phoneValidation.message;
+    }
+    
+    // Validate pincode
+    const pincodeValidation = validatePincode(formData.pinCode);
+    if (!pincodeValidation.valid) {
+      newErrors.pinCode = pincodeValidation.message;
+    }
+    
+    // Validate city
+    const cityValidation = validateRequired(formData.city, 'City');
+    if (!cityValidation.valid || cityValidation.value.length < 2) {
+      newErrors.city = 'City must be at least 2 characters long';
+    }
+    
+    // Validate address
+    const addressValidation = validateAddress(formData.address);
+    if (!addressValidation.valid) {
+      newErrors.address = addressValidation.message;
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate all fields before submission
+    if (!validateForm()) {
+      toast.error("Please fix all validation errors before submitting");
+      return;
+    }
+    
     setLoading(true);
     setError('');
+    setErrors({});
     
     try {
-      // Update this endpoint according to your backend API
+      // Clean and format data
+      const nameValidation = validateName(formData.fullName);
+      const emailValidation = validateEmail(formData.email);
+      const phoneValidation = validatePhone(formData.phoneNumber);
+      const pincodeValidation = validatePincode(formData.pinCode);
+      
       await submitPublicOrder({
         formType: 'custom',
-        name: formData.fullName,
-        email: formData.email,
-        phone: formData.phoneNumber,
-        address: formData.address || `${formData.city}, ${formData.pinCode}`,
-        city: formData.city,
-        pincode: formData.pinCode,
+        name: nameValidation.value,
+        email: emailValidation.value,
+        phone: phoneValidation.value,
+        address: formData.address.trim(),
+        city: formData.city.trim(),
+        pincode: pincodeValidation.value,
         productName: 'Custom Furniture Request',
         productPrice: 0,
         paymentStatus: 'pending',
         paymentMode: 'na',
-        notes: formData.description
+        notes: formData.description.trim() || 'Custom furniture enquiry'
       });
+      
+      toast.success("Request submitted successfully! Our team will contact you shortly.");
       setSuccess(true);
       setFormData({
         fullName: '',
@@ -53,8 +125,24 @@ const CustomFurniture = () => {
         description: ''
       });
     } catch (err) {
-      setError('Something went wrong. Please try again.');
       console.error('Form submission error:', err);
+      
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+        toast.error(err.response.data.message);
+      } else if (err.response?.data?.errors) {
+        const backendErrors = {};
+        err.response.data.errors.forEach((error) => {
+          if (error.param) {
+            backendErrors[error.param] = error.msg || error.message;
+          }
+        });
+        setErrors(backendErrors);
+        toast.error("Please fix the validation errors");
+      } else {
+        setError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -104,8 +192,9 @@ const CustomFurniture = () => {
                       onChange={handleChange}
                       placeholder="Full Name*"
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${errors.fullName ? 'border-red-500' : 'border-gray-300'}`}
                     />
+                    {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
                   </div>
 
                   <div>
@@ -116,8 +205,9 @@ const CustomFurniture = () => {
                       onChange={handleChange}
                       placeholder="Email*"
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                     />
+                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                   </div>
 
                   <div>
@@ -126,10 +216,12 @@ const CustomFurniture = () => {
                       name="phoneNumber"
                       value={formData.phoneNumber}
                       onChange={handleChange}
-                      placeholder="Phone Number *"
+                      placeholder="Phone Number * (10 digits)"
+                      maxLength={10}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'}`}
                     />
+                    {errors.phoneNumber && <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>}
                   </div>
 
                   <div>
@@ -138,10 +230,12 @@ const CustomFurniture = () => {
                       name="pinCode"
                       value={formData.pinCode}
                       onChange={handleChange}
-                      placeholder="Pin Code*"
+                      placeholder="Pin Code* (6 digits)"
+                      maxLength={6}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${errors.pinCode ? 'border-red-500' : 'border-gray-300'}`}
                     />
+                    {errors.pinCode && <p className="text-red-500 text-xs mt-1">{errors.pinCode}</p>}
                   </div>
 
                   <div>
@@ -152,8 +246,9 @@ const CustomFurniture = () => {
                       onChange={handleChange}
                       placeholder="City*"
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${errors.city ? 'border-red-500' : 'border-gray-300'}`}
                     />
+                    {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
                   </div>
 
                   <div>
@@ -162,10 +257,11 @@ const CustomFurniture = () => {
                       name="address"
                       value={formData.address}
                       onChange={handleChange}
-                      placeholder="Complete Address *"
+                      placeholder="Complete Address * (minimum 10 characters)"
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
                     />
+                    {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
                   </div>
 
                   <div>
@@ -182,7 +278,7 @@ const CustomFurniture = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="px-8 py-3 bg-orange-500 text-white font-medium rounded-full hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-8 py-3 bg-orange-500 text-white font-medium rounded-full hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? 'Submitting...' : 'Submit Your Request'}
                   </button>
