@@ -9,8 +9,8 @@ import {
   faChevronUp,
   faTh,
   faThList,
-  faFilter, // Added filter icon for mobile button
-  faTimes // Added close icon for mobile filter modal
+  faFilter,
+  faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import API from '../utils/api';
@@ -30,7 +30,6 @@ const Productpage = () => {
   const [priceRange, setPriceRange] = useState([0, 200000]);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedSeaters, setSelectedSeaters] = useState([]);
-  // size filter coming from query (bed_size, sofa_size, dining_size, size)
   const [selectedSizeFilter, setSelectedSizeFilter] = useState('');
   const [sortBy, setSortBy] = useState('recommended');
   const [viewMode, setViewMode] = useState('grid');
@@ -40,33 +39,32 @@ const Productpage = () => {
   const [isMaterialOpen, setIsMaterialOpen] = useState(true);
   const [isSeaterOpen, setIsSeaterOpen] = useState(true);
 
-  // *** NEW: Mobile Filter Modal State ***
+  // Mobile Filter Modal State
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   // Material options (from products)
   const [materials, setMaterials] = useState([]);
-  // Wishlist state: store product IDs in a Set for quick lookup
   const [userWishlistIds, setUserWishlistIds] = useState(new Set());
   const [wishlistLoadingMap, setWishlistLoadingMap] = useState({});
   
   // Seater options
   const seaterOptions = ['3 Seater', '3+1+1 Seater', '2 Seater', '5 Seater', '6 Seater'];
 
-  // Main category -> subcategory names mapping (used to show chips and to request combined products)
+  // Main category -> subcategory names mapping
   const MAIN_CATEGORY_MAP = {
-    'sofas': ['Wooden Sofas','Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas', 'Wooden Diwan', 'Benches', 'Stools'],
+    'sofas': ['Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas', 'Wooden Diwan', 'Benches', 'Stools'],
     'living': ['TV Units','Temples','Book Shelves','Display Units','Shoe Racks','Sideboards','Chest of Drawers','Chairs','Stools','Benches','Swings','Coffee Tables','Side Tables','Console Tables','Wall Shelves & Hanger','Wall Mirrors'],
-    'bedroom': ['King Size Beds','Queen Size Beds','Single Beds','Hydraulic Storage Beds','Poster Beds','1-4 Door Wardrobes'],
+    'bedroom': ['King Size Beds','Queen Size Beds','Single Beds','Hydraulic Storage Beds','Poster Beds','Wooden Wardrobe'],
     'dining-kitchen': ['Dining Tables','2 Seater Dining Sets','4 Seater Dining Sets','6 Seater Dining Sets','Dining Chairs','Benches','Kitchen Cabinets','Crockery Units','Wooden Tray','Wooden Jars','Spice Box','Chopping Board','Coasters','Tissue Box'],
     'storage': ['TV Units','Book Shelves','Display Units','Shoe Racks','Home Temples','Magazine Racks','Wooden Corner','Chest of Drawers','Wardrobes','Bed Side Tables','Dressing','Almira','Bar Cabinets'],
     'study-office': ['Study Tables','Wooden Corner'],
     'custom-furnitures': ['Custom Sofas','Custom Wardrobes','Custom Beds','Custom Tables']
   };
 
-  // Helper: slugify a name in the same way header does
+  // Helper: slugify a name
   const slugify = (s) => s.toLowerCase().replace(/\s+/g, '-').replace(/\+/g, '').replace(/&/g, '');
 
-  // Build reverse map: slug -> original display name (for subcategories and main names)
+  // Build reverse map
   const SLUG_TO_NAME = {};
   Object.keys(MAIN_CATEGORY_MAP).forEach((main) => {
     SLUG_TO_NAME[main] = main.split('-').map(w => w[0]?.toUpperCase()+w.slice(1)).join(' ');
@@ -76,19 +74,16 @@ const Productpage = () => {
   });
 
   useEffect(() => {
-    // Redirect invalid slugs that match known routes - CRITICAL: prevent API call with slug="profile"
     const invalidSlugs = ['profile', 'userprofile', 'login', 'register', 'cart', 'wishlist', 'address', 'checkout', 'cashfree-callback'];
     if (slug && invalidSlugs.includes(slug.toLowerCase())) {
-      console.warn('⚠️ Invalid slug for product page:', slug, '- redirecting to correct route');
       if (slug.toLowerCase() === 'profile' || slug.toLowerCase() === 'userprofile') {
         navigate('/userprofile', { replace: true });
       } else {
         navigate(`/${slug.toLowerCase()}`, { replace: true });
       }
-      return; // IMPORTANT: Return early to prevent API call
+      return;
     }
 
-    // If search query present in URL, perform search; else if slug present fetch by slug
     const params = new URLSearchParams(location.search);
     const searchParam = params.get('search') || params.get('q');
     if (searchParam) {
@@ -96,17 +91,14 @@ const Productpage = () => {
       return;
     }
     
-    // Only fetch products if slug is valid (not an invalid route)
     if (slug && !invalidSlugs.includes(slug.toLowerCase())) {
       fetchProductsBySlug(slug);
     } else if (!slug) {
-      // No slug - don't fetch anything (empty state)
       setProducts([]);
       setLoading(false);
     }
   }, [slug, location.search, navigate]);
 
-  // Read query params (size filters) from URL and set initial filters
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const bedSize = params.get('bed_size');
@@ -117,7 +109,6 @@ const Productpage = () => {
     const sizeFromQuery = bedSize || sofaSize || diningSize || genericSize || '';
     if (sizeFromQuery) {
       setSelectedSizeFilter(sizeFromQuery);
-      // If the size looks like a seater option, also mark it in seater filters so UI reflects it
       if (seaterOptions.some(s => s.toLowerCase() === sizeFromQuery.toLowerCase())) {
         setSelectedSeaters([sizeFromQuery]);
       }
@@ -128,7 +119,6 @@ const Productpage = () => {
     applyFilters();
   }, [products, fastDelivery, priceRange, selectedMaterials, selectedSeaters, sortBy]);
 
-  // Load user's wishlist IDs when component mounts (if logged in)
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -138,7 +128,6 @@ const Productpage = () => {
         const res = await API.get('/api/wishlist');
         const items = Array.isArray(res.data) ? res.data : (res.data.wishlist || []);
         const ids = new Set(items.map(i => {
-          // wishlist item may embed product or just reference id
           if (i.product && typeof i.product === 'object') return i.product._id || i.product.id;
           return i.product || i._id || i.id;
         }));
@@ -152,44 +141,26 @@ const Productpage = () => {
   }, []);
 
   const fetchProductsBySlug = async (categorySlug) => {
-    // CRITICAL: Prevent fetching for invalid slugs - double-check before API call
     const invalidSlugs = ['profile', 'userprofile', 'login', 'register', 'cart', 'wishlist', 'address', 'checkout', 'cashfree-callback'];
     if (!categorySlug || invalidSlugs.includes(categorySlug.toLowerCase())) {
-      console.warn("⚠️ BLOCKED: Invalid slug for product fetch:", categorySlug, "- This should not reach API");
       setError("Invalid category");
       setProducts([]);
       setLoading(false);
-      return; // Early return - DO NOT call API with invalid slug
+      return;
     }
 
     setLoading(true);
     setError("");
     try {
-      console.log("🔍 Fetching products for slug:", categorySlug);
-      // If this slug maps to a main category with known subcategories, request all of them
-      const CATEGORY_MAP = {
-        'sofas': ['Wooden Sofas','Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas', 'Wooden Diwan', 'Benches', 'Stools'],
-        'living': ['TV Units','Temples','Book Shelves','Display Units','Shoe Racks','Sideboards','Chest of Drawers','Chairs','Stools','Benches','Swings','Coffee Tables','Side Tables','Console Tables','Wall Shelves & Hanger','Wall Mirrors'],
-        'bedroom': ['King Size Beds','Queen Size Beds','Single Beds','Hydraulic Storage Beds','Poster Beds','1-4 Door Wardrobes'],
-        'dining-kitchen': ['Dining Tables','2 Seater Dining Sets','4 Seater Dining Sets','6 Seater Dining Sets','Dining Chairs','Benches','Kitchen Cabinets','Crockery Units','Wooden Tray','Wooden Jars','Spice Box','Chopping Board','Coasters','Tissue Box'],
-        'storage': ['TV Units','Book Shelves','Display Units','Shoe Racks','Home Temples','Magazine Racks','Wooden Corner','Chest of Drawers','Wardrobes','Bed Side Tables','Dressing','Almira','Bar Cabinets'],
-        'study-office': ['Study Tables','Wooden Corner'],
-        'custom-furnitures': ['Custom Sofas','Custom Wardrobes','Custom Beds','Custom Tables']
-      };
-
-      // Build category param using slug forms (these match DB values)
       let categoryParam = categorySlug;
       const mapEntry = MAIN_CATEGORY_MAP[categorySlug];
       if (mapEntry && Array.isArray(mapEntry) && mapEntry.length > 0) {
-        // main category: include main slug + all subcategory slugs
         const subsSlugs = mapEntry.map(s => slugify(s));
         const parts = [categorySlug, ...subsSlugs];
         categoryParam = parts.join(',');
       } else if (SLUG_TO_NAME[categorySlug]) {
-        // it's a subcategory slug — use the slug itself (DB stores slugs)
         categoryParam = categorySlug;
       } else {
-        // fallback: try slug and capitalized variant
         categoryParam = [categorySlug, categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1)].join(',');
       }
 
@@ -198,13 +169,9 @@ const Productpage = () => {
       const productsData = Array.isArray(res.data) ? res.data : (res.data.products || []);
       setProducts(productsData);
       
-      // Extract unique materials
       const uniqueMaterials = [...new Set(productsData.map(p => p.material).filter(Boolean))];
       setMaterials(uniqueMaterials.map((m, i) => ({ name: m, count: productsData.filter(p => p.material === m).length })));
-      
-      console.log("✅ Products loaded:", productsData.length);
     } catch (err) {
-      console.error("❌ Failed to fetch products:", err);
       setError("Failed to load products. Please try again later.");
       setProducts([]);
     } finally {
@@ -216,18 +183,13 @@ const Productpage = () => {
     setLoading(true);
     setError("");
     try {
-      console.log("🔍 Searching products for:", query);
       const res = await API.get(`/api/products`, { params: { search: query } });
       const productsData = Array.isArray(res.data) ? res.data : (res.data.products || []);
       setProducts(productsData);
 
-      // Extract unique materials
       const uniqueMaterials = [...new Set(productsData.map(p => p.material).filter(Boolean))];
       setMaterials(uniqueMaterials.map((m) => ({ name: m, count: productsData.filter(p => p.material === m).length })));
-
-      console.log("✅ Search results loaded:", productsData.length);
     } catch (err) {
-      console.error("❌ Failed to search products:", err);
       setError("Failed to search products. Please try again later.");
       setProducts([]);
     } finally {
@@ -238,31 +200,26 @@ const Productpage = () => {
   const applyFilters = () => {
     let filtered = [...products];
 
-    // Fast delivery filter
     if (fastDelivery) {
       filtered = filtered.filter(p => p.stock_count > 0);
     }
 
-    // Price range filter
     const [min, max] = priceRange;
     filtered = filtered.filter(p => {
       const price = calcDiscountedPrice(p.price, p.offer);
       return price >= min && price <= max;
     });
 
-    // Material filter
     if (selectedMaterials.length > 0) {
       filtered = filtered.filter(p => selectedMaterials.includes(p.material));
     }
 
-    // Seater filter (check if product name contains seater info)
     if (selectedSeaters.length > 0) {
       filtered = filtered.filter(p => 
         selectedSeaters.some(seater => p.pname.toLowerCase().includes(seater.toLowerCase()))
       );
     }
 
-    // Size filter from query or selection - match product.size or pname
     if (selectedSizeFilter) {
       const q = selectedSizeFilter.toLowerCase();
       filtered = filtered.filter(p => {
@@ -272,7 +229,6 @@ const Productpage = () => {
       });
     }
 
-    // Sorting
     switch (sortBy) {
       case 'price-low':
         filtered.sort((a, b) => calcDiscountedPrice(a.price, a.offer) - calcDiscountedPrice(b.price, b.offer));
@@ -287,12 +243,10 @@ const Productpage = () => {
         filtered.sort((a, b) => b.rating - a.rating);
         break;
       default:
-        // recommended - keep original order
         break;
     }
 
     setFilteredProducts(filtered);
-    // NEW: Close modal after applying filters on mobile
     if(isFilterModalOpen) setIsFilterModalOpen(false);
   };
 
@@ -342,7 +296,6 @@ const Productpage = () => {
       });
       toast.success(response.data.message || 'Product added to cart!');
     } catch (error) {
-      console.error('Failed to add to cart:', error);
       toast.error(error.response?.data?.message || 'Failed to add product to cart');
     }
   };
@@ -357,13 +310,11 @@ const Productpage = () => {
     }
 
     const prodId = product._id;
-    // Prevent duplicate requests
     if (wishlistLoadingMap[prodId]) return;
 
     const currentlyHas = userWishlistIds.has(prodId);
     const prevSet = new Set(userWishlistIds);
 
-    // Optimistic UI update
     const newSet = new Set(prevSet);
     if (currentlyHas) newSet.delete(prodId); else newSet.add(prodId);
     setUserWishlistIds(newSet);
@@ -380,8 +331,6 @@ const Productpage = () => {
         try { window.dispatchEvent(new Event('wishlistUpdated')); } catch (e) { }
       }
     } catch (err) {
-      console.error('Failed to toggle wishlist:', err);
-      // Revert optimistic update
       setUserWishlistIds(prevSet);
       toast.error(err.response?.data?.message || 'Failed to update wishlist');
     } finally {
@@ -423,7 +372,6 @@ const Productpage = () => {
     );
   }
 
-  // Component to render the filters (reused in both sidebar and mobile modal)
   const FiltersContent = ({ isMobile }) => (
     <>
       <div className="p-4 border-b">
@@ -431,7 +379,6 @@ const Productpage = () => {
       </div>
 
       <div className={`overflow-y-auto ${isMobile ? 'max-h-[calc(100vh-160px)]' : 'max-h-[calc(100vh-120px)]'}`}>
-        {/* Fast Delivery Toggle */}
         <div className="p-4 border-b">
           <label className="flex items-center cursor-pointer">
             <div className="relative">
@@ -448,7 +395,6 @@ const Productpage = () => {
           </label>
         </div>
 
-        {/* Price Range */}
         <div className="border-b">
           <button
             onClick={() => setIsPriceOpen(!isPriceOpen)}
@@ -463,7 +409,6 @@ const Productpage = () => {
                 <span>₹{priceRange[0].toLocaleString()}</span>
                 <span>₹{priceRange[1].toLocaleString()}</span>
               </div>
-              {/* Range inputs can be complex with Tailwind/basic HTML, keeping the original logic */}
               <input
                 type="range"
                 min="19989"
@@ -498,7 +443,6 @@ const Productpage = () => {
           )}
         </div>
 
-        {/* Material Filter */}
         <div className="border-b">
           <button
             onClick={() => setIsMaterialOpen(!isMaterialOpen)}
@@ -525,7 +469,6 @@ const Productpage = () => {
           )}
         </div>
 
-        {/* Seater Filter */}
         <div className="border-b">
           <button
             onClick={() => setIsSeaterOpen(!isSeaterOpen)}
@@ -551,7 +494,6 @@ const Productpage = () => {
           )}
         </div>
 
-        {/* Reset All Button */}
         <div className="p-4">
           <button
             onClick={resetFilters}
@@ -567,7 +509,6 @@ const Productpage = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-[1400px] mx-auto px-2 sm:px-4 py-3 sm:py-6">
-        {/* Mobile Filter Button (Visible on small screens) */}
         <div className="sticky top-0 z-20 bg-gray-50 pt-2 pb-1 lg:hidden">
             <button 
                 onClick={() => setIsFilterModalOpen(true)}
@@ -578,20 +519,15 @@ const Productpage = () => {
             </button>
         </div>
 
-        {/* Main Content Area: Flex layout on large screens, single column on mobile */}
-        {/* Added lg:flex and gap-6 classes to control layout */}
         <div className="flex flex-col lg:flex-row gap-6"> 
-          {/* Left Sidebar - Filters (Hidden on small screens, shown on large screens) */}
           <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="bg-white rounded-lg shadow-sm sticky top-4">
               <FiltersContent isMobile={false} />
             </div>
           </div>
 
-          {/* Mobile Filter Modal (Fixed position overlay) */}
           {isFilterModalOpen && (
             <div className="fixed inset-0 z-50 bg-white lg:hidden overflow-y-auto">
-              {/* Header for Modal */}
               <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center shadow-sm">
                 <h2 className="text-xl font-bold">Product Filters</h2>
                 <button onClick={() => setIsFilterModalOpen(false)} className="text-gray-600 hover:text-gray-900">
@@ -599,12 +535,10 @@ const Productpage = () => {
                 </button>
               </div>
               
-              {/* Filter Content in Modal */}
-              <div className="pb-20"> {/* pb-20 for space above bottom apply button */}
+              <div className="pb-20">
                   <FiltersContent isMobile={true} />
               </div>
 
-              {/* Fixed Bottom Bar for Mobile Apply Button */}
               <div className="fixed bottom-0 left-0 right-0 bg-white p-3 border-t shadow-2xl">
                 <button
                     onClick={applyFilters}
@@ -616,26 +550,25 @@ const Productpage = () => {
             </div>
           )}
 
-          {/* Right Side - Products */}
           <div className="flex-1">
-            {/* Category Header */}
             <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
               <div className="flex items-center justify-between">
-                {/* Text size adjusted for responsiveness */}
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
                   {(MAIN_CATEGORY_MAP[slug] ? slug.split('-').map(w => w[0]?.toUpperCase()+w.slice(1)).join(' ') : formatCategoryName(slug))}
                 </h1>
               </div>
               {MAIN_CATEGORY_MAP[slug] && MAIN_CATEGORY_MAP[slug].length > 0 && (
                 <>
-                  {/* Hide detailed subcategory list on very small screens for brevity */}
                   <div className="text-sm text-gray-600 mt-1 hidden sm:block">{MAIN_CATEGORY_MAP[slug].join(' • ')}</div>
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="mt-4 flex flex-wrap gap-2">
                     {MAIN_CATEGORY_MAP[slug].map((sub) => {
                       const subSlug = sub.toLowerCase().replace(/\s+/g, '-').replace(/\+/g, '').replace(/&/g, '');
                       return (
-                        // Chip size adjusted for mobile
-                        <button key={sub} onClick={() => navigate(`/${subSlug}`)} className="px-3 py-1 rounded bg-white border text-xs sm:text-sm text-gray-700 hover:bg-orange-50 whitespace-nowrap">
+                        <button 
+                          key={sub} 
+                          onClick={() => navigate(`/${subSlug}`)} 
+                          className="px-4 py-2 rounded-full bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-300 text-sm text-gray-800 font-medium hover:from-orange-500 hover:to-orange-600 hover:text-white hover:border-orange-600 hover:shadow-lg transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
+                        >
                           {sub}
                         </button>
                       );
@@ -645,7 +578,6 @@ const Productpage = () => {
               )}
             </div>
 
-            {/* Top Bar - Sort & View */}
             <div className="bg-white rounded-lg shadow-sm p-4 mb-6 flex items-center justify-between">
               <div className="flex items-center gap-2 sm:gap-4">
                 <span className="text-sm text-gray-600 hidden sm:block">Sort By :</span>
@@ -662,7 +594,6 @@ const Productpage = () => {
                 </select>
               </div>
 
-              {/* View Mode buttons - Hidden on smallest screen to keep bar clean */}
               <div className="hidden sm:flex items-center gap-3">
                 <span className="text-sm text-gray-600">View As</span>
                 <button
@@ -680,11 +611,8 @@ const Productpage = () => {
               </div>
             </div>
 
-            {/* Products Grid */}
             {filteredProducts.length === 0 ? (
               <div className="bg-white rounded-lg p-6 sm:p-12 text-center">
-                {/* Image size and margin adjusted for responsiveness */}
-                 
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">No Products Found</h3>
                 <p className="text-gray-600 mb-4 text-sm sm:text-base">Try adjusting your filters</p>
                 <button onClick={resetFilters} className="px-4 sm:px-6 py-2 sm:py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm sm:text-base">
@@ -692,19 +620,15 @@ const Productpage = () => {
                 </button>
               </div>
             ) : (
-              // Responsive grid layout: 1 column on mobile, 2 on sm, 3 on lg, 4 on xl (if viewMode is grid)
               <div className={`gap-4 sm:gap-5 ${viewMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'flex flex-col'}`}>
                 {filteredProducts.map((product) => (
-                  // Product Card
                   <div
                     key={product._id}
                     onClick={() => navigate(`/dtproduct/${product._id}`)}
-                    // Added conditional styling for list vs grid view
                     className={`bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer group 
                       ${viewMode === 'list' ? 'flex flex-col sm:flex-row' : ''}
                     `}
                   >
-                    {/* Image Container */}
                     <div className={`relative overflow-hidden aspect-[4/3] ${viewMode === 'list' ? 'w-full sm:w-1/3 flex-shrink-0' : ''}`}>
                       {(() => {
                         const displayImage = product.natural_finish_image || product.stone_finish_image || product.img1 || product.image || (product.images && product.images[0]) || '';
@@ -718,7 +642,6 @@ const Productpage = () => {
                         );
                       })()}
                       
-                      {/* Wishlist Button */}
                       <button
                         onClick={(e) => handleAddToWishlist(e, product)}
                         className={`absolute top-3 right-3 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-lg transition z-10 ${wishlistLoadingMap[product._id] ? 'opacity-60 cursor-wait' : 'hover:bg-orange-500 hover:text-white'}`}
@@ -726,14 +649,12 @@ const Productpage = () => {
                         <FontAwesomeIcon icon={faHeart} className={userWishlistIds.has(product._id) ? 'text-red-500' : 'text-gray-500'} />
                       </button>
 
-                      {/* Badges */}
                       {product.offer > 0 && (
                         <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-0.5 rounded text-xs font-semibold">
                           {product.offer}% Off
                         </div>
                       )}
 
-                      {/* Hover Overlay */}
                       <div className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 transition-transform duration-300
                           ${viewMode === 'grid' ? 'translate-y-full group-hover:translate-y-0' : 'group-hover:opacity-100 opacity-0'}
                       `}>
@@ -753,12 +674,10 @@ const Productpage = () => {
                       )}
                     </div>
 
-                    {/* Product Info */}
                     <div className={`p-3 sm:p-4 ${viewMode === 'list' ? 'w-full sm:w-2/3 flex flex-col justify-between' : ''}`}>
                       <h3 className="font-semibold text-gray-800 mb-1 line-clamp-2 min-h-[40px] sm:min-h-[48px] text-sm sm:text-base">{product.pname}</h3>
                       <p className="text-xs text-gray-500 mb-2">By {product.brand}</p>
 
-                      {/* Rating */}
                       <div className="flex items-center gap-1 mb-2">
                         <div className="text-xs sm:text-sm">
                             {renderStars(product.rating)}
@@ -766,13 +685,11 @@ const Productpage = () => {
                         <span className="text-xs text-gray-600 ml-1">({product.rating})</span>
                       </div>
 
-                      {/* Options Badge - Hidden on smallest screens if space is tight */}
                       <div className="inline-flex items-center gap-2 bg-gray-100 px-2 py-0.5 rounded text-[10px] sm:text-xs text-gray-600 mb-3">
                         <div className="w-2 h-2 rounded-full bg-orange-300 border border-gray-300"></div>
                         4+ Options
                       </div>
 
-                      {/* Price Section */}
                       <div className="border-t pt-2 sm:pt-3">
                         {product.offer > 0 && (
                           <span className="inline-block bg-orange-500 text-white text-[9px] sm:text-[10px] font-semibold px-2 py-0.5 rounded mb-1 sm:mb-2">Deal Price</span>
@@ -788,7 +705,6 @@ const Productpage = () => {
                             </>
                           )}
                         </div>
-                        {/* Add to Cart button visible in list view, not just on hover */}
                         {viewMode === 'list' && (
                           <button
                             onClick={(e) => handleAddToCart(e, product)}
