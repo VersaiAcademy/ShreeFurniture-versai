@@ -289,7 +289,7 @@ const CustomFurniture = () => {
             {/* Right Side - Image */}
             <div className="hidden lg:block relative">
               <img
-                src="/custom-furniture-image.jpg"
+                src="/home/CUst(450 x 990 px).png"
                 alt="Custom Furniture Design"
                 className="w-full h-full object-cover"
               />
