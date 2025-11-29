@@ -1,4 +1,4 @@
-// Header.jsx - UPDATED VERSION with proper category navigation
+// Header.jsx - UPDATED VERSION with Wooden Street style mobile header
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Search, User, ShoppingCart, Menu, X, Heart, MapPin, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -139,7 +139,7 @@ const Header = () => {
       sections: [
         {
           title: 'LIVING STORAGE',
-          items: ['TV Units', 'Temples','Book Shelves', 'Display Units', 'Shoe Racks', 'Sideboards', 'Chest of Drawers'],
+          items: ['TV Units', 'Temples','Book Shelves', 'Display Units', 'Shoe Racks', 'Sideboards', 'Chest of Drawers','Trunk Box'],
           hasDropdown: true
         },
         {
@@ -182,12 +182,12 @@ const Header = () => {
       sections: [
         {
           title: 'LIVING STORAGE',
-          items: ['TV Units', 'Book Shelves' ,'Display Units' , 'Shoe Racks' ,'Temples' ,'Magazine Racks' ,'Wooden Corner' ],
+          items: ['TV Units', 'Book Shelves' ,'Display Units' , 'Shoe Racks' ,'Temples' ,'Magazine Racks' ,'Wooden Corner','Trunk Box' ],
           hasDropdown: true
         },
         {
           title: 'BEDROOM STORAGE',
-          items: ['Chest of Drawers', 'Wooden Wardrobes' ,'Bed Side Tables' , 'Dressing ' ,'Almira'  ],
+          items: ['Chest of Drawers', 'Wooden Wardrobe' ,'Bed Side Tables' , 'Wooden Dressing Table' ,'Almira'  ],
           hasDropdown: true
         },
         {
@@ -218,7 +218,7 @@ const Header = () => {
     }
   };
 
-  // NEW: Navigate function that handles both category and subcategory clicks
+  // Navigate function that handles both category and subcategory clicks
   const navigateToSlug = (itemName, isMainCategory = false) => {
     // Close all menus
     setIsMobileMenuOpen(false);
@@ -287,8 +287,84 @@ const Header = () => {
     <>
       <header className="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Top Bar */}
-          <div className="flex items-center justify-between py-4 border-b border-gray-100">
+          {/* MOBILE HEADER - Wooden Street Style */}
+          <div className="lg:hidden flex items-center justify-between py-1">
+            {/* Left - Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2"
+              aria-label="Open menu"
+            >
+              <Menu className="h-6 w-6 text-gray-700" />
+            </button>
+
+            {/* Center - Logo */}
+            <div className="flex-1 flex justify-center" onClick={() => navigate('/')}>
+              <img 
+                src="/SFV Log 637x154 Pxl.png" 
+                alt="Sri Furniture Village" 
+                className="h-8 w-auto object-contain"
+              />
+            </div>
+
+            {/* Right - Icons */}
+            <div className="flex items-center space-x-3">
+              <button 
+                onClick={() => navigate('/wishlist')} 
+                className="p-2 relative"
+              >
+                <Heart className="h-6 w-6 text-gray-700" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
+              </button>
+              
+              <button 
+                onClick={() => navigate('/cart')}
+                className="p-2 relative"
+              >
+                <ShoppingCart className="h-6 w-6 text-gray-700" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* MOBILE SEARCH BAR - Below header */}
+          <div className="lg:hidden pb-3">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const q = (searchQuery || '').trim();
+                    if (q) navigate(`/search?search=${encodeURIComponent(q)}`);
+                  }
+                }}
+                placeholder="Search Products, Color & More..."
+                className="w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 text-sm"
+              />
+              <button
+                onClick={() => {
+                  const q = (searchQuery || '').trim();
+                  if (q) navigate(`/search?search=${encodeURIComponent(q)}`);
+                }}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              >
+                <Search className="h-5 w-5 text-gray-400" />
+              </button>
+            </div>
+          </div>
+
+          {/* DESKTOP HEADER - Original Design */}
+          <div className="hidden lg:flex items-center justify-between py-4 border-b border-gray-100">
             {/* Logo */}
             <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
               <img 
@@ -299,7 +375,7 @@ const Header = () => {
             </div>
 
             {/* Search Bar (desktop) */}
-            <div className="hidden md:flex flex-1 max-w-xl mx-8">
+            <div className="flex flex-1 max-w-xl mx-8">
               <div className="relative w-full">
                 <input
                   type="text"
@@ -326,27 +402,16 @@ const Header = () => {
               </div>
             </div>
 
-            {/* Mobile search button (opens overlay) */}
-            <div className="md:hidden mr-2">
-              <button
-                onClick={() => setSearchOpen(true)}
-                aria-label="Open search"
-                className="p-2 rounded-md bg-white/0 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
-              >
-                <Search className="h-5 w-5 text-orange-700" />
-              </button>
-            </div>
-
             {/* Right Icons */}
             <div className="flex items-center space-x-6">
-              <a href="#location" className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group">
+              <a href="#location" className="flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group">
                 <MapPin className="h-5 w-5 mb-1" />
                 <span className="text-xs font-medium">Stores</span>
               </a>
 
               <button 
                 onClick={handleProfileClick}
-                className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group p-2"
+                className="flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group p-2"
                 title={isLoggedIn ? `View ${userName}'s Profile` : "Login to view profile"}
               >
                 <User className="h-5 w-5 mb-1" />
@@ -356,7 +421,7 @@ const Header = () => {
               {isLoggedIn && (
                 <button 
                   onClick={handleLogout}
-                  className="hidden lg:flex flex-col items-center text-gray-700 hover:text-red-600 transition-colors group p-2"
+                  className="flex flex-col items-center text-gray-700 hover:text-red-600 transition-colors group p-2"
                   title="Logout"
                 >
                   <LogOut className="h-5 w-5 mb-1" />
@@ -364,7 +429,7 @@ const Header = () => {
                 </button>
               )}
 
-              <button onClick={() => navigate('/wishlist')} className="hidden lg:flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group p-2">
+              <button onClick={() => navigate('/wishlist')} className="flex flex-col items-center text-gray-700 hover:text-orange-600 transition-colors group p-2">
                 <Heart className="h-5 w-5 mb-1" />
                 <span className="text-xs font-medium">Wishlist ({wishlistCount})</span>
               </button>
@@ -381,19 +446,11 @@ const Header = () => {
                   </span>
                 )}
               </button>
-
-              <button
-                className="lg:hidden p-3"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-label="Open menu"
-              >
-                <Menu className="h-6 w-6 text-gray-700" />
-              </button>
             </div>
           </div>
 
-          {/* Navigation Bar - UPDATED */}
-          <nav className="hidden md:flex items-center justify-center space-x-1 py-3">
+          {/* Navigation Bar - Desktop Only */}
+          <nav className="hidden lg:flex items-center justify-center space-x-1 py-3">
             {categories.map((cat) => (
               <div
                 key={cat._id}
@@ -401,7 +458,6 @@ const Header = () => {
                 onMouseEnter={() => handleMouseEnter(cat.name)}
                 onMouseLeave={handleMouseLeave}
               >
-                {/* UPDATED: Main category button now passes isMainCategory=true */}
                 <button 
                   onClick={() => navigateToSlug(cat.name, true)} 
                   className={`px-4 py-2 text-sm font-medium transition-colors ${
@@ -481,38 +537,10 @@ const Header = () => {
         />
       )}
 
-      {/* Mobile Search Overlay */}
-      {searchOpen && (
-        <div className="fixed inset-0 z-50 bg-white p-4 lg:hidden">
-          <div className="flex items-center gap-2">
-            <input
-              autoFocus
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  const q = (searchQuery || '').trim();
-                  if (q) {
-                    setSearchOpen(false);
-                    navigate(`/search?search=${encodeURIComponent(q)}`);
-                  }
-                }
-              }}
-              placeholder="Search Products, Color & More..."
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-            />
-            <button onClick={() => setSearchOpen(false)} className="p-2">
-              <X className="h-6 w-6 text-gray-700" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Mobile Menu Drawer - UPDATED */}
+      {/* Mobile Menu Drawer */}
       <div
-        className={`lg:hidden fixed top-0 right-0 bottom-0 w-80 bg-white z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto shadow-2xl ${
-          isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`lg:hidden fixed top-0 left-0 bottom-0 w-80 bg-white z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto shadow-2xl ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-orange-600 to-orange-500">
@@ -523,28 +551,8 @@ const Header = () => {
         </div>
 
         <div className="p-4">
-          <div className="mb-4">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  const q = (searchQuery || '').trim();
-                  if (q) {
-                    setIsMobileMenuOpen(false);
-                    navigate(`/search?search=${encodeURIComponent(q)}`);
-                  }
-                }
-              }}
-              placeholder="Search Products..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 text-sm"
-            />
-          </div>
-
           {categories.map((cat) => (
             <div key={cat._id} className="border-b border-gray-200">
-              {/* Main Category Toggle for Mobile - UPDATED */}
               <button
                 onClick={() => {
                   if (menuData[cat.name]) {
@@ -565,10 +573,8 @@ const Header = () => {
                 )}
               </button>
 
-              {/* Mobile Submenu Container */}
               {activeMenu === cat.name && menuData[cat.name] && (
                 <div className="pb-4 space-y-4">
-                  {/* "View All" button for mobile */}
                   <div className="pl-4 mb-2">
                     <button
                       onClick={() => navigateToSlug(cat.name, true)}
@@ -580,7 +586,6 @@ const Header = () => {
 
                   {menuData[cat.name].sections.map((section, idx) => (
                     <div key={idx} className="pl-4">
-                      {/* Submenu Section Toggle */}
                       <button
                         onClick={() => toggleMobileSubmenu(cat.name, section.title)}
                         className="flex items-center justify-between w-full text-xs font-bold text-orange-600 uppercase tracking-wider mb-2"
@@ -593,7 +598,6 @@ const Header = () => {
                         />
                       </button>
                       
-                      {/* Submenu Items */}
                       {activeMobileSubmenu[`${cat.name}-${section.title}`] && (
                         <ul className="space-y-2 pl-3">
                           {section.items.map((item, itemIdx) => (

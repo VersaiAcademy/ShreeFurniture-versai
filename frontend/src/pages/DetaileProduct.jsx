@@ -816,37 +816,51 @@ const DetailProduct = () => {
               </div>
 
               {/* Special Offers */}
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-                <h3 className="text-lg font-semibold text-orange-700 mb-3">
-                  Special Offers
-                </h3>
-                <ul className="space-y-2 text-sm text-gray-700">
-                  <li className="flex gap-2">
-                    <span className="text-green-600 font-bold">›</span>
-                    <span>
-                      <span className="font-semibold">Valentine Day Sale</span> - Apply
-                      Coupon LOVEIT10 & Get Up to 20% Off{' '}
-                      <span className="text-blue-600 cursor-pointer underline">T&C</span>
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-green-600 font-bold">›</span>
-                    <span>
-                      <span className="font-semibold">Store Discount</span> - Get up to
-                      10% off{' '}
-                      <span className="text-blue-600 cursor-pointer underline">T&C</span>
-                    </span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-green-600 font-bold">›</span>
-                    <span>
-                      <span className="font-semibold">No Cost EMI</span> - Available on
-                      Net Cart Value of ₹39,990+{' '}
-                      <span className="text-blue-600 cursor-pointer underline">T&C</span>
-                    </span>
-                  </li>
-                </ul>
-              </div>
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+        <h3 className="text-lg font-semibold text-orange-700 mb-3">
+          Special Offers
+        </h3>
+        <ul className="space-y-2 text-sm text-gray-700">
+
+          {/* New User Discount */}
+          <li className="flex gap-2">
+            <span className="text-green-600 font-bold">›</span>
+            <span>
+              <span className="font-semibold">New User Discount</span> – Get Flat 10% OFF on Your First Order{' '}
+              <span className="text-blue-600 cursor-pointer underline">T&C</span>
+            </span>
+          </li>
+
+          {/* Festive Offer */}
+          <li className="flex gap-2">
+            <span className="text-green-600 font-bold">›</span>
+            <span>
+              <span className="font-semibold">Festive Season Offer</span> – Save Up to 20% on Selected Furniture{' '}
+              <span className="text-blue-600 cursor-pointer underline">T&C</span>
+            </span>
+          </li>
+
+          {/* Store Discount */}
+          <li className="flex gap-2">
+            <span className="text-green-600 font-bold">›</span>
+            <span>
+              <span className="font-semibold">Store Discount</span> – Get Up to 10% OFF on All Orders{' '}
+              <span className="text-blue-600 cursor-pointer underline">T&C</span>
+            </span>
+          </li>
+
+          {/* Finance Offer */}
+          <li className="flex gap-2">
+            <span className="text-green-600 font-bold">›</span>
+            <span>
+              <span className="font-semibold">No Cost EMI</span> – Available on Net Cart Value of ₹39,990+{' '}
+              <span className="text-blue-600 cursor-pointer underline">T&C</span>
+            </span>
+          </li>
+
+        </ul>
+      </div>
+
             </div>
 
         

@@ -6,7 +6,7 @@ const ProductCategoryGrid = () => {
     [
       { name: 'Beds', image: '/product/1.png', route: '/bedroom' },
       { name: 'Sofas', image: '/product/2.png', route: '/311-sofa-sets' }, 
-      { name: 'Dining', image: '/product/3.png', route: '/dining-tables' },
+      { name: 'Dining', image: '/product/3.png', route: '/4-seater-dining-sets' },
       { name: 'Study Table', image: '/product/4.png', route: '/study-tables' },
       { name: 'Temple', image: '/product/5.png', route: '/temples' },
     ],
