@@ -588,7 +588,7 @@ const DetailProduct = () => {
               <div className="mt-6">
   <div className="bg-gray-200 rounded-lg overflow-hidden">
     <img
-      src="/Sri/2624x308 Pixle.jpg"
+      src="/Sri/2624x308 Pixle (1).png"
       alt="Discount Banner"
       className="w-full h-auto object-contain"
     />
