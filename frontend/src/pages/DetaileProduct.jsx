@@ -586,14 +586,15 @@ const DetailProduct = () => {
 
               {/* BANNER SECTION */}
               <div className="mt-6">
-                <div className="bg-gray-200 h-24 rounded-lg flex items-center justify-center overflow-hidden">
-                  <img 
-                    src="/Sri/2624x308 Pixle.jpg" 
-                    alt="Discount Banner" 
-                    className="w-full h-full object-cover" 
-                  />
-                </div>
-              </div>
+  <div className="bg-gray-200 rounded-lg overflow-hidden">
+    <img
+      src="/Sri/2624x308 Pixle.jpg"
+      alt="Discount Banner"
+      className="w-full h-auto object-contain"
+    />
+  </div>
+</div>
+
             </div>
           </div>
 
