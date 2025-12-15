@@ -238,7 +238,11 @@ const Homepage = () => {
           </div>
 
           {/* Right: Top and Bottom Small Banners - Takes 4 columns on desktop */}
+<<<<<<< HEAD
           <div className="col-span-4 grid grid-cols-1 gap-6">
+=======
+         <div className="hidden sm:grid lg:col-span-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-2 md:gap-3 lg:gap-2">
+>>>>>>> b57bd2095c2ecabbd533a98515728c89cca2d023
             
             {/* Top Small Banner */}
             <div className="relative w-full h-[257px] xl:h-[267px] rounded-xl overflow-hidden shadow-xl group">

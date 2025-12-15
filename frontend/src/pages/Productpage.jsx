@@ -506,6 +506,32 @@ const Productpage = () => {
     </>
   );
 
+  const getCategoryTitle = () => {
+  if (!slug) return "";
+
+  // Special case: show 3-1-1 instead of 311
+  if (slug === "311-sofa-sets") {
+    return "3-1-1 Sofa Sets";
+  }
+
+  // If we have a pretty name in the map, use it
+  if (SLUG_TO_NAME[slug]) {
+    return SLUG_TO_NAME[slug];
+  }
+
+  // If it's a main category, format it nicely
+  if (MAIN_CATEGORY_MAP[slug]) {
+    return slug
+      .split("-")
+      .map((w) => (w[0] ? w[0].toUpperCase() + w.slice(1) : ""))
+      .join(" ");
+  }
+
+  // Fallback
+  return formatCategoryName(slug);
+};
+
+  
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-[1400px] mx-auto px-2 sm:px-4 py-3 sm:py-6">
@@ -553,9 +579,10 @@ const Productpage = () => {
           <div className="flex-1">
             <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
               <div className="flex items-center justify-between">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
-                  {(MAIN_CATEGORY_MAP[slug] ? slug.split('-').map(w => w[0]?.toUpperCase()+w.slice(1)).join(' ') : formatCategoryName(slug))}
-                </h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
+  {getCategoryTitle()}
+</h1>
+
               </div>
               {MAIN_CATEGORY_MAP[slug] && MAIN_CATEGORY_MAP[slug].length > 0 && (
                 <>
