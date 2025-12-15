@@ -2,96 +2,172 @@ import React, { useState, useEffect } from 'react';
 
 const Homepage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Main carousel banners (4-5 images)
-  const mainBanners = [
+  // All images combined for mobile slider
+  const allImages = [
     {
       id: 1,
       imageUrl: "/home/Home Page Banner 1440x879 (1).png",
-      title: "Relax in Premium quality",
-      subtitle: "Lounge Chair",
-      offer: "UPTO 50% OFF",
-      description: "on all chairs",
-      buttonText: "BUY NOW",
-      bgColor: "from-amber-700/80 to-amber-900/80"
+      title: "Relax in Premium quality"
     },
     {
       id: 2,
       imageUrl: "/home/Home Page Banner 1440x879 (2).png",
-      title: "Modern Bedroom Collection",
-      subtitle: "Luxury Beds",
-      offer: "₹5000 OFF",
-      description: "Premium Quality",
-      buttonText: "SHOP NOW",
-      bgColor: "from-gray-800/80 to-gray-900/80"
+      title: "Modern Bedroom Collection"
     },
     {
       id: 3,
       imageUrl: "/home/Home Page Banner 1440x879.png",
-      title: "Comfort Redefined",
-      subtitle: "Sofa Collection",
-      offer: "UPTO 40% OFF",
-      description: "Exclusive Designs",
-      buttonText: "EXPLORE",
-      bgColor: "from-blue-800/80 to-blue-900/80"
+      title: "Comfort Redefined"
     },
     {
       id: 4,
       imageUrl: "/Sri/IMG_5693.jpeg",
-      title: "Family Time Essentials",
-      subtitle: "Dining Sets",
-      offer: "UPTO 35% OFF",
-      description: "Premium Wood Finish",
-      buttonText: "VIEW MORE",
-      bgColor: "from-green-800/80 to-green-900/80"
+      title: "Family Time Essentials"
+    },
+    {
+      id: 5,
+      imageUrl: "/india/Header web banner png Tv.png",
+      title: "Special Deal"
+    },
+    {
+      id: 6,
+      imageUrl: "/india/Header web banner Chest of Drawer.png",
+      title: "Promotional Banner"
     }
   ];
 
+  // Main carousel banners for desktop (first 4 images)
+  const mainBanners = allImages.slice(0, 4);
+
   // Top small banner
-  const topSmallBanner = {
-    id: 5,
-    imageUrl: "/home/Header Web Baneer (1) (1).png",
-    tag: "",
-    subtitle: "",
-    tagColor: ""
-  };
+  const topSmallBanner = allImages[4];
 
   // Bottom small banner
-  const bottomSmallBanner = {
-    id: 6,
-    imageUrl: "/home/Header Web Baneer Jpeg (1).jpg",
-    tag: "",
-    tagColor: ""
-  };
+  const bottomSmallBanner = allImages[5];
+
+  // Detect mobile view
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Auto-slide effect
   useEffect(() => {
+    const slideCount = isMobile ? allImages.length : mainBanners.length;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % mainBanners.length);
+      setCurrentSlide((prev) => (prev + 1) % slideCount);
     }, 5000);
     return () => clearInterval(timer);
-  }, [mainBanners.length]);
+  }, [isMobile, allImages.length, mainBanners.length]);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % mainBanners.length);
+    const slideCount = isMobile ? allImages.length : mainBanners.length;
+    setCurrentSlide((prev) => (prev + 1) % slideCount);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + mainBanners.length) % mainBanners.length);
+    const slideCount = isMobile ? allImages.length : mainBanners.length;
+    setCurrentSlide((prev) => (prev - 1 + slideCount) % slideCount);
   };
 
   const goToSlide = (index) => {
     setCurrentSlide(index);
   };
 
+  // Mobile Single Slider View
+  if (isMobile) {
+    return (
+      <div className="w-full px-3 sm:px-4 py-3 sm:py-4">
+        <div className="max-w-[1600px] mx-auto">
+          <div className="relative w-full h-[280px] xs:h-[320px] sm:h-[380px] md:h-[450px] rounded-xl overflow-hidden bg-gray-100 shadow-xl group">
+            
+            {/* All Images in Single Slider */}
+            <div className="relative w-full h-full">
+              {allImages.map((banner, index) => (
+                <div
+                  key={banner.id}
+                  className={`absolute inset-0 transition-opacity duration-700 ${
+                    index === currentSlide ? "opacity-100" : "opacity-0"
+                  }`}
+                >
+                  <img
+                    src={banner.imageUrl}
+                    alt={banner.title}
+                    className="w-full h-full object-cover object-center"
+                    style={{
+                      imageRendering: '-webkit-optimize-contrast',
+                      WebkitBackfaceVisibility: 'hidden',
+                      backfaceVisibility: 'hidden',
+                      transform: 'translateZ(0)',
+                      willChange: 'opacity'
+                    }}
+                    onError={(e) => {
+                      e.target.src = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&h=800&fit=crop';
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Previous Button */}
+            <button
+              onClick={prevSlide}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 bg-white/90 hover:bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all z-10 shadow-lg active:scale-95"
+              aria-label="Previous slide"
+            >
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+
+            {/* Next Button */}
+            <button
+              onClick={nextSlide}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 bg-white/90 hover:bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all z-10 shadow-lg active:scale-95"
+              aria-label="Next slide"
+            >
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
+            {/* Dots Indicator - All 6 dots */}
+            <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 z-10">
+              {allImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`h-2 sm:h-2.5 rounded-full transition-all ${
+                    index === currentSlide
+                      ? "bg-white w-7 sm:w-8"
+                      : "bg-white/60 hover:bg-white/90 w-2 sm:w-2.5"
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop Layout (Original 3-column design)
   return (
     <div className="w-full px-3 sm:px-4 md:px-2 lg:px-4 py-3 sm:py-4 md:py-4">
       <div className="max-w-[1600px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
+        <div className="grid grid-cols-12 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
           
           {/* Left: Main Carousel Banner - Takes 8 columns on desktop */}
-          <div className="lg:col-span-8">
-            <div className="relative w-full h-[200px] xs:h-[240px] sm:h-[300px] md:h-[420px] lg:h-[480px] xl:h-[540px] rounded-xl overflow-hidden bg-gray-100 shadow-xl group">
+          <div className="col-span-8">
+            <div className="relative w-full h-[480px] xl:h-[540px] rounded-xl overflow-hidden bg-gray-100 shadow-xl group">
               
               {/* Carousel Images */}
               <div className="relative w-full h-full">
@@ -106,6 +182,13 @@ const Homepage = () => {
                       src={banner.imageUrl}
                       alt={banner.title}
                       className="w-full h-full object-cover object-center"
+                      style={{
+                        imageRendering: '-webkit-optimize-contrast',
+                        WebkitBackfaceVisibility: 'hidden',
+                        backfaceVisibility: 'hidden',
+                        transform: 'translateZ(0)',
+                        willChange: 'opacity'
+                      }}
                       onError={(e) => {
                         e.target.src = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&h=800&fit=crop';
                       }}
@@ -117,10 +200,10 @@ const Homepage = () => {
               {/* Previous Button */}
               <button
                 onClick={prevSlide}
-                className="absolute left-1 sm:left-2 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10 shadow-lg"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10 shadow-lg"
                 aria-label="Previous slide"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
@@ -128,24 +211,24 @@ const Homepage = () => {
               {/* Next Button */}
               <button
                 onClick={nextSlide}
-                className="absolute right-1 sm:right-2 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10 shadow-lg"
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 hover:bg-white backdrop-blur-sm rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10 shadow-lg"
                 aria-label="Next slide"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
 
               {/* Dots Indicator */}
-              <div className="absolute bottom-2 sm:bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 md:gap-2.5 z-10">
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5 z-10">
                 {mainBanners.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => goToSlide(index)}
-                    className={`h-1.5 sm:h-2 md:h-2.5 rounded-full transition-all ${
+                    className={`h-2.5 rounded-full transition-all ${
                       index === currentSlide
-                        ? "bg-white w-6 sm:w-8 md:w-10"
-                        : "bg-white/60 hover:bg-white/90 w-1.5 sm:w-2 md:w-2.5"
+                        ? "bg-white w-10"
+                        : "bg-white/60 hover:bg-white/90 w-2.5"
                     }`}
                     aria-label={`Go to slide ${index + 1}`}
                   />
@@ -155,47 +238,42 @@ const Homepage = () => {
           </div>
 
           {/* Right: Top and Bottom Small Banners - Takes 4 columns on desktop */}
-          <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-2 md:gap-3 lg:gap-2">
+          <div className="col-span-4 grid grid-cols-1 gap-6">
             
             {/* Top Small Banner */}
-            <div className="relative w-full h-[150px] xs:h-[180px] sm:h-[200px] md:h-[240px] lg:h-[237px] xl:h-[267px] rounded-xl overflow-hidden shadow-xl group">
+            <div className="relative w-full h-[257px] xl:h-[267px] rounded-xl overflow-hidden shadow-xl group">
               <img
                 src={topSmallBanner.imageUrl}
-                alt="Special Deal Banner"
-                className="w-full h-full object-cover object-center transition-transform duration-500"
+                alt={topSmallBanner.title}
+                className="w-full h-full object-cover object-center"
+                style={{
+                  imageRendering: '-webkit-optimize-contrast',
+                  WebkitBackfaceVisibility: 'hidden',
+                  backfaceVisibility: 'hidden',
+                  transform: 'translateZ(0)'
+                }}
                 onError={(e) => {
                   e.target.src = 'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=800&h=600&fit=crop';
                 }}
               />
-              {/* Optional overlay with text */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute bottom-4 left-4 right-4">
-                  <span className="inline-block px-3 py-1 bg-orange-500 text-white text-xs font-bold rounded-full mb-2">
-                    {topSmallBanner.tag}
-                  </span>
-                  <p className="text-white text-sm font-semibold">{topSmallBanner.subtitle}</p>
-                </div>
-              </div>
             </div>
 
             {/* Bottom Small Banner */}
-            <div className="relative w-full h-[150px] xs:h-[180px] sm:h-[200px] md:h-[240px] lg:h-[237px] xl:h-[267px] rounded-xl overflow-hidden shadow-xl group">
+            <div className="relative w-full h-[257px] xl:h-[267px] rounded-xl overflow-hidden shadow-xl group">
               <img
                 src={bottomSmallBanner.imageUrl}
-                alt=""
-                className="w-full h-full object-cover object-center transition-transform duration-500"
+                alt={bottomSmallBanner.title}
+                className="w-full h-full object-cover object-center"
+                style={{
+                  imageRendering: '-webkit-optimize-contrast',
+                  WebkitBackfaceVisibility: 'hidden',
+                  backfaceVisibility: 'hidden',
+                  transform: 'translateZ(0)'
+                }}
                 onError={(e) => {
                   e.target.src = 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=800&h=600&fit=crop';
                 }}
               />
-              {/* Optional overlay with text */}
-              <div className="absolute inset-0 opacity-0 duration-300">
-                <div className="absolute bottom-4 left-4 right-4">
-                  <span className="inline-block px-3 py-1 text-white text-xs font-bold rounded-full">
-                    {bottomSmallBanner.tag}
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
 

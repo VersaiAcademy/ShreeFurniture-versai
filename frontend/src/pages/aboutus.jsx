@@ -76,7 +76,7 @@ export default function AboutUs() {
     },
     { 
       name: 'Mr. Ranveer Jangid', 
-      role: 'Co-Manager', 
+      role: 'Co-Founder', 
       image: '/home/Ranveer .png'
     }
   ];
