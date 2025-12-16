@@ -361,10 +361,10 @@ const Cart = () => {
                           <span className="text-gray-600">OFFER</span>
                           <span className="text-green-600 font-medium">{averageOfferPercent || 0}%</span>
                         </div>
-                        <div className="flex justify-between text-sm sm:text-base">
+                        {/* <div className="flex justify-between text-sm sm:text-base">
                           <span className="text-gray-600">Today Deal</span>
                           <span className="text-green-600 font-medium">₹{todaysDeal.toLocaleString('en-IN')}</span>
-                        </div>
+                        </div> */}
                         <div className="flex justify-between text-base sm:text-lg font-semibold pt-3 border-t border-gray-200">
                           <span>Total Payable</span>
                           <span className="text-orange-500">
