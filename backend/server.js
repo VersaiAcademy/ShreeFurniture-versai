@@ -157,9 +157,12 @@ mongoose
       console.log('SIGTERM received — shutting down gracefully');
       server.close(() => {
         console.log('HTTP server closed');
-        mongoose.connection.close(false, () => {
+        mongoose.connection.close().then(() => {
           console.log('Mongo connection closed');
           process.exit(0);
+        }).catch((err) => {
+          console.error('Error closing MongoDB connection:', err);
+          process.exit(1);
         });
       });
     };
