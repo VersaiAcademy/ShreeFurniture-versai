@@ -249,8 +249,7 @@ const Checkout = () => {
       // Handle COD
       if (paymentMethod === 'cod') {
         if (!address) {
-          toast.error('Please add delivery address first');
-          navigate('/address/0/0/0');
+          toast.error('Please add delivery address first. Click "Continue to Address" to proceed.');
           return;
         }
 
@@ -274,8 +273,7 @@ const Checkout = () => {
 
       // Online payment - Cashfree
       if (!address) {
-        toast.error('Please add delivery address first');
-        navigate('/address/0/0/0');
+        toast.error('Please add delivery address first. Click "Continue to Address" to proceed.');
         return;
       }
 
@@ -491,7 +489,7 @@ const Checkout = () => {
                 <h2 className="text-xl font-semibold">Delivery Address</h2>
                 {!address && (
                   <button
-                    onClick={() => navigate('/address/0/0/0')}
+                    onClick={() => navigate(`/address/${couponDiscount}/${totalAmount}/${0}`)}
                     className="text-orange-500 hover:text-orange-600 text-sm"
                   >
                     + Add Address
@@ -505,7 +503,7 @@ const Checkout = () => {
                   <p>{address.city}, {address.state} - {address.postalcode}</p>
                   <p className="text-sm text-gray-500 mt-2">Landmark: {address.landmark}</p>
                   <button
-                    onClick={() => navigate('/address/0/0/0')}
+                    onClick={() => navigate(`/address/${couponDiscount}/${totalAmount}/${0}`)}
                     className="text-orange-500 text-sm mt-2"
                   >
                     Change Address
@@ -515,7 +513,7 @@ const Checkout = () => {
                 <div className="text-center py-4 text-gray-500">
                   <p>No address added</p>
                   <button
-                    onClick={() => navigate('/address/0/0/0')}
+                    onClick={() => navigate(`/address/${couponDiscount}/${totalAmount}/${0}`)}
                     className="mt-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
                   >
                     Add Address
@@ -625,6 +623,15 @@ const Checkout = () => {
                   <span className="text-orange-500">₹{totalAmount.toLocaleString()}</span>
                 </div>
               </div>
+
+              {/* Continue to Address Button */}
+              <button
+                onClick={() => navigate(`/address/${couponDiscount}/${totalAmount}/${0}`)}
+                disabled={cartItems.length === 0}
+                className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-all mb-3"
+              >
+                Continue to Address
+              </button>
 
               {/* Pay Now Button */}
               <button
