@@ -90,13 +90,13 @@ const Cart = () => {
     return tprice + price * qty;
   }, 0);
 
-  const todaysDeal = 2000;
+  // const todaysDeal = 000;
 
-  const states = {
-    totaloffer: totalOffers,
-    totalprice: totalPrice,
-    todaydeal: todaysDeal,
-  };
+  // const states = {
+  //   totaloffer: totalOffers,
+  //   totalprice: totalPrice,
+  //   todaydeal: todaysDeal,
+  // };
 
   const removeCartItems = async (id) => {
     try {
@@ -368,7 +368,7 @@ const Cart = () => {
                         <div className="flex justify-between text-base sm:text-lg font-semibold pt-3 border-t border-gray-200">
                           <span>Total Payable</span>
                           <span className="text-orange-500">
-                            ₹{((totalPrice || 0) - (todaysDeal || 0)).toLocaleString('en-IN')}
+                            ₹{((totalPrice || 0)).toLocaleString('en-IN')}
                           </span>
                         </div>
                       </div>
