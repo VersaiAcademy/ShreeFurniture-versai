@@ -827,7 +827,7 @@ const DetailProduct = () => {
           <li className="flex gap-2">
             <span className="text-green-600 font-bold">›</span>
             <span>
-              <span className="font-semibold">New User Discount</span> – Get Flat 10% OFF on Your First Order{' '}
+              <span className="font-semibold">New User Discount</span> – Get Up to 10% OFF on Your First Order{' '}
               <span className="text-blue-600 cursor-pointer underline">T&C</span>
             </span>
           </li>
@@ -853,7 +853,7 @@ const DetailProduct = () => {
           {/* Finance Offer */}
           <li className="flex gap-2">
             <span className="text-green-600 font-bold">›</span>
-            <span>
+            <span> 
               <span className="font-semibold">No Cost EMI</span> – Available on Net Cart Value of ₹39,990+{' '}
               <span className="text-blue-600 cursor-pointer underline">T&C</span>
             </span>
