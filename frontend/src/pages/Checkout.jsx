@@ -13,6 +13,12 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState('online');
   const [address, setAddress] = useState(null);
   const [addressLoading, setAddressLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  const [lastError, setLastError] = useState(null);
+  const [couponCode, setCouponCode] = useState('');
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponError, setCouponError] = useState('');
   const [updatingItems, setUpdatingItems] = useState({});
 
   useEffect(() => {
@@ -79,24 +85,54 @@ const Checkout = () => {
   };
 
   const calculateTotal = (items) => {
-    const total = items.reduce((sum, item) => {
+    const subtotal = items.reduce((sum, item) => {
       const price = item.price || (item.product?.price || 0);
       const qty = item.qty || 1;
       return sum + (price * qty);
     }, 0);
+    const total = subtotal - couponDiscount;
     setTotalAmount(total);
   };
 
   const loadAddress = async () => {
     try {
-      setAddressLoading(true);
       const response = await API.get('/api/address');
-      setAddress(response.data);
+      setAddress(response.data || null);
     } catch (error) {
+      console.error('Failed to load address:', error);
       setAddress(null);
     } finally {
       setAddressLoading(false);
     }
+  };
+
+  const applyCoupon = () => {
+    const code = couponCode.trim().toUpperCase();
+    if (code === 'SRIFURNITURE10') {
+      const discount = Math.round(totalAmount * 0.1); // 10% discount
+      setCouponDiscount(discount);
+      setCouponApplied(true);
+      setCouponError('');
+      toast.success('Coupon applied successfully! 10% discount added.');
+    } else {
+      setCouponError('Invalid coupon code');
+      setCouponDiscount(0);
+      setCouponApplied(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setCouponCode('');
+    setCouponDiscount(0);
+    setCouponApplied(false);
+    setCouponError('');
+    toast.info('Coupon removed');
+  };
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+    setLastError(null);
+    handlePayment();
   };
 
   // Update quantity
@@ -342,6 +378,7 @@ const Checkout = () => {
       }
     } catch (error) {
       console.error('❌ Payment error:', error);
+      setLastError(error);
       const message =
         error?.response?.data?.message ||
         error?.response?.data?.error ||
@@ -524,12 +561,61 @@ const Checkout = () => {
                 </label>
               </div>
 
+              {/* Coupon Section */}
+              <div className="border-t pt-4 mb-6">
+                <h3 className="text-lg font-semibold mb-3">Have a Coupon?</h3>
+                {!couponApplied ? (
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                        placeholder="Enter coupon code"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      />
+                      <button
+                        onClick={applyCoupon}
+                        disabled={!couponCode.trim()}
+                        className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                    {couponError && (
+                      <p className="text-red-500 text-sm">{couponError}</p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-semibold text-green-800">SRIFURNITURE10</p>
+                        <p className="text-sm text-green-600">10% discount applied</p>
+                      </div>
+                      <button
+                        onClick={removeCoupon}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Price Summary */}
               <div className="border-t pt-4 mb-6">
                 <div className="flex justify-between mb-2">
                   <span>Subtotal</span>
-                  <span className="font-semibold">₹{totalAmount.toLocaleString()}</span>
+                  <span className="font-semibold">₹{(totalAmount + couponDiscount).toLocaleString()}</span>
                 </div>
+                {couponApplied && (
+                  <div className="flex justify-between mb-2 text-green-600">
+                    <span>Coupon Discount (10%)</span>
+                    <span>-₹{couponDiscount.toLocaleString()}</span>
+                  </div>
+                )}
                 <div className="flex justify-between mb-2">
                   <span>Shipping</span>
                   <span className="text-green-600">Free</span>
@@ -558,6 +644,16 @@ const Checkout = () => {
                   </>
                 )}
               </button>
+
+              {lastError && retryCount < 3 && (
+                <button
+                  onClick={handleRetry}
+                  disabled={loading}
+                  className="w-full mt-3 bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg transition-all text-sm"
+                >
+                  Try Again ({retryCount}/3)
+                </button>
+              )}
 
               {paymentMethod === 'online' && (
                 <p className="text-xs text-gray-500 text-center mt-4">

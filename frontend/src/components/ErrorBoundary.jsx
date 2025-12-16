@@ -19,7 +19,7 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       // In development show details to help debugging. In production keep generic message.
-      if (process.env.NODE_ENV !== 'production') {
+      if (import.meta.env.DEV) {
         return (
           <div style={{ padding: 20 }}>
             <h2>Something went wrong. Please refresh.</h2>

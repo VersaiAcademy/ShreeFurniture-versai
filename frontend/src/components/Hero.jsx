@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Homepage = () => {
+const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -283,4 +283,4 @@ const Homepage = () => {
   );
 };
 
-export default Homepage;
+export default Hero;

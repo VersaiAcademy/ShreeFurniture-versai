@@ -8,6 +8,7 @@ import Hero from "../components/Hero";
 import RecommendedProducts from "../components/RecommendedProducts";
 
 const Homepage = () => {
+  console.log('🏠 Homepage component rendering...');
 
   return (
     <div className="min-h-screen">

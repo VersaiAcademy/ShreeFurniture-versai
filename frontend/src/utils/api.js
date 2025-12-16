@@ -1,47 +1,83 @@
 import axios from 'axios';
+import { API_CONFIG, API_ENDPOINTS, STORAGE_KEYS, isDevelopment } from './constants.js';
 
 // ✅ Get API base URL from environment
 // Priority: VITE_API_BASE_URL > VITE_API_URL > Production URL > localhost
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL 
-  || import.meta.env.VITE_API_URL 
-  || 'https://shreefurniture-backend-production.up.railway.app';
+const API_BASE_URL = API_CONFIG.BASE_URL;
+
+// Add fallback for development
+const fallbackUrl = isDevelopment ? API_CONFIG.DEV_FALLBACK_URL : API_BASE_URL;
+
+// ✅ Create axios instance with base configuration
+const API = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: API_CONFIG.DEFAULT_TIMEOUT,
+  headers: API_CONFIG.DEFAULT_HEADERS,
+});
 
 console.log('🌐 API Base URL:', API_BASE_URL);
 console.log('🌐 Environment check:', {
   VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
   VITE_API_URL: import.meta.env.VITE_API_URL,
-  using: API_BASE_URL
+  isDevelopment,
+  using: API_BASE_URL,
+  fallback: fallbackUrl
 });
 
-// ✅ Create axios instance with default config
-const API = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30000, // 30 seconds
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// ✅ Health check function to test API connectivity
+export const checkApiHealth = async (url = API_BASE_URL) => {
+  try {
+    const response = await axios.get(`${url}${API_ENDPOINTS.HEALTH}`, {
+      timeout: API_CONFIG.HEALTH_CHECK_TIMEOUT
+    });
+    return response.status === 200;
+  } catch (error) {
+    console.warn(`Health check failed for ${url}:`, error.message);
+    return false;
+  }
+};
+
+// ✅ Auto-switch to fallback URL if primary fails
+let apiHealthChecked = false;
+const performHealthCheck = async () => {
+  if (apiHealthChecked) return;
+
+  apiHealthChecked = true;
+
+  const primaryHealthy = await checkApiHealth(API_BASE_URL);
+  if (!primaryHealthy && isDevelopment) {
+    console.warn('⚠️ Primary API URL unhealthy, trying fallback...');
+    const fallbackHealthy = await checkApiHealth(fallbackUrl);
+    if (fallbackHealthy) {
+      console.log('✅ Switching to fallback API URL:', fallbackUrl);
+      API.defaults.baseURL = fallbackUrl;
+    }
+  }
+};
 
 // ✅ Request interceptor - Add auth token automatically
 API.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    // Perform health check on first request
+    await performHealthCheck();
+
     // Get token from localStorage (try both user and admin tokens)
-    const userToken = localStorage.getItem('token');
-    const adminToken = localStorage.getItem('adminToken');
-    
+    const userToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const adminToken = localStorage.getItem(STORAGE_KEYS.ADMIN_TOKEN);
+
     // Use admin token if available, otherwise user token
     const token = adminToken || userToken;
-    
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     // Log request for debugging
     console.log(`📤 ${config.method.toUpperCase()} ${config.url}`, {
       params: config.params,
       data: config.data
     });
-    
+
     return config;
   },
   (error) => {
@@ -111,8 +147,8 @@ API.interceptors.response.use(
           window.location.href = `/login?next=${encodeURIComponent(nextPath)}`;
         }
         
-        localStorage.removeItem('token');
-        localStorage.removeItem('adminToken');
+        localStorage.removeItem(STORAGE_KEYS.TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.ADMIN_TOKEN);
       }
       
       // 403 Forbidden - Insufficient permissions
@@ -142,12 +178,18 @@ API.interceptors.response.use(
         code: error.code
       });
       
-      // Show user-friendly error message
+      // Show user-friendly error message (NEVER show technical details to users)
       const errorMsg = error.code === 'ERR_NETWORK' || error.message === 'Network Error'
-        ? 'Cannot connect to server. Please check:\n1. Backend server is running\n2. Backend URL is correct\n3. No firewall blocking connection'
-        : message;
+        ? 'Unable to load data. Please check your internet connection and try again.'
+        : 'Something went wrong. Please try again.';
       
-      alert(errorMsg);
+      // Use toast instead of alert for better UX
+      import('react-toastify').then(({ toast }) => {
+        toast.error(errorMsg);
+      }).catch(() => {
+        // Fallback if toast is not available
+        console.error('Error displaying user-friendly message:', errorMsg);
+      });
     } else {
       // Something else happened
       console.error('⚠️ Error:', message);
@@ -200,7 +242,7 @@ export const getCategories = () => {
  * @returns {Promise} - Axios response
  */
 export const login = (credentials) => {
-  return API.post('/api/auth/login', credentials);
+  return API.post(API_ENDPOINTS.LOGIN, credentials);
 };
 
 /**
@@ -258,6 +300,57 @@ export const removeFromCart = (id) => {
 };
 
 export const submitPublicOrder = (payload) => API.post('/api/order/create', payload);
+
+// ✅ Safe API call wrapper to prevent app crashes
+export const safeApiCall = async (apiCall, fallbackValue = null) => {
+  try {
+    return await apiCall();
+  } catch (error) {
+    console.error('🚨 Safe API call failed:', error);
+
+    // Don't crash the app - return fallback value
+    if (import.meta.env.DEV) {
+      console.warn('🔄 Returning fallback value due to API error');
+    }
+
+    return fallbackValue;
+  }
+};
+
+// ✅ Safe API call with toast notification
+export const safeApiCallWithToast = async (apiCall, options = {}) => {
+  const {
+    successMessage,
+    errorMessage = 'Something went wrong. Please try again.',
+    showSuccessToast = false,
+    showErrorToast = true
+  } = options;
+
+  try {
+    const result = await apiCall();
+
+    if (showSuccessToast && successMessage) {
+      // Import toast dynamically to avoid circular dependency
+      import('react-toastify').then(({ toast }) => {
+        toast.success(successMessage);
+      });
+    }
+
+    return result;
+  } catch (error) {
+    console.error('🚨 API call with toast failed:', error);
+
+    if (showErrorToast) {
+      // Import toast dynamically to avoid circular dependency
+      import('react-toastify').then(({ toast }) => {
+        const message = error?.response?.data?.message || errorMessage;
+        toast.error(message);
+      });
+    }
+
+    throw error; // Re-throw so calling code can handle it
+  }
+};
 
 // Default export
 export default API;
