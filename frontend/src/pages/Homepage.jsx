@@ -36,7 +36,7 @@ const Homepage = () => {
           <div className="relative w-full rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
             <img
               className="w-full h-auto object-cover rounded-lg" 
-              src="/india/2624x308 Pixle (1).png" 
+              src="/images/2624x308 Pixle (3).png" 
               alt="Featured Collection Banner" 
               loading="lazy"
             />
