@@ -203,7 +203,7 @@ const Homepage = () => {
   <div className="flex flex-col lg:flex-row mb-10 gap-4 lg:gap-6">
     <div className="pt-0 lg:pt-10 cursor-pointer flex-1" onClick={() => window.location.href = '/dining-kitchen'}>
       <img
-        src="/dining/Web Dining table Sets.jpg"
+        src="/dining/Living Room.png"
         alt="Dining Table Sets"
         className="w-full h-auto object-cover rounded-lg shadow-md hover:shadow-xl transition-shadow"
       />

@@ -828,7 +828,7 @@ const DetailProduct = () => {
             <span className="text-green-600 font-bold">›</span>
             <span>
               <span className="font-semibold">New User Discount</span> – Get Up to 10% OFF on Your First Order{' '}
-              <span className="text-blue-600 cursor-pointer underline">T&C</span>
+              {/* <span className="text-blue-600 cursor-pointer underline">T&C</span> */}
             </span>
           </li>
 
@@ -837,7 +837,7 @@ const DetailProduct = () => {
             <span className="text-green-600 font-bold">›</span>
             <span>
               <span className="font-semibold">Festive Season Offer</span> – Save Up to 20% on Selected Furniture{' '}
-              <span className="text-blue-600 cursor-pointer underline">T&C</span>
+              {/* <span className="text-blue-600 cursor-pointer underline">T&C</span> */}
             </span>
           </li>
 
@@ -846,7 +846,7 @@ const DetailProduct = () => {
             <span className="text-green-600 font-bold">›</span>
             <span>
               <span className="font-semibold">Store Discount</span> – Get Up to 10% OFF on All Orders{' '}
-              <span className="text-blue-600 cursor-pointer underline">T&C</span>
+              {/* <span className="text-blue-600 cursor-pointer underline">T&C</span> */}
             </span>
           </li>
 
