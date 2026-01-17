@@ -84,6 +84,7 @@ const Hero = () => {
   // Mobile Single Slider View
   if (isMobile) {
     return (
+      
       <div className="w-full px-3 sm:px-4 py-3 sm:py-4">
         <div className="max-w-[1600px] mx-auto">
           <div className="relative w-full h-[280px] xs:h-[320px] sm:h-[380px] md:h-[450px] rounded-xl overflow-hidden bg-gray-100 shadow-xl group">
