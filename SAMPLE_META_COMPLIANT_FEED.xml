@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>Sri Furniture Village - Product Catalog</title>
+    <link>https://srifurniturevillage.com</link>
+    <description>Premium Wooden Furniture Products</description>
+    <lastBuildDate>2026-01-21T10:30:00.000Z</lastBuildDate>
+    <item>
+      <g:id>507f1f77bcf86cd799439011</g:id>
+      <title>Premium Wooden Sofa - Modern Design</title>
+      <description>Elegant wooden sofa crafted from premium hardwood with contemporary design. Features comfortable seating for 3-4 people with high-quality upholstery and durable construction. Perfect for living rooms.</description>
+      <link>https://srifurniturevillage.com/DetaileProduct/507f1f77bcf86cd799439011</link>
+      <g:image_link>https://srifurniturevillage.com/uploads/products/sofa-brown-01.jpg</g:image_link>
+      <g:price>22500.00 INR</g:price>
+      <g:availability>in stock</g:availability>
+      <g:brand>Sri Furniture Village</g:brand>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>507f1f77bcf86cd799439012</g:id>
+      <title>Wooden Dining Table with 6 Chairs</title>
+      <description>Complete dining set with solid wood dining table and 6 matching chairs. Ideal for family meals and gatherings. Sturdy construction ensures long-lasting durability and classic aesthetic appeal.</description>
+      <link>https://srifurniturevillage.com/DetaileProduct/507f1f77bcf86cd799439012</link>
+      <g:image_link>https://srifurniturevillage.com/uploads/products/dining-set-natural-01.jpg</g:image_link>
+      <g:price>18999.00 INR</g:price>
+      <g:availability>in stock</g:availability>
+      <g:brand>Sri Furniture Village</g:brand>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>507f1f77bcf86cd799439013</g:id>
+      <title>Carved Wooden Bed Frame - Queen Size</title>
+      <description>Beautiful carved wooden bed frame with intricate traditional patterns. Spacious queen size perfect for master bedrooms. Handcrafted details and premium wood construction provide elegance and comfort.</description>
+      <link>https://srifurniturevillage.com/DetaileProduct/507f1f77bcf86cd799439013</link>
+      <g:image_link>https://srifurniturevillage.com/uploads/products/bed-carved-brown-01.jpg</g:image_link>
+      <g:price>35000.00 INR</g:price>
+      <g:availability>in stock</g:availability>
+      <g:brand>Sri Furniture Village</g:brand>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>507f1f77bcf86cd799439014</g:id>
+      <title>Wooden Bookshelf with 5 Shelves</title>
+      <description>Tall wooden bookshelf with 5 adjustable shelves for organizing books and decorative items. Crafted from sustainable hardwood with a natural finish. Perfect for home libraries and offices.</description>
+      <link>https://srifurniturevillage.com/DetaileProduct/507f1f77bcf86cd799439014</link>
+      <g:image_link>https://srifurniturevillage.com/uploads/products/shelf-natural-01.jpg</g:image_link>
+      <g:price>8500.00 INR</g:price>
+      <g:availability>in stock</g:availability>
+      <g:brand>Sri Furniture Village</g:brand>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>507f1f77bcf86cd799439015</g:id>
+      <title>Wooden Coffee Table with Storage</title>
+      <description>Stylish coffee table featuring built-in storage compartments. Perfect for living rooms to hold magazines, remotes, and other essentials. Made from durable hardwood with contemporary design.</description>
+      <link>https://srifurniturevillage.com/DetaileProduct/507f1f77bcf86cd799439015</link>
+      <g:image_link>https://srifurniturevillage.com/uploads/products/table-storage-01.jpg</g:image_link>
+      <g:price>5999.00 INR</g:price>
+      <g:availability>in stock</g:availability>
+      <g:brand>Sri Furniture Village</g:brand>
+      <g:condition>new</g:condition>
+    </item>
+  </channel>
+</rss>
