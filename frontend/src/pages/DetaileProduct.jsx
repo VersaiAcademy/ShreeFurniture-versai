@@ -7,6 +7,7 @@ import { getProduct } from '../utils/api';
 import Loader from '../components/Loader';
 import { toast } from 'react-toastify';
 import API from '../utils/api';
+import { trackViewContent, trackAddToCart } from '../utils/metaPixel';
 
 const DetailProduct = () => {
   const { id } = useParams();
@@ -174,6 +175,13 @@ const DetailProduct = () => {
     }
   }, [id]);
 
+  // --- Track ViewContent Event (Meta Pixel) ---
+  useEffect(() => {
+    if (product && !loading) {
+      trackViewContent(product);
+    }
+  }, [product, loading]);
+
   // --- Fetch Related Products by Category ---
   const fetchRelatedProducts = async (category, currentProductId) => {
     try {
@@ -236,6 +244,9 @@ const DetailProduct = () => {
         price: discountedPrice,
         qty: quantity
       });
+      
+      // Track AddToCart event (Meta Pixel)
+      trackAddToCart(product, quantity);
       
       toast.success(response.data.message || 'Added to cart successfully!');
       setQuantity(1); // Reset quantity

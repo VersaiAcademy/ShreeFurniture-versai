@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import API from '../utils/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCreditCard, faTruck, faLock, faTrash, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
+import { trackInitiateCheckout } from '../utils/metaPixel';
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -33,6 +34,13 @@ const Checkout = () => {
     loadCartData();
     loadAddress();
   }, [navigate]);
+
+  // Track InitiateCheckout event when cart items are loaded
+  useEffect(() => {
+    if (cartItems.length > 0 && totalAmount > 0) {
+      trackInitiateCheckout(cartItems, totalAmount);
+    }
+  }, [cartItems, totalAmount]);
 
   // Auto-trigger payment after login
   useEffect(() => {

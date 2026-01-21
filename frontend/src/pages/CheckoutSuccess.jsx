@@ -6,6 +6,7 @@ import API from '../utils/api';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { trackPurchase } from '../utils/metaPixel';
 
 const CheckoutSuccess = () => {
   const navigate = useNavigate();
@@ -27,11 +28,21 @@ const CheckoutSuccess = () => {
       if (mode === 'cod') {
         const summary = sessionStorage.getItem('paymentSuccessSummary');
         const messageFromStorage = sessionStorage.getItem('paymentSuccessMessage');
+        const cartItems = summary ? JSON.parse(summary).items : [];
+        const totalAmount = summary ? JSON.parse(summary).totalAmount : 0;
+        const orderId = searchParams.get('order_id');
+        
         setOrderSummary(summary ? JSON.parse(summary) : null);
-        setOrderId(searchParams.get('order_id'));
+        setOrderId(orderId);
         setMessage(messageFromStorage || 'Order placed successfully! Our team will reach you shortly.');
         setSuccess(true);
         setLoading(false);
+        
+        // Track Purchase event (Meta Pixel) for COD
+        if (cartItems.length > 0 && totalAmount > 0) {
+          trackPurchase(cartItems, totalAmount, orderId);
+        }
+        
         sessionStorage.removeItem('paymentSuccessSummary');
         sessionStorage.removeItem('paymentSuccessMessage');
         setTimeout(() => {
@@ -85,6 +96,13 @@ const CheckoutSuccess = () => {
           if (res.data.orderSummary) {
             setOrderSummary(res.data.orderSummary);
             sessionStorage.setItem('paymentSuccessSummary', JSON.stringify(res.data.orderSummary));
+            
+            // Track Purchase event (Meta Pixel) for online payment
+            const cartItems = res.data.orderSummary.items || [];
+            const totalAmount = res.data.orderSummary.totalAmount || Number(total) || 0;
+            if (cartItems.length > 0 && totalAmount > 0) {
+              trackPurchase(cartItems, totalAmount, finalOrderId);
+            }
           }
 
           toast.success('Order Confirmed! Email Sent.');

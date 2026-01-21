@@ -58,8 +58,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/oauth-callback" element={<OAuthCallback />} />
         <Route path="/wishlist" element={<Whislist />} />
-  <Route path="/dtproduct/:id" element={<DetaileProduct />} />
-  <Route path="/detaileproduct/:id" element={<DetaileProduct />} />
+        <Route path="/dtproduct/:id" element={<DetaileProduct />} />
+        <Route path="/detaileproduct/:id" element={<DetaileProduct />} />
         <Route path="/userprofile" element={<UserProfile />} />
         {/* Alias /profile to /userprofile for backward compatibility */}
         <Route path="/profile" element={<UserProfile />} />
