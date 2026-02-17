@@ -104,11 +104,7 @@ const Header = () => {
           items: [ 'Sofas','Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas'],
           hasDropdown: true
         },
-        {
-          title: 'SEATING',
-          items: ['Wooden Diwan', 'Benches', 'Stools' ],
-          hasDropdown: true
-        }
+        
       ]
     },
     'Bedroom': {
@@ -157,6 +153,11 @@ const Header = () => {
           items: [ 'Wall Shelves & Hanger', 'Wall Mirrors'],
           hasDropdown: true
         },
+        {
+          title: 'SEATING',
+          items: ['Wooden Diwan', 'Benches', 'Stools' ],
+          hasDropdown: true
+        }
       ]
     },
     'Dining & Kitchen': {
