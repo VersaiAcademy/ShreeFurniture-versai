@@ -5,7 +5,7 @@ import API from '../utils/api';
 const CATEGORY_MAP = {
   'sofas': {
     title: 'Sofas',
-    subs: ['Wooden Sofas','Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas', 'Wooden Diwan', 'Benches', 'Stools']
+    subs: ['Wooden Sofas','Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas']
   },
   'living': {
     title: 'Living',
