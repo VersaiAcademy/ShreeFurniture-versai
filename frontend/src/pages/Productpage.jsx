@@ -52,8 +52,8 @@ const Productpage = () => {
 
   // Main category -> subcategory names mapping
   const MAIN_CATEGORY_MAP = {
-    'sofas': ['Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas', 'Wooden Diwan', 'Benches', 'Stools'],
-    'living': ['TV Units','Temples','Book Shelves','Display Units','Shoe Racks','Sideboards','Chest of Drawers','Chairs','Stools','Benches','Swings','Coffee Tables','Side Tables','Console Tables','Wall Shelves & Hanger','Wall Mirrors'],
+    'sofas': ['Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas', ],
+    'living': ['TV Units','Temples','Book Shelves','Display Units','Shoe Racks','Sideboards','Chest of Drawers','Chairs','Stools','Benches','Swings','Coffee Tables','Side Tables','Console Tables','Wall Shelves & Hanger','Wall Mirrors','Wooden Diwan', 'Benches', 'Stools'],
     'bedroom': ['King Size Beds','Queen Size Beds','Single Beds','Hydraulic Storage Beds','Poster Beds','Wooden Wardrobe'],
     'dining-kitchen': ['Dining Tables','2 Seater Dining Sets','4 Seater Dining Sets','6 Seater Dining Sets','Dining Chairs','Benches','Kitchen Cabinets','Crockery Units','Wooden Tray','Wooden Jars','Spice Box','Chopping Board','Coasters','Tissue Box'],
     'storage': ['TV Units','Book Shelves','Display Units','Shoe Racks','Home Temples','Magazine Racks','Wooden Corner','Chest of Drawers','Wardrobes','Bed Side Tables','Dressing','Almira','Bar Cabinets'],
