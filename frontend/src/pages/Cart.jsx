@@ -13,6 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Loader from "../components/Loader";
+import { API_CONFIG } from "../utils/constants";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const Cart = () => {
           },
           withCredentials: true,
         });
-        
+
         console.log('📦 /api/cart response:', response.data);
 
         // Normalize response to an array of cart items
@@ -58,7 +59,7 @@ const Cart = () => {
         // REMOVED THE SINGLE ITEM LIMITATION - Now allows multiple items
         setCartItems(items);
         console.log(`✅ Loaded ${items.length} items in cart`);
-        
+
       } catch (error) {
         console.error("Error fetching cart item:", error);
         setCartItems([]);
@@ -262,16 +263,16 @@ const Cart = () => {
 
                               // If image is relative (starts with /) or missing protocol, prefix API base URL
                               if (displayImage && !/^https?:\/\//i.test(displayImage)) {
-                                const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+                                const API_BASE = API_CONFIG.BASE_URL;
                                 displayImage = `${API_BASE.replace(/\/$/, '')}/${displayImage.replace(/^\//, '')}`;
                               }
 
                               return (
-                                <img 
-                                  src={displayImage || 'https://via.placeholder.com/400x300?text=No+Image'} 
-                                  alt={item.product_name || ''} 
-                                  className="w-full h-full object-cover" 
-                                  onError={(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'} 
+                                <img
+                                  src={displayImage || 'https://via.placeholder.com/400x300?text=No+Image'}
+                                  alt={item.product_name || ''}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'}
                                 />
                               );
                             })()}
@@ -350,47 +351,47 @@ const Cart = () => {
 
                   {/* Price Details Sidebar */}
                   <div className="w-full lg:w-96 bg-white shadow-sm mt-5 p-4 sm:p-5 md:p-6 border border-orange-400 rounded-lg sticky top-4">
-                      <p className="text-base sm:text-lg font-semibold mb-3">Price Detail</p>
-                      <hr className="border-gray-200" />
-                      <div className="space-y-3 pt-3">
-                        <div className="flex justify-between text-sm sm:text-base">
-                          <span className="text-gray-600">MRP ({cartleng} {cartleng === 1 ? 'item' : 'items'})</span>
-                          <span className="font-medium">₹{totalPrice.toLocaleString('en-IN')}</span>
-                        </div>
-                        <div className="flex justify-between text-sm sm:text-base">
-                          <span className="text-gray-600">OFFER</span>
-                          <span className="text-green-600 font-medium">{averageOfferPercent || 0}%</span>
-                        </div>
-                        {/* <div className="flex justify-between text-sm sm:text-base">
+                    <p className="text-base sm:text-lg font-semibold mb-3">Price Detail</p>
+                    <hr className="border-gray-200" />
+                    <div className="space-y-3 pt-3">
+                      <div className="flex justify-between text-sm sm:text-base">
+                        <span className="text-gray-600">MRP ({cartleng} {cartleng === 1 ? 'item' : 'items'})</span>
+                        <span className="font-medium">₹{totalPrice.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="flex justify-between text-sm sm:text-base">
+                        <span className="text-gray-600">OFFER</span>
+                        <span className="text-green-600 font-medium">{averageOfferPercent || 0}%</span>
+                      </div>
+                      {/* <div className="flex justify-between text-sm sm:text-base">
                           <span className="text-gray-600">Today Deal</span>
                           <span className="text-green-600 font-medium">₹{todaysDeal.toLocaleString('en-IN')}</span>
                         </div> */}
-                        <div className="flex justify-between text-base sm:text-lg font-semibold pt-3 border-t border-gray-200">
-                          <span>Total Payable</span>
-                          <span className="text-orange-500">
-                            ₹{((totalPrice || 0)).toLocaleString('en-IN')}
-                          </span>
-                        </div>
+                      <div className="flex justify-between text-base sm:text-lg font-semibold pt-3 border-t border-gray-200">
+                        <span>Total Payable</span>
+                        <span className="text-orange-500">
+                          ₹{((totalPrice || 0)).toLocaleString('en-IN')}
+                        </span>
                       </div>
+                    </div>
 
-                      <Link
-                        className="flex justify-center items-center mt-5 sm:mt-6"
-                        to="/checkout"
-                      >
-                        <button className="p-3 rounded-lg text-white bg-gradient-to-r from-orange-400 to-orange-600 w-full h-12 sm:h-14 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-700 transition-all shadow-md hover:shadow-lg active:scale-95 text-sm sm:text-base font-semibold">
-                          <FontAwesomeIcon icon={faBuyNLarge} className="pr-2 sm:pr-3" /> 
-                          Continue to Checkout
-                        </button>
-                      </Link>
+                    <Link
+                      className="flex justify-center items-center mt-5 sm:mt-6"
+                      to="/checkout"
+                    >
+                      <button className="p-3 rounded-lg text-white bg-gradient-to-r from-orange-400 to-orange-600 w-full h-12 sm:h-14 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-700 transition-all shadow-md hover:shadow-lg active:scale-95 text-sm sm:text-base font-semibold">
+                        <FontAwesomeIcon icon={faBuyNLarge} className="pr-2 sm:pr-3" />
+                        Continue to Checkout
+                      </button>
+                    </Link>
                   </div>
                 </div>
               </div>
             </>
           ) : (
             <div className="flex flex-col justify-center items-center min-h-[60vh] px-4">
-              <img 
-                src="https://expresshub.com.bd/img/404.png" 
-                alt="Empty Cart" 
+              <img
+                src="https://expresshub.com.bd/img/404.png"
+                alt="Empty Cart"
                 className="max-w-xs sm:max-w-md w-full h-auto"
               />
               <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg mt-4 sm:mt-6 text-center max-w-md w-full">

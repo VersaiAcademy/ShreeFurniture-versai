@@ -3,9 +3,22 @@
 
 export const API_CONFIG = {
   // Base URLs with priority order
-  BASE_URL: import.meta.env.VITE_API_BASE_URL
-    || import.meta.env.VITE_API_URL
-    || 'https://shreefurniture-backend-production.up.railway.app',
+  // Base URLs with priority order
+  BASE_URL: (() => {
+    // If in production mode (via import.meta.env.PROD), avoid localhost
+    if (import.meta.env.PROD) {
+      const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL;
+      // Use env var only if it's NOT localhost/127.0.0.1
+      if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+        return envUrl;
+      }
+      return 'https://shreefurniture-backend-production.up.railway.app';
+    }
+    // Development mode
+    return import.meta.env.VITE_API_BASE_URL
+      || import.meta.env.VITE_API_URL
+      || 'http://localhost:5000';
+  })(),
 
   // Development fallback
   DEV_FALLBACK_URL: 'http://localhost:5000',
