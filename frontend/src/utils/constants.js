@@ -3,17 +3,28 @@
 
 export const API_CONFIG = {
   // Base URLs with priority order
-  // Base URLs with priority order
   BASE_URL: (() => {
-    // If in production mode (via import.meta.env.PROD), avoid localhost
+    // If we're on the live site, ALWAYS use production backend
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      if (
+        hostname.includes('ifurniturevillage') ||
+        hostname.includes('srifurniturevillage') ||
+        hostname.includes('vercel.app')
+      ) {
+        return 'https://shreefurniture-backend-production.up.railway.app';
+      }
+    }
+
+    // Fallback logic
     if (import.meta.env.PROD) {
       const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL;
-      // Use env var only if it's NOT localhost/127.0.0.1
       if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
         return envUrl;
       }
       return 'https://shreefurniture-backend-production.up.railway.app';
     }
+
     // Development mode
     return import.meta.env.VITE_API_BASE_URL
       || import.meta.env.VITE_API_URL
@@ -23,9 +34,9 @@ export const API_CONFIG = {
   // Development fallback
   DEV_FALLBACK_URL: 'http://localhost:5000',
 
-  // Timeouts
-  DEFAULT_TIMEOUT: 30000,
-  HEALTH_CHECK_TIMEOUT: 5000,
+  // Timeouts - increased for mobile networks which can be slow
+  DEFAULT_TIMEOUT: 45000,   // 45 seconds for mobile networks
+  HEALTH_CHECK_TIMEOUT: 3000, // 3 seconds - fast fail health check
 
   // Headers
   DEFAULT_HEADERS: {

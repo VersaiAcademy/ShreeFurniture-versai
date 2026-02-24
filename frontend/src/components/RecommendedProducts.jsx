@@ -8,6 +8,7 @@ import Loader from './Loader';
 const RecommendedProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [visibleCount, setVisibleCount] = useState(10); // Changed to 10 for 2 rows
   const [imageErrors, setImageErrors] = useState({});
   const [wishlistItems, setWishlistItems] = useState(new Set());
@@ -19,41 +20,47 @@ const RecommendedProducts = () => {
 
   // ✅ Fetch products and wishlist on mount
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await API.get('/api/products?limit=20&page=1');
-        console.log('✅ Products fetched:', response.data.products);
-        setProducts(response.data.products || []);
-        
-        // Fetch wishlist if user is logged in
-        const token = localStorage.getItem('token');
-        if (token) {
-          try {
-            const wishlistRes = await API.get('/api/wishlist');
-            const wishlistIds = new Set(wishlistRes.data.wishlist.map(item => item.product._id));
-            setWishlistItems(wishlistIds);
-          } catch (err) {
-            console.warn('Could not fetch wishlist:', err);
-          }
-        }
-      } catch (error) {
-        console.error('❌ Error fetching recommended products:', error);
-        setProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProducts();
   }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await API.get('/api/products?limit=20&page=1');
+      console.log('✅ Products fetched:', response.data.products);
+      setProducts(response.data.products || []);
+
+      // Fetch wishlist if user is logged in
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const wishlistRes = await API.get('/api/wishlist');
+          const wishlistIds = new Set(
+            (wishlistRes.data.wishlist || []).map(item =>
+              (item.product && item.product._id) ? item.product._id : item.product
+            ).filter(Boolean)
+          );
+          setWishlistItems(wishlistIds);
+        } catch (err) {
+          console.warn('Could not fetch wishlist:', err);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error fetching recommended products:', error);
+      setError('Failed to load products. Please check your connection.');
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleViewMore = () => {
     setVisibleCount(prev => Math.min(prev + 10, products.length));
   };
 
   const handleProductClick = (productId) => {
-    navigate(`/detaileproduct/${productId}`);
+    navigate(`/dtproduct/${productId}`);
   };
 
   const handleImageError = (productId, imageUrl) => {
@@ -64,7 +71,7 @@ const RecommendedProducts = () => {
   // ✅ Handle add/remove from wishlist
   const handleAddToWishlist = async (e, productId) => {
     e.stopPropagation();
-    
+
     const token = localStorage.getItem('token');
     if (!token) {
       toast.warning('Please login to add items to wishlist');
@@ -167,6 +174,25 @@ const RecommendedProducts = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="pt-5 md:pt-8 lg:pt-10 px-4 sm:px-6 md:px-8 lg:px-10">
+        <div className="max-w-7xl mx-auto">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2">Recommended For You</h3>
+          <div className="text-center py-10">
+            <p className="text-gray-500 text-base mb-4">{error}</p>
+            <button
+              onClick={fetchProducts}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pt-5 md:pt-8 lg:pt-10 px-4 sm:px-6 md:px-8 lg:px-10">
       <div className="max-w-7xl mx-auto">
@@ -201,7 +227,7 @@ const RecommendedProducts = () => {
                       <span className="text-xs text-gray-500 font-medium">Image Not Available</span>
                     </div>
                   )}
-                  
+
                   {/* Discount Badge */}
                   {product.offer > 0 && (
                     <div className="absolute top-2 right-2 flex items-center z-10">
@@ -213,21 +239,20 @@ const RecommendedProducts = () => {
                       </span>
                     </div>
                   )}
-                  
+
                   {/* Wishlist Button */}
                   <button
-                    className={`absolute top-2 left-2 p-2 rounded-full shadow transition-all z-10 ${
-                      wishlistItems.has(product._id)
+                    className={`absolute top-2 left-2 p-2 rounded-full shadow transition-all z-10 ${wishlistItems.has(product._id)
                         ? 'bg-red-100 hover:bg-red-200'
                         : 'bg-white hover:bg-orange-50'
-                    }`}
+                      }`}
                     onClick={(e) => handleAddToWishlist(e, product._id)}
                     disabled={addingToWishlist[product._id]}
                     aria-label={wishlistItems.has(product._id) ? 'Remove from wishlist' : 'Add to wishlist'}
                   >
-                    <Heart 
-                      size={18} 
-                      className={wishlistItems.has(product._id) ? 'fill-red-500 text-red-500' : 'text-red-500'} 
+                    <Heart
+                      size={18}
+                      className={wishlistItems.has(product._id) ? 'fill-red-500 text-red-500' : 'text-red-500'}
                     />
                   </button>
                 </div>

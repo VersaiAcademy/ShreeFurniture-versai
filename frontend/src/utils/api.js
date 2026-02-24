@@ -13,6 +13,8 @@ const API = axios.create({
   baseURL: API_BASE_URL,
   timeout: API_CONFIG.DEFAULT_TIMEOUT,
   headers: API_CONFIG.DEFAULT_HEADERS,
+  // Important for mobile: don't cache responses that might be stale
+  withCredentials: false,
 });
 
 console.log('🌐 API Base URL:', API_BASE_URL);
@@ -37,30 +39,36 @@ export const checkApiHealth = async (url = API_BASE_URL) => {
   }
 };
 
-// ✅ Auto-switch to fallback URL if primary fails
+// ✅ Auto-switch to fallback URL if primary fails (runs in BACKGROUND - does NOT block requests)
 let apiHealthChecked = false;
-const performHealthCheck = async () => {
+const performHealthCheckBackground = () => {
   if (apiHealthChecked) return;
-
   apiHealthChecked = true;
 
-  const primaryHealthy = await checkApiHealth(API_BASE_URL);
-  if (!primaryHealthy && isDevelopment) {
-    console.warn('⚠️ Primary API URL unhealthy, trying fallback...');
-    const fallbackHealthy = await checkApiHealth(fallbackUrl);
-    if (fallbackHealthy) {
-      console.log('✅ Switching to fallback API URL:', fallbackUrl);
-      API.defaults.baseURL = fallbackUrl;
+  // Run health check non-blocking - do NOT await this in request interceptor
+  checkApiHealth(API_BASE_URL).then((primaryHealthy) => {
+    if (!primaryHealthy && isDevelopment) {
+      console.warn('⚠️ Primary API URL unhealthy, trying fallback...');
+      checkApiHealth(fallbackUrl).then((fallbackHealthy) => {
+        if (fallbackHealthy) {
+          console.log('✅ Switching to fallback API URL:', fallbackUrl);
+          API.defaults.baseURL = fallbackUrl;
+        }
+      });
     }
-  }
+  }).catch(() => {
+    // Health check failure should never block the app
+    console.warn('⚠️ Health check could not complete - API requests will proceed anyway');
+  });
 };
 
-// ✅ Request interceptor - Add auth token automatically
-API.interceptors.request.use(
-  async (config) => {
-    // Perform health check on first request
-    await performHealthCheck();
+// Kick off health check early (background, non-blocking)
+performHealthCheckBackground();
 
+// ✅ Request interceptor - Add auth token automatically
+// NOTE: This is SYNCHRONOUS (no await) so it never blocks requests on mobile
+API.interceptors.request.use(
+  (config) => {
     // Get token from localStorage (try both user and admin tokens)
     const userToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
     const adminToken = localStorage.getItem(STORAGE_KEYS.ADMIN_TOKEN);
@@ -94,7 +102,7 @@ API.interceptors.response.use(
       status: response.status,
       data: response.data
     });
-    
+
     return response;
   },
   (error) => {
@@ -110,27 +118,27 @@ API.interceptors.response.use(
       message,
       data: error.response?.data
     });
-    
+
     // Handle specific error cases
     if (error.response) {
       const { status, data } = error.response;
-      
+
       // 401 Unauthorized - Token expired or invalid
       if (status === 401) {
         console.log('🔒 Unauthorized - Clearing tokens');
         const currentPath = window.location.pathname + window.location.search;
-        
+
         // Save current path for redirect after login (unless already on login)
         if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
           // Fix: Never save broken address paths - always use /checkout for checkout flow
           let redirectPath = currentPath;
-          
+
           // If on address page or broken checkout path, redirect to /checkout instead
           if (currentPath.includes('/address/') || currentPath.match(/\/address\/\d+\/\d+\/\d+/)) {
             console.warn('⚠️ Blocked redirect to broken address path:', currentPath);
             redirectPath = '/checkout'; // Always use /checkout for payment flow
           }
-          
+
           // Preserve checkout intent
           if (redirectPath.includes('/checkout') || redirectPath === '/checkout') {
             localStorage.setItem('afterLoginRedirect', '/checkout');
@@ -138,37 +146,37 @@ API.interceptors.response.use(
           } else {
             localStorage.setItem('afterLoginRedirect', redirectPath);
           }
-          
+
           // Redirect to login with next parameter (always /checkout for checkout flow)
-          const nextPath = redirectPath.includes('/checkout') || redirectPath.includes('/address') 
-            ? '/checkout' 
+          const nextPath = redirectPath.includes('/checkout') || redirectPath.includes('/address')
+            ? '/checkout'
             : redirectPath;
-          
+
           window.location.href = `/login?next=${encodeURIComponent(nextPath)}`;
         }
-        
+
         localStorage.removeItem(STORAGE_KEYS.TOKEN);
         localStorage.removeItem(STORAGE_KEYS.ADMIN_TOKEN);
       }
-      
+
       // 403 Forbidden - Insufficient permissions
       if (status === 403) {
         console.log('⛔ Forbidden - Insufficient permissions');
         alert('You do not have permission to perform this action');
       }
-      
+
       // 404 Not Found
       if (status === 404) {
         console.log('🔍 Not Found:', data.message);
       }
-      
+
       // 500 Internal Server Error
       if (status === 500) {
         console.log('💥 Server Error:', message);
         alert(message);
       }
     } else if (error.request) {
-      // Request was made but no response received
+      // Request was made but no response received (network error, timeout, etc.)
       console.error('📡 No response from server');
       console.error('📡 Connection Error Details:', {
         url: error.config?.url,
@@ -177,24 +185,34 @@ API.interceptors.response.use(
         message: error.message,
         code: error.code
       });
-      
-      // Show user-friendly error message (NEVER show technical details to users)
-      const errorMsg = error.code === 'ERR_NETWORK' || error.message === 'Network Error'
-        ? 'Unable to load data. Please check your internet connection and try again.'
-        : 'Something went wrong. Please try again.';
-      
+
+      // Distinguish error types for better mobile UX
+      const isNetError = error.code === 'ERR_NETWORK' || error.message === 'Network Error';
+      const isTimeout = error.code === 'ECONNABORTED' || error.message?.includes('timeout');
+      const isCORS = error.message?.includes('CORS') || error.message?.includes('cors');
+
+      let errorMsg;
+      if (isTimeout) {
+        errorMsg = 'Request timed out. Please check your connection and try again.';
+      } else if (isCORS) {
+        errorMsg = 'Connection blocked. Please try again.';
+      } else if (isNetError) {
+        errorMsg = 'No internet connection. Please check your network and try again.';
+      } else {
+        errorMsg = 'Could not connect to server. Please try again.';
+      }
+
       // Use toast instead of alert for better UX
       import('react-toastify').then(({ toast }) => {
-        toast.error(errorMsg);
+        toast.error(errorMsg, { toastId: 'network-error', autoClose: 4000 });
       }).catch(() => {
-        // Fallback if toast is not available
-        console.error('Error displaying user-friendly message:', errorMsg);
+        console.error('Network error:', errorMsg);
       });
     } else {
       // Something else happened
       console.error('⚠️ Error:', message);
     }
-    
+
     return Promise.reject(new Error(message));
   }
 );

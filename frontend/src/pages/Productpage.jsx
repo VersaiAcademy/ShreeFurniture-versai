@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faHeart, 
-  faShoppingCart, 
+import {
+  faHeart,
+  faShoppingCart,
   faStar,
   faChevronDown,
   faChevronUp,
@@ -24,16 +24,16 @@ const Productpage = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  
+
   // Filter states
   const [fastDelivery, setFastDelivery] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 200000]);
+  const [priceRange, setPriceRange] = useState([0, 500000]);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedSeaters, setSelectedSeaters] = useState([]);
   const [selectedSizeFilter, setSelectedSizeFilter] = useState('');
   const [sortBy, setSortBy] = useState('recommended');
   const [viewMode, setViewMode] = useState('grid');
-  
+
   // Accordion states
   const [isPriceOpen, setIsPriceOpen] = useState(true);
   const [isMaterialOpen, setIsMaterialOpen] = useState(true);
@@ -46,19 +46,19 @@ const Productpage = () => {
   const [materials, setMaterials] = useState([]);
   const [userWishlistIds, setUserWishlistIds] = useState(new Set());
   const [wishlistLoadingMap, setWishlistLoadingMap] = useState({});
-  
+
   // Seater options
   const seaterOptions = ['3 Seater', '3+1+1 Seater', '2 Seater', '5 Seater', '6 Seater'];
 
   // Main category -> subcategory names mapping
   const MAIN_CATEGORY_MAP = {
-    'sofas': ['Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas', ],
-    'living': ['TV Units','Temples','Book Shelves','Display Units','Shoe Racks','Sideboards','Chest of Drawers','Chairs','Stools','Benches','Swings','Coffee Tables','Side Tables','Console Tables','Wall Shelves & Hanger','Wall Mirrors','Wooden Diwan', 'Benches', 'Stools'],
-    'bedroom': ['King Size Beds','Queen Size Beds','Single Beds','Hydraulic Storage Beds','Poster Beds','Wooden Wardrobe'],
-    'dining-kitchen': ['Dining Tables','2 Seater Dining Sets','4 Seater Dining Sets','6 Seater Dining Sets','Dining Chairs','Benches','Kitchen Cabinets','Crockery Units','Wooden Tray','Wooden Jars','Spice Box','Chopping Board','Coasters','Tissue Box'],
-    'storage': ['TV Units','Book Shelves','Display Units','Shoe Racks','Home Temples','Magazine Racks','Wooden Corner','Chest of Drawers','Wardrobes','Bed Side Tables','Dressing','Almira','Bar Cabinets'],
-    'study-office': ['Study Tables','Wooden Corner'],
-    'custom-furnitures': ['Custom Sofas','Custom Wardrobes','Custom Beds','Custom Tables']
+    'sofas': ['Sofa Cum Beds', '3 Seater Sofas', '1 Seater Sofas', '3+1+1 Sofa Sets', 'L Shaped Sofas',],
+    'living': ['TV Units', 'Temples', 'Book Shelves', 'Display Units', 'Shoe Racks', 'Sideboards', 'Chest of Drawers', 'Chairs', 'Stools', 'Benches', 'Swings', 'Coffee Tables', 'Side Tables', 'Console Tables', 'Wall Shelves & Hanger', 'Wall Mirrors', 'Wooden Diwan', 'Benches', 'Stools'],
+    'bedroom': ['King Size Beds', 'Queen Size Beds', 'Single Beds', 'Hydraulic Storage Beds', 'Poster Beds', 'Wooden Wardrobe'],
+    'dining-kitchen': ['Dining Tables', '2 Seater Dining Sets', '4 Seater Dining Sets', '6 Seater Dining Sets', 'Dining Chairs', 'Benches', 'Kitchen Cabinets', 'Crockery Units', 'Wooden Tray', 'Wooden Jars', 'Spice Box', 'Chopping Board', 'Coasters', 'Tissue Box'],
+    'storage': ['TV Units', 'Book Shelves', 'Display Units', 'Shoe Racks', 'Home Temples', 'Magazine Racks', 'Wooden Corner', 'Chest of Drawers', 'Wardrobes', 'Bed Side Tables', 'Dressing', 'Almira', 'Bar Cabinets'],
+    'study-office': ['Study Tables', 'Wooden Corner'],
+    'custom-furnitures': ['Custom Sofas', 'Custom Wardrobes', 'Custom Beds', 'Custom Tables']
   };
 
   // Helper: slugify a name
@@ -67,7 +67,7 @@ const Productpage = () => {
   // Build reverse map
   const SLUG_TO_NAME = {};
   Object.keys(MAIN_CATEGORY_MAP).forEach((main) => {
-    SLUG_TO_NAME[main] = main.split('-').map(w => w[0]?.toUpperCase()+w.slice(1)).join(' ');
+    SLUG_TO_NAME[main] = main.split('-').map(w => w[0]?.toUpperCase() + w.slice(1)).join(' ');
     MAIN_CATEGORY_MAP[main].forEach((sub) => {
       SLUG_TO_NAME[slugify(sub)] = sub;
     });
@@ -90,7 +90,7 @@ const Productpage = () => {
       fetchProductsBySearch(searchParam);
       return;
     }
-    
+
     if (slug && !invalidSlugs.includes(slug.toLowerCase())) {
       fetchProductsBySlug(slug);
     } else if (!slug) {
@@ -165,10 +165,10 @@ const Productpage = () => {
       }
 
       const res = await API.get('/api/products', { params: { category: categoryParam } });
-      
+
       const productsData = Array.isArray(res.data) ? res.data : (res.data.products || []);
       setProducts(productsData);
-      
+
       const uniqueMaterials = [...new Set(productsData.map(p => p.material).filter(Boolean))];
       setMaterials(uniqueMaterials.map((m, i) => ({ name: m, count: productsData.filter(p => p.material === m).length })));
     } catch (err) {
@@ -215,7 +215,7 @@ const Productpage = () => {
     }
 
     if (selectedSeaters.length > 0) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         selectedSeaters.some(seater => p.pname.toLowerCase().includes(seater.toLowerCase()))
       );
     }
@@ -247,7 +247,6 @@ const Productpage = () => {
     }
 
     setFilteredProducts(filtered);
-    if(isFilterModalOpen) setIsFilterModalOpen(false);
   };
 
   const calcDiscountedPrice = (price, offer) => {
@@ -273,7 +272,7 @@ const Productpage = () => {
 
   const resetFilters = () => {
     setFastDelivery(false);
-    setPriceRange([19989, 194989]);
+    setPriceRange([0, 500000]);
     setSelectedMaterials([]);
     setSelectedSeaters([]);
     setSortBy('recommended');
@@ -340,9 +339,9 @@ const Productpage = () => {
 
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <FontAwesomeIcon 
-        key={i} 
-        icon={faStar} 
+      <FontAwesomeIcon
+        key={i}
+        icon={faStar}
         className={i < Math.floor(rating) ? "text-orange-400" : "text-gray-300"}
       />
     ));
@@ -362,9 +361,16 @@ const Productpage = () => {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
+        <div className="text-center px-4">
           <p className="text-red-500 text-xl mb-4">{error}</p>
-          <button onClick={() => fetchProductsBySlug(slug)} className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600">
+          <button
+            onClick={() => {
+              setError("");
+              setLoading(true);
+              if (slug) fetchProductsBySlug(slug);
+            }}
+            className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+          >
             Try Again
           </button>
         </div>
@@ -411,16 +417,16 @@ const Productpage = () => {
               </div>
               <input
                 type="range"
-                min="19989"
-                max="194989"
+                min="0"
+                max="500000"
                 value={priceRange[0]}
                 onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
                 className="w-full accent-orange-500"
               />
               <input
                 type="range"
-                min="19989"
-                max="194989"
+                min="0"
+                max="500000"
                 value={priceRange[1]}
                 onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
                 className="w-full accent-orange-500 mt-2"
@@ -433,7 +439,7 @@ const Productpage = () => {
                   Apply
                 </button>
                 <button
-                  onClick={() => setPriceRange([19989, 194989])}
+                  onClick={() => setPriceRange([0, 500000])}
                   className="px-4 py-2 text-orange-500 text-sm font-medium hover:bg-orange-50 rounded"
                 >
                   Reset
@@ -507,45 +513,45 @@ const Productpage = () => {
   );
 
   const getCategoryTitle = () => {
-  if (!slug) return "";
+    if (!slug) return "";
 
-  // Special case: show 3-1-1 instead of 311
-  if (slug === "311-sofa-sets") {
-    return "3-1-1 Sofa Sets";
-  }
+    // Special case: show 3-1-1 instead of 311
+    if (slug === "311-sofa-sets") {
+      return "3-1-1 Sofa Sets";
+    }
 
-  // If we have a pretty name in the map, use it
-  if (SLUG_TO_NAME[slug]) {
-    return SLUG_TO_NAME[slug];
-  }
+    // If we have a pretty name in the map, use it
+    if (SLUG_TO_NAME[slug]) {
+      return SLUG_TO_NAME[slug];
+    }
 
-  // If it's a main category, format it nicely
-  if (MAIN_CATEGORY_MAP[slug]) {
-    return slug
-      .split("-")
-      .map((w) => (w[0] ? w[0].toUpperCase() + w.slice(1) : ""))
-      .join(" ");
-  }
+    // If it's a main category, format it nicely
+    if (MAIN_CATEGORY_MAP[slug]) {
+      return slug
+        .split("-")
+        .map((w) => (w[0] ? w[0].toUpperCase() + w.slice(1) : ""))
+        .join(" ");
+    }
 
-  // Fallback
-  return formatCategoryName(slug);
-};
+    // Fallback
+    return formatCategoryName(slug);
+  };
 
-  
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-[1400px] mx-auto px-2 sm:px-4 py-3 sm:py-6">
         <div className="sticky top-0 z-20 bg-gray-50 pt-2 pb-1 lg:hidden">
-            <button 
-                onClick={() => setIsFilterModalOpen(true)}
-                className="w-full flex items-center justify-center gap-2 py-3 mb-3 bg-orange-500 text-white rounded-lg shadow-md font-semibold"
-            >
-                <FontAwesomeIcon icon={faFilter} />
-                Filter Products
-            </button>
+          <button
+            onClick={() => setIsFilterModalOpen(true)}
+            className="w-full flex items-center justify-center gap-2 py-3 mb-3 bg-orange-500 text-white rounded-lg shadow-md font-semibold"
+          >
+            <FontAwesomeIcon icon={faFilter} />
+            Filter Products
+          </button>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6"> 
+        <div className="flex flex-col lg:flex-row gap-6">
           <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="bg-white rounded-lg shadow-sm sticky top-4">
               <FiltersContent isMobile={false} />
@@ -560,17 +566,17 @@ const Productpage = () => {
                   <FontAwesomeIcon icon={faTimes} size="xl" />
                 </button>
               </div>
-              
+
               <div className="pb-20">
-                  <FiltersContent isMobile={true} />
+                <FiltersContent isMobile={true} />
               </div>
 
               <div className="fixed bottom-0 left-0 right-0 bg-white p-3 border-t shadow-2xl">
                 <button
-                    onClick={applyFilters}
-                    className="w-full bg-orange-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-orange-600"
+                  onClick={applyFilters}
+                  className="w-full bg-orange-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-orange-600"
                 >
-                    Show {filteredProducts.length} Products
+                  Show {filteredProducts.length} Products
                 </button>
               </div>
             </div>
@@ -579,9 +585,9 @@ const Productpage = () => {
           <div className="flex-1">
             <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
               <div className="flex items-center justify-between">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
-  {getCategoryTitle()}
-</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
+                  {getCategoryTitle()}
+                </h1>
 
               </div>
               {MAIN_CATEGORY_MAP[slug] && MAIN_CATEGORY_MAP[slug].length > 0 && (
@@ -591,9 +597,9 @@ const Productpage = () => {
                     {MAIN_CATEGORY_MAP[slug].map((sub) => {
                       const subSlug = sub.toLowerCase().replace(/\s+/g, '-').replace(/\+/g, '').replace(/&/g, '');
                       return (
-                        <button 
-                          key={sub} 
-                          onClick={() => navigate(`/${subSlug}`)} 
+                        <button
+                          key={sub}
+                          onClick={() => navigate(`/${subSlug}`)}
                           className="px-4 py-2 rounded-full bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-300 text-sm text-gray-800 font-medium hover:from-orange-500 hover:to-orange-600 hover:text-white hover:border-orange-600 hover:shadow-lg transition-all duration-300 transform hover:scale-105 whitespace-nowrap"
                         >
                           {sub}
@@ -669,7 +675,7 @@ const Productpage = () => {
                           />
                         );
                       })()}
-                      
+
                       <button
                         onClick={(e) => handleAddToWishlist(e, product)}
                         className={`absolute top-3 right-3 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center shadow-lg transition z-10 ${wishlistLoadingMap[product._id] ? 'opacity-60 cursor-wait' : 'hover:bg-orange-500 hover:text-white'}`}
@@ -708,7 +714,7 @@ const Productpage = () => {
 
                       <div className="flex items-center gap-1 mb-2">
                         <div className="text-xs sm:text-sm">
-                            {renderStars(product.rating)}
+                          {renderStars(product.rating)}
                         </div>
                         <span className="text-xs text-gray-600 ml-1">({product.rating})</span>
                       </div>

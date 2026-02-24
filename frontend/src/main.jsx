@@ -9,8 +9,10 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
 import axios from "axios";
 
+import { API_CONFIG } from "./utils/constants.js";
+
 // ✅ Configure axios baseURL globally for all API calls
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://shreefurniture-backend-production.up.railway.app';
+const API_BASE_URL = API_CONFIG.BASE_URL;
 axios.defaults.baseURL = API_BASE_URL;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.timeout = 30000;
@@ -47,15 +49,15 @@ axios.interceptors.response.use(
 console.log('🌐 Frontend API Base URL:', API_BASE_URL);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-<React.StrictMode>
-<ErrorBoundary>
-<Provider store={Store}>
-<AuthProvider>
-<CartProvider>
-<App />
-</CartProvider>
-</AuthProvider>
-</Provider>
-</ErrorBoundary>
-</React.StrictMode>
+  <React.StrictMode>
+    <ErrorBoundary>
+      <Provider store={Store}>
+        <AuthProvider>
+          <CartProvider>
+            <App />
+          </CartProvider>
+        </AuthProvider>
+      </Provider>
+    </ErrorBoundary>
+  </React.StrictMode>
 );
