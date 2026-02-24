@@ -18,8 +18,14 @@ const PORT = Number(process.env.PORT || 5000);
 const allowedOrigins = [
   'https://shree-furniture-versai.vercel.app',
   'https://shree-furniture-versai-v2ee.vercel.app',
-  'https://ifurniturevillage.com',
-  'https://www.ifurniturevillage.com',
+  'https://srifurniturevillage.com',
+  'https://www.srifurniturevillage.com',
+  'https://srifurniturevillage.com',
+  'https://www.srifurniturevillage.com',
+  'http://srifurniturevillage.com',
+  'http://www.srifurniturevillage.com',
+  'http://srifurniturevillage.com',
+  'http://www.srifurniturevillage.com',
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:3000',
@@ -28,24 +34,43 @@ const allowedOrigins = [
   'http://127.0.0.1:3000',
 ];
 
+// ⚠️ DEBUG: origin: true if you want to allow all origins temporarily
+// const corsOptions = { origin: true, credentials: true, ... };
+
 const corsOptions = {
   origin(origin, callback) {
-    // allow requests with no origin (curl, mobile apps, postman)
-    if (!origin) return callback(null, true);
-    const normalized = origin.replace(/\/$/, '');
-    if (allowedOrigins.includes(normalized)) return callback(null, true);
+    // ✅ Allow requests with no origin (curl, Postman, mobile apps, some WebViews)
+    // 'null' string origin also allowed (sent by some Android WebViews)
+    if (!origin || origin === 'null') return callback(null, true);
 
-    if (NODE_ENV !== 'production') {
-      console.warn(`CORS (dev): allowing ${normalized}`);
+    // ⚠️ Robust Check: Allow any of our domains regardless of http/https or www
+    const allowedDomains = [
+      'srifurniturevillage',
+      'shree-furniture-versai',
+      'vercel.app',
+      'railway.app',     // Allow Railway backend self-requests
+      'localhost',
+      '127.0.0.1'
+    ];
+
+    const isAllowed = allowedDomains.some(domain => origin.includes(domain));
+
+    if (isAllowed) {
       return callback(null, true);
     }
 
-    console.error(`CORS blocked: ${normalized}`);
+    if (NODE_ENV !== 'production') {
+      console.warn(`CORS (dev): allowing ${origin}`);
+      return callback(null, true);
+    }
+
+    console.error(`CORS blocked: ${origin}`);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With', 'Cache-Control', 'Pragma'],
+  exposedHeaders: ['Content-Length', 'Content-Type'],
   optionsSuccessStatus: 204,
 };
 
@@ -103,15 +128,27 @@ app.use('/meta-product-feed.xml', require('./routes/metafeed'));
   Serve frontend production build ONLY when NODE_ENV === 'production'
   and do NOT override /api/* routes or /meta-product-feed.xml.
 */
+const fs = require('fs'); // Ensure fs is required
 if (NODE_ENV === 'production') {
   const frontendPath = path.join(__dirname, '../frontend/dist');
-  app.use(express.static(frontendPath));
 
-  app.get('*', (req, res, next) => {
-    // skip API routes and meta feed
-    if (req.path.startsWith('/api') || req.path === '/meta-product-feed.xml') return next();
-    return res.sendFile(path.join(frontendPath, 'index.html'));
-  });
+  if (fs.existsSync(frontendPath)) {
+    app.use(express.static(frontendPath));
+
+    app.get('*', (req, res, next) => {
+      // skip API routes and meta feed
+      if (req.path.startsWith('/api') || req.path === '/meta-product-feed.xml') return next();
+
+      const indexFile = path.join(frontendPath, 'index.html');
+      if (fs.existsSync(indexFile)) {
+        return res.sendFile(indexFile);
+      } else {
+        return next();
+      }
+    });
+  } else {
+    console.warn('⚠️ Frontend build folder not found at:', frontendPath);
+  }
 }
 
 /* -------------------------  404 & ERRORS  --------------------- */
