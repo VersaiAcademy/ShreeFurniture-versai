@@ -24,36 +24,39 @@ const RecommendedProducts = () => {
   }, []);
 
   const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await API.get('/api/products?limit=20&page=1');
-      console.log('✅ Products fetched:', response.data.products);
-      setProducts(response.data.products || []);
+  try {
+    setLoading(true);
+    setError(null);
+    const response = await API.get('/api/products?limit=20&page=1');
+    
+    const allProducts = response.data.products || [];
+    const naturalFinishProducts = allProducts.filter(product => {
+      return product.natural_finish_image && product.natural_finish_image.trim() !== '';
+    });
+    
+    setProducts(naturalFinishProducts);
 
-      // Fetch wishlist if user is logged in
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const wishlistRes = await API.get('/api/wishlist');
-          const wishlistIds = new Set(
-            (wishlistRes.data.wishlist || []).map(item =>
-              (item.product && item.product._id) ? item.product._id : item.product
-            ).filter(Boolean)
-          );
-          setWishlistItems(wishlistIds);
-        } catch (err) {
-          console.warn('Could not fetch wishlist:', err);
-        }
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const wishlistRes = await API.get('/api/wishlist');
+        const wishlistIds = new Set(
+          (wishlistRes.data.wishlist || []).map(item =>
+            (item.product && item.product._id) ? item.product._id : item.product
+          ).filter(Boolean)
+        );
+        setWishlistItems(wishlistIds);
+      } catch (err) {
+        // Silent fail - no console
       }
-    } catch (error) {
-      console.error('❌ Error fetching recommended products:', error);
-      setError('Failed to load products. Please check your connection.');
-      setProducts([]);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (error) {
+    setError('Failed to load products. Please check your connection.');
+    setProducts([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleViewMore = () => {
     setVisibleCount(prev => Math.min(prev + 10, products.length));
