@@ -113,7 +113,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6 pt-6 md:pt-8 border-t border-gray-200">
           <div className="text-center md:text-left order-2 md:order-1">
             <p className="text-xs sm:text-sm text-gray-900 font-medium">
-              © 2023 - 2025 Sri Furniture Village All Rights Reserved
+              © 2023 - 2026 Sri Furniture Village All Rights Reserved
             </p>
             <p className="text-xs sm:text-sm text-gray-600 mt-1 md:mt-2">
               Design & Developed By &nbsp;
