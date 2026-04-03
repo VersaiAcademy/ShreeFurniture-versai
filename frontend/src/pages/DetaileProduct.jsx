@@ -548,6 +548,9 @@ const DetailProduct = () => {
   if (stoneFinishImages.length > 0) {
     colorOptions.push({ name: 'Stone', key: 'stone', images: stoneFinishImages, thumbnail: product.stone_finish_image });
   }
+  if (mainImages.length > 0) {
+    colorOptions.push({ name: 'Product Images', key: 'main', images: mainImages, thumbnail: product.img1 });
+  }
 
   // Default image: prefer currently selected, or first available
   const displayImage = selectedImage || naturalFinishImages[0] || stoneFinishImages[0] || mainImages[0] || 'placeholder-image-url';
@@ -575,8 +578,8 @@ const DetailProduct = () => {
                         key={`${activeImageSet}-${index}`}
                         onClick={() => setSelectedImage(img)}
                         className={`flex-shrink-0 transition-all ${selectedImage === img
-                            ? 'border-4 border-orange-500'
-                            : 'border-2 border-gray-300 hover:border-orange-300'
+                          ? 'border-4 border-orange-500'
+                          : 'border-2 border-gray-300 hover:border-orange-300'
                           } rounded-md overflow-hidden`}
                         type="button"
                       >
@@ -657,8 +660,8 @@ const DetailProduct = () => {
                         key={option.key}
                         onClick={() => handleFinishSelect(option.key, option.images)}
                         className={`cursor-pointer rounded-lg p-1 transition-all w-1/2 ${activeImageSet === option.key
-                            ? 'border-4 border-orange-500 bg-white shadow-lg'
-                            : 'border-2 border-transparent hover:border-gray-300 bg-white'
+                          ? 'border-4 border-orange-500 bg-white shadow-lg'
+                          : 'border-2 border-transparent hover:border-gray-300 bg-white'
                           }`}
                       >
                         <img
@@ -685,8 +688,8 @@ const DetailProduct = () => {
                         key={row.label + idx}
                         onClick={() => handleSizeClick(row.url)}
                         className={`px-6 py-3 rounded-lg font-medium transition-all border-2 ${selectedSize === row.label
-                            ? 'bg-orange-500 text-white border-orange-500 shadow-md'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-orange-400 hover:bg-orange-50'
+                          ? 'bg-orange-500 text-white border-orange-500 shadow-md'
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-orange-400 hover:bg-orange-50'
                           }`}
                         disabled={!row.url}
                       >
