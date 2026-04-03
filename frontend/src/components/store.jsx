@@ -21,16 +21,6 @@ export default function StoreLocator() {
       location: "https://www.google.com/maps/search/shree+furniture+village+HYDERABAD+Miyapur/@17.4958037,78.3561454,17z?entry=s&sa=X&ved=1t%3A199789"
     },
     {
-      name: "Moghalrajpuram Vijaywada",
-      image: "/Sri/mangalapuram vijaywada.jpg",
-      location: "https://www.google.com/maps/search/shree+furniture+village+Guntur/@16.3280899,80.4383042,815m/data=!3m1!1e3?entry=ttu&g_ep=EgoyMDI1MTEwMi4wIKXMDSoASAFQAw%3D%3D"
-    },
-    {
-      name: "Eluru",
-      image: "/Sri/Eluru.jpg",
-      location: "https://www.google.com/maps/place/Sri+Furniture+Village/@16.7155905,81.0921592,814m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3a3615dab3df5683:0x6c95abfc2ec83cdd!8m2!3d16.7155905!4d81.0921592!16s%2Fg%2F11sy6p7k77?entry=ttu&g_ep=EgoyMDI1MTEwMi4wIKXMDSoASAFQAw%3D%3D"
-    },
-    {
       name: "Guntur",
       image: "/Sri/Guntur.jpg",
       location: "https://www.google.com/maps/search/shree+furniture+village+Guntur/@16.3280899,80.4383042,815m/data=!3m1!1e3?entry=ttu&g_ep=EgoyMDI1MTEwMi4wIKXMDSoASAFQAw%3D%3D"
