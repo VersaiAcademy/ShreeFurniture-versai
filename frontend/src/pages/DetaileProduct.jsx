@@ -15,11 +15,11 @@ const DetailProduct = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // State for Quantity
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
-  
+
   // State for Similar Products
   const [similarProducts, setSimilarProducts] = useState([]);
   const [similarLoading, setSimilarLoading] = useState(false);
@@ -127,16 +127,18 @@ const DetailProduct = () => {
           data.stone_finish_img8,
         ].filter(Boolean);
 
+
+
         // Prefer main images first (admin-selected order), then fall back to variants
-        if (mainImgs.length > 0) {
-          setSelectedImage(mainImgs[0]);
-          setActiveImageSet('main');
-        } else if (naturalImgs.length > 0) {
+        if (naturalImgs.length > 0) {
           setSelectedImage(naturalImgs[0]);
           setActiveImageSet('natural');
         } else if (stoneImgs.length > 0) {
           setSelectedImage(stoneImgs[0]);
           setActiveImageSet('stone');
+        } else if (mainImgs.length > 0) {
+          setSelectedImage(mainImgs[0]);
+          setActiveImageSet('main');
         }
 
         // Check if product is in wishlist (if user is logged in)
@@ -170,7 +172,7 @@ const DetailProduct = () => {
 
     if (id) {
       // Ensure we start at top when loading a new product
-      try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0,0); }
+      try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0, 0); }
       fetchProduct();
     }
   }, [id]);
@@ -187,14 +189,14 @@ const DetailProduct = () => {
     try {
       setSimilarLoading(true);
       console.log('🔍 Fetching related products for category:', category);
-      
+
       const response = await API.get(`/api/products/related/${encodeURIComponent(category)}`, {
         params: {
           excludeId: currentProductId,
           limit: 6
         }
       });
-      
+
       const data = response.data;
       setSimilarProducts(data.relatedProducts || []);
       console.log(`✅ Fetched ${data.relatedProducts?.length || 0} related products`);
@@ -235,19 +237,19 @@ const DetailProduct = () => {
       }
 
       setAddingToCart(true);
-      
+
       const discountedPrice = Math.floor(product.price - (product.price * product.offer) / 100);
-      
+
       const response = await API.post('/api/cart', {
         product: product._id,
         product_name: product.pname,
         price: discountedPrice,
         qty: quantity
       });
-      
+
       // Track AddToCart event (Meta Pixel)
       trackAddToCart(product, quantity);
-      
+
       toast.success(response.data.message || 'Added to cart successfully!');
       setQuantity(1); // Reset quantity
     } catch (error) {
@@ -263,7 +265,7 @@ const DetailProduct = () => {
       // Check if token exists and is valid
       const token = localStorage.getItem('token');
       let isAuthenticated = false;
-      
+
       // Validate token by making a test API call if token exists
       if (token) {
         try {
@@ -286,11 +288,11 @@ const DetailProduct = () => {
           }
         }
       }
-      
+
       const discountedPrice = Math.floor(product.price - (product.price * product.offer) / 100);
       const totalPrice = discountedPrice * quantity;
       const totalOffer = product.offer;
-      
+
       // If not authenticated, save checkout state and redirect to login
       if (!isAuthenticated) {
         // Save product info for checkout after login
@@ -314,7 +316,7 @@ const DetailProduct = () => {
         } catch (e) {
           console.warn('Failed to save checkout data:', e);
         }
-        
+
         // Redirect to login with checkout as next destination
         toast.info('Please login to proceed to checkout');
         navigate('/login?next=/checkout');
@@ -323,7 +325,7 @@ const DetailProduct = () => {
 
       // User is authenticated - add to cart and proceed directly to checkout
       setAddingToCart(true);
-      
+
       // Add to cart first
       await API.post('/api/cart', {
         product: product._id,
@@ -331,13 +333,13 @@ const DetailProduct = () => {
         price: discountedPrice,
         qty: quantity
       });
-      
+
       // Navigate directly to checkout page (not address page)
       toast.success('Proceeding to checkout...');
       navigate('/checkout');
     } catch (error) {
       console.error('Failed to process buy now:', error);
-      
+
       // If 401 error, redirect to login
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
@@ -348,7 +350,7 @@ const DetailProduct = () => {
         navigate('/login?next=/checkout');
         return;
       }
-      
+
       toast.error(error.response?.data?.message || 'Failed to proceed to checkout');
     } finally {
       setAddingToCart(false);
@@ -374,7 +376,7 @@ const DetailProduct = () => {
   // --- Get Size Options Based on Category ---
   const getSizeOptions = () => {
     const category = product?.category?.toLowerCase() || '';
-    
+
     if (category.includes('bed')) {
       return ['King Size', 'Queen Size', 'Single'];
     } else if (category.includes('sofa')) {
@@ -402,9 +404,9 @@ const DetailProduct = () => {
       setDeliveryInfo({ available: false, message: 'Please enter a valid 6-digit Pincode.' });
       return;
     }
-    
+
     setDeliveryInfo({ available: null, message: 'Checking...' });
-    
+
     try {
       // Representative pincode mapping for serviceable cities.
       // NOTE: This is a simple lookup with one representative pincode per city.
@@ -452,14 +454,14 @@ const DetailProduct = () => {
 
       if (allowedPincodes.has(pincode)) {
         const cities = Object.keys(serviceableCityMap).join(', ');
-        setDeliveryInfo({ 
-          available: true, 
-          message: `Delivery available in: ${cities}. Estimated: ${product.dispatch_in || '5-7 Days'}` 
+        setDeliveryInfo({
+          available: true,
+          message: `Delivery available in: ${cities}. Estimated: ${product.dispatch_in || '5-7 Days'}`
         });
       } else {
-        setDeliveryInfo({ 
-          available: false, 
-          message: 'Sorry, delivery is not available to this Pincode.' 
+        setDeliveryInfo({
+          available: false,
+          message: 'Sorry, delivery is not available to this Pincode.'
         });
       }
     } catch (error) {
@@ -545,13 +547,10 @@ const DetailProduct = () => {
   }
   if (stoneFinishImages.length > 0) {
     colorOptions.push({ name: 'Stone', key: 'stone', images: stoneFinishImages, thumbnail: product.stone_finish_image });
-  } 
-  if (mainImages.length > 0) {
-    colorOptions.push({ name: 'Product Images', key: 'main', images: mainImages, thumbnail: product.img1 });
   }
-  
+
   // Default image: prefer currently selected, or first available
-  const displayImage = selectedImage || mainImages[0] || naturalFinishImages[0] || stoneFinishImages[0] || 'placeholder-image-url';
+  const displayImage = selectedImage || naturalFinishImages[0] || stoneFinishImages[0] || mainImages[0] || 'placeholder-image-url';
 
 
   // --- JSX Render ---
@@ -575,11 +574,10 @@ const DetailProduct = () => {
                       <button
                         key={`${activeImageSet}-${index}`}
                         onClick={() => setSelectedImage(img)}
-                        className={`flex-shrink-0 transition-all ${
-                          selectedImage === img
+                        className={`flex-shrink-0 transition-all ${selectedImage === img
                             ? 'border-4 border-orange-500'
                             : 'border-2 border-gray-300 hover:border-orange-300'
-                        } rounded-md overflow-hidden`}
+                          } rounded-md overflow-hidden`}
                         type="button"
                       >
                         <img
@@ -597,14 +595,14 @@ const DetailProduct = () => {
 
               {/* BANNER SECTION */}
               <div className="mt-6">
-  <div className="bg-gray-200 rounded-lg overflow-hidden">
-    <img
-      src="/Sri/2624x308 Pixle (1).png"
-      alt="Discount Banner"
-      className="w-full h-auto object-contain"
-    />
-  </div>
-</div>
+                <div className="bg-gray-200 rounded-lg overflow-hidden">
+                  <img
+                    src="/Sri/2624x308 Pixle (1).png"
+                    alt="Discount Banner"
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+              </div>
 
             </div>
           </div>
@@ -619,11 +617,11 @@ const DetailProduct = () => {
               <p className="text-sm text-gray-600 mb-3">
                 By {product.brand || 'Sri Furniture Village'}
               </p>
-              
+
               <div className="flex items-center gap-3 mb-4">
                 <RatingStars rating={product.rating || 5} />
                 <span className="text-gray-700">({product.rating_count || 55})</span>
-                <button 
+                <button
                   onClick={inWishlist ? handleRemoveFromWishlist : handleAddToWishlist}
                   className={`ml-auto flex items-center gap-2 transition-colors ${inWishlist ? 'text-orange-500' : 'text-gray-700 hover:text-orange-500'} ${addingToWishlist ? 'opacity-50 pointer-events-none' : ''}`}
                   disabled={addingToWishlist}
@@ -657,12 +655,11 @@ const DetailProduct = () => {
                     {colorOptions.map((option) => (
                       <div
                         key={option.key}
-                        onClick={() => handleFinishSelect(option.key, option.images)} 
-                        className={`cursor-pointer rounded-lg p-1 transition-all w-1/2 ${
-                          activeImageSet === option.key 
+                        onClick={() => handleFinishSelect(option.key, option.images)}
+                        className={`cursor-pointer rounded-lg p-1 transition-all w-1/2 ${activeImageSet === option.key
                             ? 'border-4 border-orange-500 bg-white shadow-lg'
                             : 'border-2 border-transparent hover:border-gray-300 bg-white'
-                        }`}
+                          }`}
                       >
                         <img
                           src={option.thumbnail || 'placeholder-thumbnail-url'}
@@ -687,11 +684,10 @@ const DetailProduct = () => {
                       <button
                         key={row.label + idx}
                         onClick={() => handleSizeClick(row.url)}
-                        className={`px-6 py-3 rounded-lg font-medium transition-all border-2 ${
-                          selectedSize === row.label
+                        className={`px-6 py-3 rounded-lg font-medium transition-all border-2 ${selectedSize === row.label
                             ? 'bg-orange-500 text-white border-orange-500 shadow-md'
                             : 'bg-white text-gray-700 border-gray-300 hover:border-orange-400 hover:bg-orange-50'
-                        }`}
+                          }`}
                         disabled={!row.url}
                       >
                         {row.label || 'No Label'}
@@ -708,48 +704,47 @@ const DetailProduct = () => {
               <div className="mb-6">
                 <h3 className="font-semibold mb-3 text-gray-900">Delivery:</h3>
                 <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 border border-gray-300 rounded-lg p-3 bg-white shadow-sm">
-                        <span className="text-sm text-gray-600">
-                            Check Delivery availability by area:
-                        </span>
-                        <div className="flex-grow flex border border-gray-400 rounded-md overflow-hidden">
-                            <input
-                                type="number"
-                                placeholder="Enter Pincode"
-                                value={pincode}
-                                onChange={(e) => setPincode(e.target.value)}
-                                className="p-2 flex-grow focus:outline-none text-sm"
-                            />
-                            <button 
-                                onClick={handlePincodeCheck}
-                                className="bg-orange-500 text-white p-2 hover:bg-orange-600 transition-colors"
-                            >
-                                <ChevronRight size={18} />
-                            </button>
-                        </div>
+                  <div className="flex items-center gap-2 border border-gray-300 rounded-lg p-3 bg-white shadow-sm">
+                    <span className="text-sm text-gray-600">
+                      Check Delivery availability by area:
+                    </span>
+                    <div className="flex-grow flex border border-gray-400 rounded-md overflow-hidden">
+                      <input
+                        type="number"
+                        placeholder="Enter Pincode"
+                        value={pincode}
+                        onChange={(e) => setPincode(e.target.value)}
+                        className="p-2 flex-grow focus:outline-none text-sm"
+                      />
+                      <button
+                        onClick={handlePincodeCheck}
+                        className="bg-orange-500 text-white p-2 hover:bg-orange-600 transition-colors"
+                      >
+                        <ChevronRight size={18} />
+                      </button>
                     </div>
-                     {/* Delivery Status Message */}
-                    {deliveryInfo.message && (
-                        <p className={`text-sm font-medium pl-3 ${
-                            deliveryInfo.available === true ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                            {deliveryInfo.message}
-                        </p>
-                    )}
+                  </div>
+                  {/* Delivery Status Message */}
+                  {deliveryInfo.message && (
+                    <p className={`text-sm font-medium pl-3 ${deliveryInfo.available === true ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                      {deliveryInfo.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Quantity Selector */}
               <div className="flex items-center gap-4 mb-6">
                 <span className="font-semibold text-gray-900">Quantity:</span>
-                <select 
+                <select
                   value={quantity}
                   onChange={(e) => setQuantity(parseInt(e.target.value))}
                   className="border border-gray-400 rounded-md p-2 focus:ring-orange-500 focus:border-orange-500"
                 >
-                    {[...Array(10)].map((_, i) => (
-                        <option key={i + 1} value={i + 1}>{i + 1}</option>
-                    ))}
+                  {[...Array(10)].map((_, i) => (
+                    <option key={i + 1} value={i + 1}>{i + 1}</option>
+                  ))}
                 </select>
               </div>
 
@@ -774,22 +769,22 @@ const DetailProduct = () => {
               {/* Trust badges */}
               <div className="flex justify-around items-center border-t border-b py-3 mb-6">
                 <div className="text-center">
-                    <span role="img" aria-label="warranty" className="text-2xl">🛡️</span>
-                    <p className="text-xs text-gray-600 mt-1">
-                        {product.warranty || '36 Month'}Warranty
-                    </p>
+                  <span role="img" aria-label="warranty" className="text-2xl">🛡️</span>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {product.warranty || '36 Month'}Warranty
+                  </p>
                 </div>
                 <div className="text-center">
-                    <span role="img" aria-label="delivery" className="text-2xl">🚚</span>
-                    <p className="text-xs text-gray-600 mt-1">
-                        Free shipping on prepaid order
-                    </p>
+                  <span role="img" aria-label="delivery" className="text-2xl">🚚</span>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Free shipping on prepaid order
+                  </p>
                 </div>
                 <div className="text-center">
-                    <span role="img" aria-label="secure" className="text-2xl">🌐</span>
-                    <p className="text-xs text-gray-600 mt-1">
-                        Safe & Secure
-                    </p>
+                  <span role="img" aria-label="secure" className="text-2xl">🌐</span>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Safe & Secure
+                  </p>
                 </div>
               </div>
 
@@ -800,82 +795,82 @@ const DetailProduct = () => {
                 </h3>
                 <div className="p-6">
                   {(() => {
-                      const overviewItems = [
-                          { label: 'Brand', value: product.brand || 'SRI FURNITURE VILLAGE' },
-                          { label: 'SKU', value: product.sku || 'SFV-4034-N' },
-                          { label: 'Dimensions (In Centimeters)', value: product.dimensions_cm  },
-                          { label: 'Dimensions (In Inches)', value: product.dimensions },
-                          { label: 'Primary Material', value: product.material || 'Solid Sheesham Wood' },
-                          { label: 'Warranty', value: product.warranty || '36 Months Warranty' },
-                          { label: 'Delivery', value: product.dispatch_in || '10-12 Days' },
-                          { label: 'Delivery Condition', value: product.delivery_condition || 'Knocked Down' },
-                          { label: 'Caring', value: product.caring  },
-                          { label: 'Mattress', value: product.mattress_size },
-                      ];
+                    const overviewItems = [
+                      { label: 'Brand', value: product.brand || 'SRI FURNITURE VILLAGE' },
+                      { label: 'SKU', value: product.sku || 'SFV-4034-N' },
+                      { label: 'Dimensions (In Centimeters)', value: product.dimensions_cm },
+                      { label: 'Dimensions (In Inches)', value: product.dimensions },
+                      { label: 'Primary Material', value: product.material || 'Solid Sheesham Wood' },
+                      { label: 'Warranty', value: product.warranty || '36 Months Warranty' },
+                      { label: 'Delivery', value: product.dispatch_in || '10-12 Days' },
+                      { label: 'Delivery Condition', value: product.delivery_condition || 'Knocked Down' },
+                      { label: 'Caring', value: product.caring },
+                      { label: 'Mattress', value: product.mattress_size },
+                    ];
 
-                      return (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                          {overviewItems.map((it) => (
-                            <div key={it.label} className="space-y-1">
-                              <div className="text-sm text-gray-600 font-medium">{it.label}</div>
-                              <div className="text-sm text-gray-900 font-normal">{it.value ?? '—'}</div>
-                            </div>
-                          ))}
-                        </div>
-                      );
+                    return (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {overviewItems.map((it) => (
+                          <div key={it.label} className="space-y-1">
+                            <div className="text-sm text-gray-600 font-medium">{it.label}</div>
+                            <div className="text-sm text-gray-900 font-normal">{it.value ?? '—'}</div>
+                          </div>
+                        ))}
+                      </div>
+                    );
                   })()}
                 </div>
               </div>
 
               {/* Special Offers */}
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-        <h3 className="text-lg font-semibold text-orange-700 mb-3">
-          Special Offers
-        </h3>
-        <ul className="space-y-2 text-sm text-gray-700">
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+                <h3 className="text-lg font-semibold text-orange-700 mb-3">
+                  Special Offers
+                </h3>
+                <ul className="space-y-2 text-sm text-gray-700">
 
-          {/* New User Discount */}
-          <li className="flex gap-2">
-            <span className="text-green-600 font-bold">›</span>
-            <span>
-              <span className="font-semibold">New User Discount</span> – Get Up to 10% OFF on Your First Order{' '}
-              {/* <span className="text-blue-600 cursor-pointer underline">T&C</span> */}
-            </span>
-          </li>
+                  {/* New User Discount */}
+                  <li className="flex gap-2">
+                    <span className="text-green-600 font-bold">›</span>
+                    <span>
+                      <span className="font-semibold">New User Discount</span> – Get Up to 10% OFF on Your First Order{' '}
+                      {/* <span className="text-blue-600 cursor-pointer underline">T&C</span> */}
+                    </span>
+                  </li>
 
-          {/* Festive Offer */}
-          <li className="flex gap-2">
-            <span className="text-green-600 font-bold">›</span>
-            <span>
-              <span className="font-semibold">Festive Season Offer</span> – Save Up to 20% on Selected Furniture{' '}
-              {/* <span className="text-blue-600 cursor-pointer underline">T&C</span> */}
-            </span>
-          </li>
+                  {/* Festive Offer */}
+                  <li className="flex gap-2">
+                    <span className="text-green-600 font-bold">›</span>
+                    <span>
+                      <span className="font-semibold">Festive Season Offer</span> – Save Up to 20% on Selected Furniture{' '}
+                      {/* <span className="text-blue-600 cursor-pointer underline">T&C</span> */}
+                    </span>
+                  </li>
 
-          {/* Store Discount */}
-          <li className="flex gap-2">
-            <span className="text-green-600 font-bold">›</span>
-            <span>
-              <span className="font-semibold">Store Discount</span> – Get Up to 10% OFF on All Orders{' '}
-              {/* <span className="text-blue-600 cursor-pointer underline">T&C</span> */}
-            </span>
-          </li>
+                  {/* Store Discount */}
+                  <li className="flex gap-2">
+                    <span className="text-green-600 font-bold">›</span>
+                    <span>
+                      <span className="font-semibold">Store Discount</span> – Get Up to 10% OFF on All Orders{' '}
+                      {/* <span className="text-blue-600 cursor-pointer underline">T&C</span> */}
+                    </span>
+                  </li>
 
-          {/* Finance Offer */}
-          <li className="flex gap-2">
-            <span className="text-green-600 font-bold">›</span>
-            <span> 
-              <span className="font-semibold">No Cost EMI</span> – Available on Net Cart Value of ₹39,990+{' '}
-              {/* <span className="text-blue-600 cursor-pointer underline">T&C</span> */}
-            </span>
-          </li>
+                  {/* Finance Offer */}
+                  <li className="flex gap-2">
+                    <span className="text-green-600 font-bold">›</span>
+                    <span>
+                      <span className="font-semibold">No Cost EMI</span> – Available on Net Cart Value of ₹39,990+{' '}
+                      {/* <span className="text-blue-600 cursor-pointer underline">T&C</span> */}
+                    </span>
+                  </li>
 
-        </ul>
-      </div>
+                </ul>
+              </div>
 
             </div>
 
-        
+
 
             {/* Product Details Accordion Sections */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -1122,7 +1117,7 @@ const DetailProduct = () => {
         <h2 className="text-3xl font-bold text-orange-600 mb-6">
           Visually Similar {product?.category || 'Products'}
         </h2>
-        
+
         {similarLoading ? (
           <div className="flex justify-center items-center py-12">
             <Loader />
@@ -1135,18 +1130,18 @@ const DetailProduct = () => {
               const itemFinalPrice = itemDiscountedPrice.toLocaleString('en-IN');
 
               return (
-                  <div 
-                    key={item._id || item.id} 
-                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
-                    onClick={() => navigate(`/dtproduct/${item._id || item.id}`)}
-                  >
+                <div
+                  key={item._id || item.id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
+                  onClick={() => navigate(`/dtproduct/${item._id || item.id}`)}
+                >
                   <div className="relative">
                     <img
                       src={item.img1 || item.natural_finish_image || item.stone_finish_image || 'https://via.placeholder.com/400x300?text=No+Image'}
                       alt={item.pname}
                       className="w-full h-48 object-cover"
                     />
-                    <button 
+                    <button
                       className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md hover:bg-orange-50"
                       onClick={(e) => {
                         e.stopPropagation();
