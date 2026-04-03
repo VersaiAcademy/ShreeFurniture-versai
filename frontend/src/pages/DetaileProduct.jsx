@@ -540,15 +540,15 @@ const DetailProduct = () => {
 
   // Build color/finish options: main images + variants (only if they exist)
   const colorOptions = [];
-  if (mainImages.length > 0) {
-    colorOptions.push({ name: 'Product Images', key: 'main', images: mainImages, thumbnail: product.img1 });
-  }
   if (naturalFinishImages.length > 0) {
     colorOptions.push({ name: 'Natural', key: 'natural', images: naturalFinishImages, thumbnail: product.natural_finish_image });
   }
   if (stoneFinishImages.length > 0) {
     colorOptions.push({ name: 'Stone', key: 'stone', images: stoneFinishImages, thumbnail: product.stone_finish_image });
   } 
+  if (mainImages.length > 0) {
+    colorOptions.push({ name: 'Product Images', key: 'main', images: mainImages, thumbnail: product.img1 });
+  }
   
   // Default image: prefer currently selected, or first available
   const displayImage = selectedImage || mainImages[0] || naturalFinishImages[0] || stoneFinishImages[0] || 'placeholder-image-url';
