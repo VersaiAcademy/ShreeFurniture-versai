@@ -23,45 +23,38 @@ const RecommendedProducts = () => {
     fetchProducts();
   }, []);
 
-const fetchProducts = async () => {
-  try {
-    setLoading(true);
-    setError(null);
-    const response = await API.get('/api/products?limit=20&page=1');
-    
-    const allProducts = response.data.products || [];
-    
-    // 🔥 DEBUG - PRODUCTION MEIN BHI CHALEGA
-    allProducts.forEach(p => {
-      console.log('Product:', p.pname);
-      console.log('  - natural_finish_image:', p.natural_finish_image);
-      console.log('  - stone_finish_image:', p.stone_finish_image);
-      console.log('---');
-    });
-    
-    setProducts(allProducts);
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await API.get('/api/products?limit=20&page=1');
+      console.log('✅ Products fetched:', response.data.products);
+      setProducts(response.data.products || []);
 
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const wishlistRes = await API.get('/api/wishlist');
-        const wishlistIds = new Set(
-          (wishlistRes.data.wishlist || []).map(item =>
-            (item.product && item.product._id) ? item.product._id : item.product
-          ).filter(Boolean)
-        );
-        setWishlistItems(wishlistIds);
-      } catch (err) {
-        // Silent fail
+      // Fetch wishlist if user is logged in
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const wishlistRes = await API.get('/api/wishlist');
+          const wishlistIds = new Set(
+            (wishlistRes.data.wishlist || []).map(item =>
+              (item.product && item.product._id) ? item.product._id : item.product
+            ).filter(Boolean)
+          );
+          setWishlistItems(wishlistIds);
+        } catch (err) {
+          console.warn('Could not fetch wishlist:', err);
+        }
       }
+    } catch (error) {
+      console.error('❌ Error fetching recommended products:', error);
+      setError('Failed to load products. Please check your connection.');
+      setProducts([]);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    setError('Failed to load products. Please check your connection.');
-    setProducts([]);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+
 
   const handleViewMore = () => {
     setVisibleCount(prev => Math.min(prev + 10, products.length));
@@ -223,7 +216,7 @@ const fetchProducts = async () => {
                 <div className="relative overflow-hidden bg-gray-100 aspect-square flex items-center justify-center">
                   {imageUrl && !hasImageError ? (
                     <img
-                      src={imageUrl}
+                      src={product.natural_finish_image || imageUrl}
                       alt={product.pname || 'Product'}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       onError={() => handleImageError(product._id, imageUrl)}
@@ -251,8 +244,8 @@ const fetchProducts = async () => {
                   {/* Wishlist Button */}
                   <button
                     className={`absolute top-2 left-2 p-2 rounded-full shadow transition-all z-10 ${wishlistItems.has(product._id)
-                        ? 'bg-red-100 hover:bg-red-200'
-                        : 'bg-white hover:bg-orange-50'
+                      ? 'bg-red-100 hover:bg-red-200'
+                      : 'bg-white hover:bg-orange-50'
                       }`}
                     onClick={(e) => handleAddToWishlist(e, product._id)}
                     disabled={addingToWishlist[product._id]}
