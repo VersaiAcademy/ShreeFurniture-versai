@@ -31,15 +31,15 @@ const fetchProducts = async () => {
     
     const allProducts = response.data.products || [];
     
-    // 🔥 SIRF NATURAL FINISH WALE PRODUCTS FILTER
-    const naturalFinishProducts = allProducts.filter(product => {
-      return product.natural_finish_image && product.natural_finish_image.trim() !== '';
+    // 🔥 DEBUG - PRODUCTION MEIN BHI CHALEGA
+    allProducts.forEach(p => {
+      console.log('Product:', p.pname);
+      console.log('  - natural_finish_image:', p.natural_finish_image);
+      console.log('  - stone_finish_image:', p.stone_finish_image);
+      console.log('---');
     });
     
-    console.log('Total products:', allProducts.length);
-    console.log('Natural products:', naturalFinishProducts.length);
-    
-    setProducts(naturalFinishProducts); // 👈 FILTERED PRODUCTS SET KAR
+    setProducts(allProducts);
 
     const token = localStorage.getItem('token');
     if (token) {
