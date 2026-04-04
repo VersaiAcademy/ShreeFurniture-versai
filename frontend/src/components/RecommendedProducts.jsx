@@ -23,40 +23,27 @@ const RecommendedProducts = () => {
     fetchProducts();
   }, []);
 
-  const fetchProducts = async () => {
+const fetchProducts = async () => {
   try {
     setLoading(true);
     setError(null);
     const response = await API.get('/api/products?limit=20&page=1');
     
     const allProducts = response.data.products || [];
-    const naturalFinishProducts = allProducts.filter(product => {
-      return product.natural_finish_image && product.natural_finish_image.trim() !== '';
+    
+    // 🔥 TEMPORARY - Sirf ek baar dekh
+    console.log('===== PRODUCTS DATA =====');
+    allProducts.forEach((p, index) => {
+      console.log(`Product ${index + 1}:`, p.pname);
+      console.log('  - natural_finish_image:', p.natural_finish_image);
+      console.log('  - stone_finish_image:', p.stone_finish_image);
+      console.log('  - finish type field:', p.finish || p.type || p.category);
+      console.log('---');
     });
     
-    setProducts(naturalFinishProducts);
-
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const wishlistRes = await API.get('/api/wishlist');
-        const wishlistIds = new Set(
-          (wishlistRes.data.wishlist || []).map(item =>
-            (item.product && item.product._id) ? item.product._id : item.product
-          ).filter(Boolean)
-        );
-        setWishlistItems(wishlistIds);
-      } catch (err) {
-        // Silent fail - no console
-      }
-    }
-  } catch (error) {
-    setError('Failed to load products. Please check your connection.');
-    setProducts([]);
-  } finally {
-    setLoading(false);
-  }
-};
+    setProducts(allProducts); // Pehle saare daal, filter baad mein lagana
+    
+    // ... rest of code
 
   const handleViewMore = () => {
     setVisibleCount(prev => Math.min(prev + 10, products.length));
