@@ -8,13 +8,19 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000', // local backend only
+        target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
       },
     },
   },
   build: {
-    outDir: 'dist'
+    outDir: 'dist',
+    commonjsOptions: {
+      transformMixedEsModules: true
+    }
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom']
   }
 })
