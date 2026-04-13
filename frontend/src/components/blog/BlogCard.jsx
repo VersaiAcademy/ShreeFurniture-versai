@@ -36,7 +36,7 @@ const BlogCard = ({ blog }) => {
       </div>
       <div className="p-5">
         <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
-          <span>By {blog.author}</span>
+          <span>By <span className="text-orange-500">{blog.author}</span></span>
           <span>•</span>
           <span>{blog.date}</span>
         </div>

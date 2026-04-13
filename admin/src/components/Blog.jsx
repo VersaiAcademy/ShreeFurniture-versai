@@ -377,8 +377,8 @@ const Blog = () => {
                 </td>
                 <td>{blog.date || formatDateForDisplay(blog.createdAt)}</td>
                 <td>
-                  <button className="btn btn-edit" onClick={() => handleEdit(blog)}>Edit</button>
-                  <button className="btn btn-danger" onClick={() => handleDelete(blog._id)}>Delete</button>
+                  <button className="btn btn-edit" onClick={() => handleEdit(blog)}>✏️</button>
+                  <button className="btn btn-danger" onClick={() => handleDelete(blog._id)}>🗑️</button>
                 </td>
               </tr>
             ))}
