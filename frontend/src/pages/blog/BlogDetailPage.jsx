@@ -110,9 +110,10 @@ const BlogDetailPage = () => {
               {blog.title}
             </h1>
 
-            <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-              {blog.content}
-            </div>
+            <div
+              className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: blog.content }}
+            />
           </div>
         </article>
 
@@ -127,7 +128,7 @@ const BlogDetailPage = () => {
           </div>
         )}
       </div>
-       <div className="pt-10 pb-5 px-4 sm:px-6 md:px-8 lg:px-10 bg-gradient-to-b from-orange-100 to-white">
+      <div className="pt-10 pb-5 px-4 sm:px-6 md:px-8 lg:px-10 bg-gradient-to-b from-orange-100 to-white">
         <div className="max-w-7xl mx-auto">
           {/* Section Heading */}
           <div className="text-center mb-6 md:mb-8">
