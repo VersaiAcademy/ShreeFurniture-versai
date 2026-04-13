@@ -37,7 +37,7 @@ const BlogCard = ({ blog }) => {
       <div className="p-5">
         <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
           <span>By <span className="text-orange-500">{blog.author}</span></span>
-          <span>•</span>
+          <span>|</span>
           <span>{blog.date}</span>
         </div>
         <h3 className="font-bold text-gray-800 mb-2 line-clamp-2 min-h-[3.5rem] group-hover:text-orange-500 transition-colors">

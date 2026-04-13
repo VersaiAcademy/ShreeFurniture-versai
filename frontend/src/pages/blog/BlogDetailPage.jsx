@@ -102,7 +102,8 @@ const BlogDetailPage = () => {
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(blog.category)}`}>
                 {blog.categoryName}
               </span>
-              <span className="text-sm text-gray-500">By {blog.author}</span>
+              <span className="text-sm text-gray-500">By <span className="text-orange-500">{blog.author}</span></span>
+              <span>|</span>
               <span className="text-sm text-gray-500">{blog.date}</span>
             </div>
 
