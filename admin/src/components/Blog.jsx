@@ -74,11 +74,11 @@ const Blog = () => {
 
   const uploadImage = async () => {
     if (!imageFile) return null;
-    
+
     const token = localStorage.getItem('adminToken');
     const fd = new FormData();
     fd.append('image', imageFile);
-    
+
     try {
       const response = await axios.post('/api/upload', fd, {
         headers: {
@@ -114,9 +114,9 @@ const Blog = () => {
       alert('Please login as admin');
       return;
     }
-    
+
     setUploading(true);
-    
+
     let imageUrl = formData.image;
     if (imageFile) {
       const uploadedUrl = await uploadImage();
@@ -124,15 +124,15 @@ const Blog = () => {
         imageUrl = uploadedUrl;
       }
     }
-    
+
     let formattedDate = formData.date;
     if (formData.date) {
       const dateObj = new Date(formData.date);
-      formattedDate = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month:'short', year: 'numeric' });
+      formattedDate = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     }
-    
+
     const submitData = { ...formData, image: imageUrl, date: formattedDate };
-    
+
     try {
       if (editingBlog) {
         await axios.put(`/api/blogs/${editingBlog._id}`, submitData, {
@@ -179,7 +179,7 @@ const Blog = () => {
     if (blog.date) {
       const parts = blog.date.split(' ');
       if (parts.length === 3) {
-        const months = { 'Jan':'01', 'Feb':'02', 'Mar':'03', 'Apr':'04', 'May':'05', 'Jun':'06', 'Jul':'07', 'Aug':'08', 'Sep':'09', 'Oct':'10', 'Nov':'11', 'Dec':'12' };
+        const months = { 'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12' };
         const month = months[parts[1]];
         const day = parts[0].padStart(2, '0');
         const year = parts[2];
@@ -188,7 +188,7 @@ const Blog = () => {
         }
       }
     }
-    
+
     setEditingBlog(blog);
     setFormData({
       title: blog.title,
@@ -377,8 +377,10 @@ const Blog = () => {
                 </td>
                 <td>{blog.date || formatDateForDisplay(blog.createdAt)}</td>
                 <td>
-                  <button className="btn btn-edit" onClick={() => handleEdit(blog)}>✏️</button>
-                  <button className="btn btn-danger" onClick={() => handleDelete(blog._id)}>🗑️</button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button className="btn btn-edit" onClick={() => handleEdit(blog)}>✏️</button>
+                    <button className="btn btn-danger" onClick={() => handleDelete(blog._id)}>🗑️</button>
+                  </div>
                 </td>
               </tr>
             ))}
