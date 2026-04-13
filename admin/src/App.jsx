@@ -7,6 +7,7 @@ import Categories from "./components/Categories";
 import Orders from "./components/Orders";
 import Banners from "./components/Banners";
 import Users from "./components/Users";
+import Blog from "./components/Blog";
 import { safeJSONParse } from "./utils/safeJSONParse";
 
 const App = () => {
@@ -83,8 +84,10 @@ const App = () => {
         return <Categories />;
       case "orders":
         return <Orders />;
-        case "users":
-          return <Users />;
+      case "users":
+        return <Users />;
+      case "blog":
+        return <Blog />;
       default:
         return <Dashboard />;
     }
@@ -138,6 +141,7 @@ const App = () => {
             { key: "products", label: "📦 Products" },
             { key: "categories", label: "📂 Categories" },
             { key: "orders", label: "📋 Orders" },
+            { key: "blog", label: "📝 Blog" },
           ].map((item) => (
             <div
               key={item.key}

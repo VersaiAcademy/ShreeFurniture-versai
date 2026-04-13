@@ -548,9 +548,7 @@ const DetailProduct = () => {
   if (stoneFinishImages.length > 0) {
     colorOptions.push({ name: 'Stone', key: 'stone', images: stoneFinishImages, thumbnail: product.stone_finish_image });
   }
-  if (mainImages.length > 0) {
-    colorOptions.push({ name: 'Product Images', key: 'main', images: mainImages, thumbnail: product.img1 });
-  }
+  
 
   // Default image: prefer currently selected, or first available
   const displayImage = selectedImage || naturalFinishImages[0] || stoneFinishImages[0] || mainImages[0] || 'placeholder-image-url';

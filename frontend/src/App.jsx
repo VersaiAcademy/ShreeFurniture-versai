@@ -30,7 +30,8 @@ import CheckoutSuccess from './pages/CheckoutSuccess';
 import WhatsAppWidget from './components/WhatsAppWidget';
 import CustomFurniture from './pages/CustomFurniture';
 import BulkOrder from "./pages/bulkorder";
-
+import BlogPage from './pages/blog/BlogPage';
+import BlogDetailPage from './pages/blog/BlogDetailPage';
 
 function App() {
   return (
@@ -72,12 +73,14 @@ function App() {
         <Route path="/help" element={<HelpPage />} />
         <Route path="/security-privacy" element={<SecurityPrivacyPage />} />
         <Route path="/terms" element={<TermsConditions />} />
-        <Route path="/return-refunds" element={< CancellationRefundPolicy/>} />
+        <Route path="/return-refunds" element={< CancellationRefundPolicy />} />
         <Route path="/delivery-policy" element={<DeliveryShippingPage />} />
         <Route path="/custom-furnitures" element={<CustomFurniture />} />
-         <Route path="/bulk-order" element={<BulkOrder />} />
+        <Route path="/bulk-order" element={<BulkOrder />} />
         {/* Category pages: handled by root `/:slug` route to preserve original paths */}
         {/* ✅ Backwards-compatible slug routing (keeps existing behavior) */}
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:slug" element={<BlogDetailPage />} />
         <Route path="/:slug" element={<Productpage />} />
       </Routes>
       <Footer />
