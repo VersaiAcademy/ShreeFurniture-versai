@@ -73,8 +73,8 @@ const BlogDetailPage = () => {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen py-8 md:py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-50 min-h-screen pt-8 md:pt-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-12">
         <button
           onClick={() => navigate('/blog')}
           className="inline-flex items-center gap-2 text-gray-600 hover:text-orange-500 mb-6 transition-colors"
