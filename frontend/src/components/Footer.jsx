@@ -24,14 +24,14 @@ const Footer = () => {
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
-                  Factory Address – Plot No. G1-58 to G1-62, Ricco Industrial Area, Ramgarh Shekhawati, Disrict - Sikar, State - Rajasthan, Pin – 331024
+                  Factory Address – Plot No. G1-58 to G1-62, Ricco Industrial Area, Ramgarh Shekhawati, District - Sikar, State - Rajasthan, Pin – 331024
                 </p>
     
               </div>
              <div className="flex items-start gap-2">
               <MapPin className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
-                  Registered Address – Plot No. 233/2,Mayuri Nagar,Near Nizampet Sub Post Office, Nizampet,Hyderabad,Disrict- Medchalmalkajgiri, Telangana, Pin – 500090
+                  Registered Address – Plot No. 233/2,Mayuri Nagar,Near Nizampet Sub Post Office, Nizampet,Hyderabad,District- Medchalmalkajgiri, Telangana, Pin – 500090
                 </p>
               </div>
               <div className="flex items-center gap-2">
