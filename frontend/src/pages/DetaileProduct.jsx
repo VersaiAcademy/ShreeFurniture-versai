@@ -1,5 +1,3 @@
-//frontend/src/pages/DetaileProduct.jsx
-
 import React, { useState, useEffect } from 'react';
 import { Star, Heart, ShoppingCart, Zap, ChevronRight, ChevronDown } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -96,86 +94,164 @@ const DetailProduct = () => {
   };
 
   // --- Data Fetching Effect for Main Product and Related Products ---
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        const response = await getProduct(id);
-        const data = response.data;
-        setProduct(data);
+  // useEffect(() => {
+  //   const fetchProduct = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const response = await getProduct(id);
+  //       const data = response.data;
+  //       setProduct(data);
 
-        // Collect all main images (img1-5) in order - respects admin upload order
-        const mainImgs = [data.img1, data.img2, data.img3, data.img4, data.img5].filter(Boolean);
-        const naturalImgs = [
-          data.natural_finish_image,
-          data.natural_finish_img2,
-          data.natural_finish_img3,
-          data.natural_finish_img4,
-          data.natural_finish_img5,
-          data.natural_finish_img6,
-          data.natural_finish_img7,
-          data.natural_finish_img8,
-        ].filter(Boolean);
-        const stoneImgs = [
-          data.stone_finish_image,
-          data.stone_finish_img2,
-          data.stone_finish_img3,
-          data.stone_finish_img4,
-          data.stone_finish_img5,
-          data.stone_finish_img6,
-          data.stone_finish_img7,
-          data.stone_finish_img8,
-        ].filter(Boolean);
+  //       // Collect all main images (img1-5) in order - respects admin upload order
+  //       const mainImgs = [data.img1, data.img2, data.img3, data.img4, data.img5].filter(Boolean);
+  //       const naturalImgs = [
+  //         data.natural_finish_image,
+  //         data.natural_finish_img2,
+  //         data.natural_finish_img3,
+  //         data.natural_finish_img4,
+  //         data.natural_finish_img5,
+  //         data.natural_finish_img6,
+  //         data.natural_finish_img7,
+  //         data.natural_finish_img8,
+  //       ].filter(Boolean);
+  //       const stoneImgs = [
+  //         data.stone_finish_image,
+  //         data.stone_finish_img2,
+  //         data.stone_finish_img3,
+  //         data.stone_finish_img4,
+  //         data.stone_finish_img5,
+  //         data.stone_finish_img6,
+  //         data.stone_finish_img7,
+  //         data.stone_finish_img8,
+  //       ].filter(Boolean);
 
 
 
-        // Prefer main images first (admin-selected order), then fall back to variants
-        if (naturalImgs.length > 0) {
-          setSelectedImage(naturalImgs[0]);
-          setActiveImageSet('natural');
-        } else if (stoneImgs.length > 0) {
-          setSelectedImage(stoneImgs[0]);
-          setActiveImageSet('stone');
-        } else if (mainImgs.length > 0) {
-          setSelectedImage(mainImgs[0]);
-          setActiveImageSet('main');
-        }
+  //       // Prefer main images first (admin-selected order), then fall back to variants
+  //       if (naturalImgs.length > 0) {
+  //         setSelectedImage(naturalImgs[0]);
+  //         setActiveImageSet('natural');
+  //       } else if (stoneImgs.length > 0) {
+  //         setSelectedImage(stoneImgs[0]);
+  //         setActiveImageSet('stone');
+  //       } else if (mainImgs.length > 0) {
+  //         setSelectedImage(mainImgs[0]);
+  //         setActiveImageSet('main');
+  //       }
 
-        // Check if product is in wishlist (if user is logged in)
-        const token = localStorage.getItem('token');
-        if (token) {
-          try {
-            const wishlistRes = await API.get(`/api/wishlist/check/${data._id}`);
-            setInWishlist(wishlistRes.data.inWishlist);
-          } catch (err) {
-            console.warn('Could not check wishlist status:', err);
-          }
-        }
+  //       // Check if product is in wishlist (if user is logged in)
+  //       const token = localStorage.getItem('token');
+  //       if (token) {
+  //         try {
+  //           const wishlistRes = await API.get(`/api/wishlist/check/${data._id}`);
+  //           setInWishlist(wishlistRes.data.inWishlist);
+  //         } catch (err) {
+  //           console.warn('Could not check wishlist status:', err);
+  //         }
+  //       }
 
-        // Fetch related products based on category
-        if (data.category) {
-          await fetchRelatedProducts(data.category, data._id);
-        }
+  //       // Fetch related products based on category
+  //       if (data.category) {
+  //         await fetchRelatedProducts(data.category, data._id);
+  //       }
 
-        setError(null);
-      } catch (err) {
-        if (err.response?.status === 404) {
-          setError('Product not found');
-        } else {
-          setError(err.response?.data?.message || 'Something went wrong. Please try again.');
-        }
-        console.error('Error fetching product:', err);
-      } finally {
+  //       setError(null);
+  //     } catch (err) {
+  //       if (err.response?.status === 404) {
+  //         setError('Product not found');
+  //       } else {
+  //         setError(err.response?.data?.message || 'Something went wrong. Please try again.');
+  //       }
+  //       console.error('Error fetching product:', err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   if (id) {
+  //     // Ensure we start at top when loading a new product
+  //     try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0, 0); }
+  //     fetchProduct();
+  //   }
+  // }, [id]);
+
+// API CALL
+
+useEffect(() => {
+  const fetchProduct = async () => {
+    try {
+      setLoading(true);
+      
+     
+      setTimeout(() => {
+        setError('Product not found');
         setLoading(false);
-      }
-    };
-
-    if (id) {
-      // Ensure we start at top when loading a new product
-      try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0, 0); }
-      fetchProduct();
+      }, 500);
+      
+      return; // API call skip
+      
+      // ORIGINAL CODE (COMMENTED)
+      // const response = await getProduct(id);
+      // const data = response.data;
+      // setProduct(data);
+      // const mainImgs = [data.img1, data.img2, data.img3, data.img4, data.img5].filter(Boolean);
+      // const naturalImgs = [
+      //   data.natural_finish_image,
+      //   data.natural_finish_img2,
+      //   data.natural_finish_img3,
+      //   data.natural_finish_img4,
+      //   data.natural_finish_img5,
+      //   data.natural_finish_img6,
+      //   data.natural_finish_img7,
+      //   data.natural_finish_img8,
+      // ].filter(Boolean);
+      // const stoneImgs = [
+      //   data.stone_finish_image,
+      //   data.stone_finish_img2,
+      //   data.stone_finish_img3,
+      //   data.stone_finish_img4,
+      //   data.stone_finish_img5,
+      //   data.stone_finish_img6,
+      //   data.stone_finish_img7,
+      //   data.stone_finish_img8,
+      // ].filter(Boolean);
+      // if (naturalImgs.length > 0) {
+      //   setSelectedImage(naturalImgs[0]);
+      //   setActiveImageSet('natural');
+      // } else if (stoneImgs.length > 0) {
+      //   setSelectedImage(stoneImgs[0]);
+      //   setActiveImageSet('stone');
+      // } else if (mainImgs.length > 0) {
+      //   setSelectedImage(mainImgs[0]);
+      //   setActiveImageSet('main');
+      // }
+      // const token = localStorage.getItem('token');
+      // if (token) {
+      //   try {
+      //     const wishlistRes = await API.get(`/api/wishlist/check/${data._id}`);
+      //     setInWishlist(wishlistRes.data.inWishlist);
+      //   } catch (err) {
+      //     console.warn('Could not check wishlist status:', err);
+      //   }
+      // }
+      // if (data.category) {
+      //   await fetchRelatedProducts(data.category, data._id);
+      // }
+      // setError(null);
+    } catch (err) {
+      setError('Product not found');
+      console.error('Error fetching product:', err);
+    } finally {
+      // setLoading(false);
     }
-  }, [id]);
+  };
+
+  if (id) {
+    try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0, 0); }
+    fetchProduct();
+  }
+}, [id]);
+
 
   // --- Track ViewContent Event (Meta Pixel) ---
   useEffect(() => {
